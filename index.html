@@ -4,7 +4,7 @@ layout: default
 <div style="padding: 0px">
   {% for post in paginator.posts %}
   <div style="padding:10px 0px;">
-    <a href="./{{ post.url }}"><article>{{ post.title }}</article></a>
+    <a href=".{{ post.url }}"><article>{{ post.title }}</article></a>
     <span style="color:darkgray; font-weight: lighter;">{{ post.date | date: "%Y-%m-%d" }}</span>
   </div>
 	{% endfor %}
