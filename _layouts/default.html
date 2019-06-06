@@ -20,11 +20,12 @@
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
   </head>
   <body>
-    {% if site.github.is_project_page %}
-      <div class="floating">
-          <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>  
-      </div>
-    {% endif %}
+    <div class="floating">
+      {% if site.github.is_project_page %}
+        <a href="/ARTS.html" class="btn">什么是 ARTS？</a>
+        <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
+      {% endif %}
+    </div>
 
     <header class="page-header" role="banner">
       <h1 class="project-name">{{ page.title| default: site.title | default: site.github.repository_name }}</h1>
