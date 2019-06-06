@@ -1,16 +1,14 @@
 ---
 layout: default
 ---
-<ul style="padding: 0px">
+<div style="padding: 0px">
   {% for post in paginator.posts %}
-		<a href="./{{ post.url }}">
-	   <h4 class='project_title'>{{ post.title }}</h4>
-    </a>
-		<p>{{ post.excerpt | strip_html | strip_newlines | truncate:site.max_excerpt_chars }}</p>
-    <span style="color: #817c7c; font-size: .9em;">{{ post.date | date: "%Y-%m-%d" }}</span>
-	<hr>
+  <div style="padding:10px 0px;">
+    <a href="./{{ post.url }}"><article>{{ post.title }}</article></a>
+    <span style="color:darkgray; font-weight: lighter;">{{ post.date | date: "%Y-%m-%d" }}</span>
+  </div>
 	{% endfor %}
-</ul>
+</div>
 
 {% if paginator.total_pages > 1 %}
 	{% if paginator.previous_page %}
