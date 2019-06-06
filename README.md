@@ -1,37 +1,22 @@
-## Welcome to GitHub Pages
+## 什么是 ARTS 打卡计划？
 
-You can use the [editor on GitHub](https://github.com/zhangao0086/ARTS/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+摘自**陈皓老师**的[知乎回答](https://www.zhihu.com/question/301150832/answer/529809529)：
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+> ### Algorithm
+>
+> 每周至少做一个 Leetcode 的算法题。**主要是为了编程训练和学习**。如果不训练你看再多的算法书，你依然不会做算法题。关于做 Leetcode 的优势，你可以看一下我在 coolshell 上的文章。
+>
+> ### Review
+>
+> 阅读并点评至少一篇英文技术文章。**主要是为了学习英文**，如果你的英文不行，你基本上无缘技术高手；我个人最喜欢去的地方是 [Medium](http://Medium.com)（需要梯子）以及各个公司的技术 blog，如 Netflix 的。
+>
+> ### Tip
+>
+> 学习至少一个技术技巧。**主要是为了总结和归纳你在日常工作中所遇到的知识点**。
+>
+> ### Share
+>
+> 分享一篇有观点和思考的技术文章。**主要是为了建立你的影响力，能够输出价值观**。
+>
+> **这就是 ARTS 的全部动机。**
 
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/zhangao0086/ARTS/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
