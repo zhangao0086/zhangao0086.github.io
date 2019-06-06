@@ -2,9 +2,9 @@
 layout: default
 title: ARTS 打卡记录
 ---
-<ul>
+<ul style="padding: 0px">
   {% for post in paginator.posts %}
-		<a href="{{ post.url }}">
+		<a href="./{{ post.url }}">
 	   <h4 class='project_title'>{{ post.title }}</h4>
 		</a>
 		<p>{{ post.excerpt | strip_html | strip_newlines | truncate:site.max_excerpt_chars }}</p>
