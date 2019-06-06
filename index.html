@@ -1,0 +1,23 @@
+---
+layout: default
+title: ARTS 打卡记录
+---
+<ul>
+  {% for post in paginator.posts %}
+		<a href="{{ post.url }}">
+	   <h4 class='project_title'>{{ post.title }}</h4>
+		</a>
+		<p>{{ post.excerpt | strip_html | strip_newlines | truncate:site.max_excerpt_chars }}</p>
+	<hr>
+	{% endfor %}
+</ul>
+
+{% if paginator.total_pages > 1 %}
+	{% if paginator.previous_page %}
+		<a href="{{ paginator.previous_page_path }}">上一页</a>
+	{% endif %}
+
+	{% if paginator.next_page %}
+		<a href="{{ paginator.next_page_path }}">下一页</a>
+	{% endif %}
+{% endif %}
