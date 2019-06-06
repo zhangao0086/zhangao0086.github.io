@@ -7,7 +7,7 @@ title: ARTS 记录
 gitalk:
     enable: true
     owner: zhangao0086
-    repo: https://zhangao0086.github.io/ARTS
+    repo: https://zhangao0086.github.io
     clientID: 4f947d812cc002d38d52
     clientSecret: 7b39edb9c0c6ee98478c06ef994a093039e4caaa
     admin: zhangao0086
