@@ -13,18 +13,50 @@
     {% endif %}
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="{{ site.github.url | append: '/favicon.png' }}"/>
+    <style >
+      @media screen and (max-width: 1024px) {
+        #category_list {
+        border-width: 0px;
+        margin: 0px;
+        width: 100%;
+        position: relative;
+        float: none;
+      }
+      #category_list ul {
+        padding-left: 20px;
+      }
+      ul {
+        padding: 0px;
+      }
+    }
+    </style>
 
 {% seo %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#157878">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="stylesheet" href="{{ '/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="stylesheet" href="{{ '/css/dropdown.css' }}">
   </head>
   <body>
     <div class="floating">
       {% if site.github.is_project_page %}
-        <a href="{{ site.github.url | append: '/README.html' }}" class="btn">什么是 ARTS？</a>
-        <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
+        <div id="floating-buttons">
+          <a href="{{ site.github.url | append: '/README.html' }}" class="btn">什么是 ARTS？</a>
+          <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
+        </div>
+        
+        <details id="floating-more" class="dropdown details-reset details-overlay">
+          <summary class="btn">
+            More
+            <div class="dropdown-caret"></div>
+          </summary>
+      
+          <ul class="dropdown-menu dropdown-menu-sw">
+            <li><a class="dropdown-item" href="{{ site.github.url | append: '/README.html' }}">什么是 ARTS？</a></li>
+            <li><a class="dropdown-item" href="{{ site.github.repository_url }}">View on GitHub</a></li>
+          </ul>
+        </details>
       {% endif %}
     </div>
 
