@@ -281,7 +281,7 @@ a:hover { text-decoration: underline; }
 @media screen and (min-width: 42em) and (max-width: 64em) { .project-tagline { font-size: 1.15rem; } }
 @media screen and (max-width: 42em) { .project-tagline { font-size: 1rem; } }
 
-.floating { position: absolute; top: 20px; right: 20px; }
+/* .floating { position: absolute; top: 20px; right: 20px; } */
 
 .main-content { word-wrap: break-word; }
 .main-content :first-child { margin-top: 0; }
@@ -322,6 +322,10 @@ a:hover { text-decoration: underline; }
 
 /* By Bannings */
 article { font-weight: bolder; color: #159957; }
+
+nav { position: absolute; top: 20px; color: white; }
+nav.left { left: 20px; }
+nav.right { right: 20px; }
 
 @media screen and (min-width: 42em) { 
   #floating-buttons {
