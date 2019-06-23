@@ -5,8 +5,8 @@ layout: default
 {{ content }}
 
 <!--//添加评论系统-->
-<link rel="stylesheet" href="../../../../css/gitalk.css">
-<script src="../../../../js/gitalk.min.js"></script>
+<link rel="stylesheet" href="{{ '/css/gitalk.css?v=' | append: site.github.build_revision | relative_url }}" />
+<script src="{{ '/js/gitalk.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
 
 
 <!--   gitalk       -->
