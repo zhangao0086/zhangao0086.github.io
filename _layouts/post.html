@@ -4,16 +4,19 @@ layout: default
 
 {{ content }}
 
-<!--//添加评论系统-->
+<!-- 添加评论系统 -->
 <link rel="stylesheet" href="{{ '/css/gitalk.css?v=' | append: site.github.build_revision | relative_url }}" />
 <script src="{{ '/js/gitalk.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
+
+<!-- MathJax -->
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 
+<!-- Back to Top -->
+{% include back_to_top.html %}
 
-
-<!--   gitalk       -->
+<!-- gitalk -->
 {% if site.gitalk %}
 <div class="comment">
     {% include comments.html %}
