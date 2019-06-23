@@ -127,9 +127,13 @@ details li {
   border: 7px solid transparent;
   border-bottom-color: #fff;
 }
+.dropdown-menu-sw {
+  left: auto;
+  right: 0;
+}
 .dropdown-menu-sw::after {
   left: auto;
-  right: 10px;
+  right: 0px;
   top: -14px;
 }
 .dropdown-item {
@@ -153,9 +157,4 @@ details a {
   text-decoration: none;
 
   background-color: transparent;
-}
-
-.dropdown-menu-sw {
-  left: auto;
-  right: 0;
 }
