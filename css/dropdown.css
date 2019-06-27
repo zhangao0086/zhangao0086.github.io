@@ -9,7 +9,9 @@
 details {
   display: block;
 }
-details .btn:active, .btn.selected, [open]>.btn {
+details .btn:active, 
+details .btn.selected, 
+[open]>.btn {
   /* background-color: #e9ecef; */
   /* background-image: none; */
   /* border-color: rgba(27,31,35,0.35); */
