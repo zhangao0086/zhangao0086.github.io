@@ -1,0 +1,17 @@
+<nav class="toc toc-right js-toc transition--300"></nav>
+<link rel="stylesheet" href="{{ '/css/tocbot.css?v=' | append: site.github.build_revision | relative_url }}" />
+<script src="{{ '/js/tocbot.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
+<script type="text/javascript" defer>
+  window.onload = function () {
+    tocbot.init({
+      // Where to render the table of contents.
+      tocSelector: '.js-toc',
+      // Where to grab the headings to build the table of contents.
+      contentSelector: '.post-content',
+      // Which headings to grab inside of the contentSelector element.
+      headingSelector: 'h1, h2, h3, h4',
+      positionFixedSelector: '.js-toc',
+      includeHtml: true
+    }); 
+  }
+</script>
