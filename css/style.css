@@ -323,10 +323,10 @@ a:hover { text-decoration: underline; }
 /* By Bannings */
 article { font-weight: bolder; color: #159957; }
 
-nav { position: absolute; top: 20px; color: white; }
+nav.left, nav.right { position: absolute; top: 20px; color: white; }
 nav.left { left: 15px; }
 nav.right { right: 15px; }
-nav i { font-size: 1.2em; min-width: 1.5em; text-align: center; }
+/* nav i { font-size: 1.2em; min-width: 1.5em; text-align: center; } */
 
 @media screen and (min-width: 42em) { 
   #floating-buttons {
