@@ -1,0 +1,16 @@
+---
+layout: post
+title: "layoutSubview 调用时机"
+date: 2011-10-25 18:18:36
+categories: [iOS]
+---
+
+
+<ul>
+	<li>init does not cause layoutSubviews to be called (duh)</li>
+	<li>addSubview causes layoutSubviews to be called on the view being added, the view it&rsquo;s being added to (target view), and all the subviews of the target view</li>
+	<li>setFrame intelligently calls layoutSubviews on the view having it&rsquo;s frame set only if the size parameter of the frame is different</li>
+	<li>scrolling a UIScrollView causes layoutSubviews to be called on the scrollView, and it&rsquo;s superview</li>
+	<li>rotating a device only calls layoutSubview on the parent view (the responding viewControllers primary view)</li>
+	<li>removeFromSuperview &ndash; layoutSubviews is called on superview only (not show in table)</li>
+</ul>

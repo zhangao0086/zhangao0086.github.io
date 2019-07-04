@@ -1,0 +1,9 @@
+---
+layout: post
+title: "Linux下java环境变量设置的完整步骤"
+date: 2011-04-24 00:17:00
+categories: [Java]
+---
+
+
+<p><span></span></p><p>Linux下java环境变量设置的完整步骤:</p><p>从java.sun.com上下载JDK的安装文件，一般是jdk1.5.0_10_XXXX.bin的格式。</p><p>解开生成JDK目录，这里假设JDK安装在/usr/java/jdk1.5.0_10中：</p><p>代码:</p><p>sudo chmod 755 jdk1.5.0_10_XXXX.bin</p><table style="width: 97%;" border="0" align="center"><tbody><tr><td colspan="3">&nbsp;</td></tr></tbody></table><p>sudo ./jdk1.5.0_10_XXXX.bin</p><p>sudo mkdir /usr/java</p><p>sudo mv jdk1.5.0_10/ /usr/java</p><p>代码:</p><p>sudo gedit /etc/profile</p><p>在这个文件的末尾追加：</p><p>代码:</p><p>export JAVA_HOME=/usr/java/jdk1.5.0_10/</p><p>#注意把新添加的JDK的bin目录追加在$PATH的最前面，这样当系统中安装有多个JDK版本时，程序会优先搜寻排在最前面的JDK版本。</p><p>export PATH=$JAVA_HOME/bin:$PATH</p><p>export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$CLASSPATH</p><p>保存/etc/profile之后，别忘了执行下面这个命令，使环境变量的更改马上起作用。</p><p>代码:</p><p>source /etc/profile</p><p>如果执行上面这个命令时报错，请仔细检查你在/etc/profile里新增的文本是不是有错。</p><p>最后检查环境变量更改是否生效：</p><p>代码:</p><p>java -version</p><p>&nbsp;</p>

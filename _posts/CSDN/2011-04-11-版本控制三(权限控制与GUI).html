@@ -1,0 +1,77 @@
+---
+layout: post
+title: "版本控制三(权限控制与GUI)"
+date: 2011-04-11 22:40:00
+categories: [版本控制]
+---
+
+
+<p>Subversion的版本库conf目录下有三个文件:svnserve.conf、passwd和authz,svnserve.conf文件中定义了所有的认证和授权政策:</p>
+<p><strong>anon-access</strong></p>
+<p>指明仓库匿名用户访问的权限，可选值（none:不能访问;read:匿名可读;write:匿名可写），一般设置为none，避免匿名访问，除非你的项目为开源项目。  </p>
+<p><strong>auth-access</strong>  </p>
+<p>指明被授权通过的用户的权限，可选值同上。  </p>
+<p><strong>password-db</strong>  </p>
+<p>指定了被授权用户的用户名及密码的文件,可以在passwd 文件中设置用户名与密码。  </p>
+<p><strong>authz-db</strong>  </p>
+<p>实现了以路径为基础的授权，也就是判断用户是否有操作对应路径的权限，在Subversion 1.3 之后，svnserve 和Apache 一样都可以使用&ldquo;authz-db&rdquo;文件。  </p>
+<p><span style="color: #ff0000;"><strong>如果权限保护目录为中文，则必须将authz文件利用ultraedit工具转存为UTF-8 无BOM 格式,否则权限不生效!</strong></span></p>
+<p>passwd文件里面存放的是项目成员帐户信息,默认在[users]下有两个被注释了的用户信息，可通过去掉注释或自己增加一行用户信息。例如：</p>
+<p>zhang = ao （前面是用户名，后面是密码） </p>
+<p>authz文件主要是做复杂的群组权限控制,假设有一个用户组叫users,有一个用户zhang:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">[groups]</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">users = zhang</pre>
+<!--CRLF--></div>
+</div>
+<p>给指定的用户指定的url(这里假定为:firstsvn)分配权限,在以上用户组的基础上:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">[firstsvn:/]</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">@users = rw</pre>
+<!--CRLF--></div>
+</div>
+<p>url后面一个要有一个"/",后面可以跟子目录比如:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">[firstsvn:/tools]</pre>
+<!--CRLF--></div>
+</div>
+<p><strong><span style="color: #ff0000;">[/] 表示整个仓库的根，如果是组的引用一定要使用 @ ，对应的权限可以是 r,w,rw 或空.</span></strong></p>
+<p>也可以给单个用户分配权限,或者给指定的用户以外的用户分配权限:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">[firstsvn:/]</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">user1 = rw</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">* = r</pre>
+<!--CRLF--></div>
+</div>
+<p>这就表示user1有对firstsvn仓库的读写权限,对子目录有继承性,其他用户只有读的权限.</p>
+<p>将权限相关的几个注释解除之后,操作就需要密码了:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302532807TnEW.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_1302532807s164.gif" border="0" alt="image" width="459" height="169" /></a></p>
+<hr />
+<p>恩.有人喜欢在命令行下工作,大多数的人喜欢在GUI的辅助下进行更快速的使用.通常使用<strong>Tortoisesvn</strong>.</p>
+<p>TortoiseSVN是Subversion版本控制系统的一个免费开源客户端，不需要为使用它而付费。它也是 Subversion 的 Windows 扩展。它使你避免接触 Subversion 枯燥而且不方便的 Command Line。它完全嵌入 Windows Explorer，使用时只需在正常的窗口里右键操作就可以了。
+</p>
+<p>Tortoisesvn下载安装:<a href="http://tortoisesvn.net/downloads">http://tortoisesvn.net/downloads</a>.操作界面如下:
+</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302532807uXCf.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_130253280895gd.gif" border="0" alt="image" width="378" height="381" /></a>
+</p>
+<p>TortoiseSVN用多种图标的显示来标注本地文件的状态:
+</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302532809FK7J.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_1302532810NNzZ.gif" border="0" alt="image" width="587" height="296" /></a>
+</p>
+<p><strong>Tortoisesvn 图标介绍:</strong>
+</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302532811RAJS.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_1302532813RNMf.gif" border="0" alt="image" width="753" height="386" /></a></p>
+<p>当我们checkout的时候,只需要右键选择"SVN Checkout &hellip;":</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_13025328130e0C.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_13025328140Bz6.gif" border="0" alt="image" width="459" height="359" /></a></p>
+<p>提供正确的url和目的地后,OK后如果有权限,则需要输入:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_13025328150Ve0.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_1302532816cxb8.gif" border="0" alt="image" width="657" height="317" /></a></p>
+<p>命令行的功能都能够实现.Subversion还提供版本对比、分支合并等功能.</p>
+<p><strong><span style="color: #ff0000;">.svn这个隐藏目录记录着两项关键的信息: 工作文件的基准版本和一个本地副本最后更新的时间戳。千万不要手工修改或删除这个 .svn隐藏目录和里面的文件！！！否则将会导致你本地的工作拷贝 （静态视图）被破坏，无法再进行操作。</span></strong></p>

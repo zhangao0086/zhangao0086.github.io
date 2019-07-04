@@ -1,0 +1,88 @@
+---
+layout: post
+title: "定制UINavigationBar"
+date: 2012-05-15 16:57:16
+categories: [iOS]
+---
+
+
+<p>在开发中经常需要定制某些界面，navigationController的navigationBar就是一个很典型的例子，比如要修改背景图、后退按钮等等。</p>
+
+<p>背景图的修改很简单，但是需要了解iOS的框架，假设我给自己定制的UINavigationController增加一个接口用于修改背景图：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-cpp">@property (nonatomic, retain) UIImage *backgroundImage;</code></pre>
+
+<p>那么该消息的实现如下：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-cpp">-(void)setBackgroundImage:(UIImage *)backgroundImage{
+    if ([self.navigationBar respondsToSelector:@selector(setBackgroundImage:forBarMetrics:)]) {
+        [self.navigationBar setBackgroundImage:backgroundImage forBarMetrics:UIBarMetricsDefault];
+        return;
+    }
+    self.navigationBar.layer.contents = (id)backgroundImage.CGImage;
+}</code></pre>
+
+<p>iOS 5增加了大量API，可以基本满足我们的定制需求，所以如果是iOS 5，我们直接调5的API就行了，而最后一行代码是针对5以下的，也就是说这<span style="color:#ff6666">一行代码就可以修改</span>了，写起来容易但是要知道为什么。众所周知一个视图如何显示是取决于它的drawRect方法，因为调这个方法之前iOS也不知道如何显示它，但其实drawRect方法的目的也是画图（显示内容），而且我们如果以其他的方式给出了内容（图）的话，drawRect方法就不会被调用了。</p>
+
+<p>&nbsp;</p>
+
+<table border="1" cellpadding="10" cellspacing="1">
+	<tbody>
+		<tr>
+			<td><em>注：实际上UIView是CALayer的delegate，如果CALayer没有内容的话，会回调给UIView的displayLayer:或者drawLayer:inContext:方法，UIView在其中调用drawRect，draw完后的图会缓存起来，除非使用setNeedsDisplay或是一些必要情况，否则都是使用缓存的图。</em></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>虽然往navigationBar里面插入一个imageView也能达到这种目的，但是要麻烦得多，因为你要自己管理navigationBar的视图层级，原因在于iOS 4和iOS 5的版本不同，往navigationBar插入视图的位置是相反的，不处理的话会导致部份子视图被遮住。</p>
+
+<p>-----------------------------------------猥琐的分界线-----------------------------------------</p>
+
+<p>如果只想更改后退按钮的标准属性，比如title、target、action，那么就：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-html">    UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] init];
+    backButtonItem.title = @"已改的";
+    backButtonItem.target = self;
+    backButtonItem.action = @selector(back);
+    self.navigationItem.backBarButtonItem = backButtonItem;
+    [backButtonItem release];</code></pre>
+
+<p>只要注意一点，这个设置是<span style="color:#ff6666">针对于子导航层级</span>的，也就是你push到下个视图控制器的时候才会看到。</p>
+
+<p>&nbsp;</p>
+
+<p>如果是想更改字体、颜色、背景之类的，就要用到UIButton了：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-cpp">    UIButton *back = [UIButton buttonWithType:UIButtonTypeCustom];
+    [back setTitle:@"已改" forState:UIControlStateNormal];
+    [back setFrame:CGRectMake(0, 0, 100, 32)];
+    [back setBackgroundColor:[UIColor redColor]];
+    UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] initWithCustomView:back];
+    self.navigationItem.leftBarButtonItem = backButtonItem;
+    [backButtonItem release];</code></pre>
+
+<p>完全当成一个button来用，注意和上面的不同：赋给了<span style="color:#ff6666">leftBarButtonItem</span>。</p>
+
+<p>&nbsp;</p>
+
+<p>如果你不知道何时添加这个自己的后退按钮？很简单，判断navigationBar.backItem有没有就行了，跟着系统走是不会错的，不过可能要再判断一下当前显示的viewController有没有用到leftBarButtonItem，不要覆盖掉逻辑就行了。</p>
+
+<p>&nbsp;</p>
+
+<p>-----------------------------------------如有问题，请指出-----------------------------------------</p>
+
+<p>&nbsp;</p>

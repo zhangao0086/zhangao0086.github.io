@@ -1,0 +1,204 @@
+---
+layout: post
+title: "NSAttributedString 详解"
+date: 2012-05-30 15:32:05
+categories: [iOS]
+---
+
+
+<p>NSAttributedString可以让我们使一个字符串显示的多样化，但是目前到iOS 5为止，好像对它支持的不是很好，因为显示起来不太方便（至少没有在OS X上方便）。</p>
+
+<p>首先导入CoreText.framework，并在需要使用的文件中导入：</p>
+
+<p style="margin-left:0.0px; margin-right:0.0px"><span style="color:#77492d">#import</span>&lt;CoreText/CoreText.h&gt;</p>
+
+<p>创建一个NSMutableAttributedString：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-objc">NSMutableAttributedString *attriString = [[[NSMutableAttributedString alloc] initWithString:@"this is test!"] 
+                                              autorelease];</code></pre>
+
+<p>非常常规的创建方式，接下来我们给它配置属性：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-objc">//把this的字体颜色变为红色
+[attriString addAttribute:(NSString *)kCTForegroundColorAttributeName
+                    value:(id)[UIColor redColor].CGColor 
+                    range:NSMakeRange(0, 4)];
+//把is变为黄色
+[attriString addAttribute:(NSString *)kCTForegroundColorAttributeName
+                    value:(id)[UIColor yellowColor].CGColor 
+                    range:NSMakeRange(5, 2)];
+//改变this的字体，value必须是一个CTFontRef
+[attriString addAttribute:(NSString *)kCTFontAttributeName
+                    value:(id)CTFontCreateWithName((CFStringRef)[UIFont boldSystemFontOfSize:14].fontName,
+                                                   14, 
+                                                   NULL)
+                    range:NSMakeRange(0, 4)];
+//给this加上下划线，value可以在指定的枚举中选择
+[attriString addAttribute:(NSString *)kCTUnderlineStyleAttributeName
+                    value:(id)[NSNumber numberWithInt:kCTUnderlineStyleDouble]
+                    range:NSMakeRange(0, 4)];
+return attriString;</code></pre>
+
+<p>这样就算是配置好了，但是我们可以发现NSAttributedString继承于NSObject，并且不支持任何draw的方法，那我们就只能自己draw了。写一个UIView的子类（假设命名为TView），在initWithFrame中把背景色设为透明（self.backgroundColor = [UIColor clearColor]），然后在重写drawRect方法：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-objc">-(void)drawRect:(CGRect)rect{
+    [super drawRect:rect];
+    
+    NSAttributedString *attriString = getAttributedString();
+    
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGContextConcatCTM(ctx, CGAffineTransformScale(CGAffineTransformMakeTranslation(0, rect.size.height), 1.f, -1.f));
+    
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attriString);
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathAddRect(path, NULL, rect);
+    
+    CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, NULL);
+    CFRelease(path);
+    CFRelease(framesetter);
+    
+    CTFrameDraw(frame, ctx);
+    CFRelease(frame);
+}</code></pre>
+
+<p>在代码中我们调整了CTM(current transformation matrix)，这是因为Quartz 2D的坐标系统不同，比如(10, 10)到(20, 20)的直线坐标：</p>
+
+<p>&nbsp;<img alt="" class="has" src="https://img-my.csdn.net/uploads/201205/30/1338369748_6595.png" /></p>
+
+<p>坐标类似于数学中的坐标，可以先不调整CTM，看它是什么样子的，下面两种调整方法是完全一样的：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-objc">CGContextConcatCTM(ctx, CGAffineTransformScale(CGAffineTransformMakeTranslation(0, rect.size.height), 1.f, -1.f));</code></pre>
+
+<p>==</p>
+
+<pre class="has" name="code">
+<code class="language-objc">CGContextTranslateCTM(ctx, 0, rect.size.height);
+CGContextScaleCTM(ctx, 1, -1);</code></pre>
+
+<p>CTFramesetter是CTFrame的创建工厂，NSAttributedString需要通过CTFrame绘制到界面上，得到CTFramesetter后，创建path（绘制路径），然后得到CTFrame，最后通过CTFrameDraw方法绘制到界面上。</p>
+
+<p>如果想要计算NSAttributedString所要的size，就需要用到这个API：</p>
+
+<p>CTFramesetterSuggestFrameSizeWithConstraints，用NSString的sizeWithFont算多行时会算不准的，因为在CoreText里，行间距也是你来控制的。</p>
+
+<p>设置行间距和换行模式都是设置一个属性：kCTParagraphStyleAttributeName，这个属性里面又分为很多子</p>
+
+<p>属性，其中就包括</p>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>kCTLineBreakByCharWrapping</li>
+	<li>kCTParagraphStyleSpecifierLineSpacingAdjustment</li>
+</ul>
+
+<p>设置如下：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-objc">//段落
+    //line break
+CTParagraphStyleSetting lineBreakMode;
+CTLineBreakMode lineBreak = kCTLineBreakByCharWrapping; //换行模式
+lineBreakMode.spec = kCTParagraphStyleSpecifierLineBreakMode;
+lineBreakMode.value = &amp;lineBreak;
+lineBreakMode.valueSize = sizeof(CTLineBreakMode);
+    //行间距
+CTParagraphStyleSetting LineSpacing;
+CGFloat spacing = 4.0;  //指定间距
+LineSpacing.spec = kCTParagraphStyleSpecifierLineSpacingAdjustment;
+LineSpacing.value = &amp;spacing;
+LineSpacing.valueSize = sizeof(CGFloat);
+
+CTParagraphStyleSetting settings[] = {lineBreakMode,LineSpacing};
+CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(settings, 2);   //第二个参数为settings的长度
+[attributedString addAttribute:(NSString *)kCTParagraphStyleAttributeName
+                         value:(id)paragraphStyle
+                         range:NSMakeRange(0, attributedString.length)];</code></pre>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#333333">-----------------------------------------猥琐的分界线-----------------------------------------</span></p>
+
+<p>这并不是唯一的方法，还有另一种替代方案：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-objc">CATextLayer *textLayer = [CATextLayer layer];
+textLayer.string = getAttributedString();
+textLayer.frame = CGRectMake(0, CGRectGetMaxY(view.frame), 200, 200);
+[self.view.layer addSublayer:textLayer];</code></pre>
+
+<p>CATextLayer可以直接支持NSAttributedString！</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#333333">-----------------------------------------猥琐的分界线-----------------------------------------</span></p>
+
+<p><span style="color:#333333">效果图：</span></p>
+
+<p><span style="color:#333333"><img alt="" class="has" src="https://img-my.csdn.net/uploads/201205/30/1338373487_4472.png" /></span></p>
+
+<h3 style="margin-left:0px; margin-right:0px"><strong><a href="http://download.csdn.net/detail/zhangao0086/4340376">源码地址</a></strong></h3>
+
+<p><span style="color:#333333">-----------------------------------------猥琐的分界线-----------------------------------------</span></p>
+
+<p>目前发现有一个问题，好像中文全都会被加粗，设置不加粗的字体也没用，应该是CoreText的bug，已经上报给了apple了。</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#333333">-----------------------------------------</span><span style="color:#ff0000">对于cythb兄提出的问题</span><span style="color:#333333">-----------------------------------------</span></p>
+
+<p><span style="color:#333333">首先表示感谢关注</span></p>
+
+<p><span style="color:#333333"><img alt="" class="has" src="http://my.csdn.net/uploads/201206/29/1340933723_2628.png" /></span></p>
+
+<p>原文中确有描述不适当的地方，比如：The upper-left corner of the context is (0, 0) 。实际上Quartz2D的坐标系统确实在左下角，只是<span style="color:#333333">有一些技术在设置它们的graphics context时使用了不同于Quartz的默认坐标系统。相对于Quartz来说，这些坐标系统是修改的坐标系统(modified coordinate system)。</span></p>
+
+<p>&nbsp;</p>
+
+<h3 style="margin-left:0px; margin-right:0px">&nbsp;</h3>
+
+<h3 style="margin-left:0px; margin-right:0px"><span style="color:#cc0000">UPDATED</span></h3>
+
+<p>在iOS6之后，创建一个AttributedString变成了一件轻松的事情，<span style="color:#d12f1b">&lt;CoreText/CoreText.h&gt;</span><span style="color:#333333">已经不需要导入了。如果我要设置字体的颜色，可以直接这样：</span></p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#000000">[textAttr&nbsp;</span><span style="color:#3d1d81">addAttribute</span><span style="color:#000000">:</span>NSForegroundColorAttributeName</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">value</span>:[<span style="color:#703daa">UIColor</span>&nbsp;<span style="color:#3d1d81">redColor</span>]</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">range</span>:<span style="color:#3d1d81">NSMakeRange</span>(<span style="color:#272ad8">0</span>, text.<span style="color:#703daa">length</span>)];</p>
+
+<p>&nbsp;</p>
+
+<p>如果要计算一个NSAttributedString的size，使用NSAttributedString的这个API：</p>
+
+<p>&nbsp;</p>
+
+<p>- (<span style="color:#703daa">CGRect</span>)boundingRectWithSize:(<span style="color:#703daa">CGSize</span>)size options:(<span style="color:#703daa">NSStringDrawingOptions</span>)options context:(<span style="color:#703daa">NSStringDrawingContext</span>&nbsp;*)context&nbsp;<span style="color:#78492a">NS_AVAILABLE_IOS</span>(<span style="color:#272ad8">6</span>_0);</p>
+
+<p>&nbsp;</p>
+
+<p>但是需要注意一点，如果调用这个API的NSAttributedString不包含字体、行高等有利于计算的数据，那最终计算出来的size可能和实际有所出入。</p>
+
+<p>&nbsp;</p>

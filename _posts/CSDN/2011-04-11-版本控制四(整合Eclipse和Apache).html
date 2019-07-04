@@ -1,0 +1,121 @@
+---
+layout: post
+title: "版本控制四(整合Eclipse和Apache)"
+date: 2011-04-11 23:29:00
+categories: [版本控制]
+---
+
+
+<p>经常要在文件里面操作也很不方便,如果能直接在开发环境里面操作就不同了,那么就有开源项目为Eclipse推出了插件以支持SVN.</p>
+<p>这里就使用:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_13025357997Kx5.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_1302535799Oq7U.gif" border="0" alt="image" width="245" height="58" /></a></p>
+<p>压缩后,将所有文件拷到Eclipse的dropins目录下,可能有多个插件,在dropins目录下再建立一个目录专门存放这个插件:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302535799ue11.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_1302535800Rpzl.gif" border="0" alt="image" width="474" height="229" /></a></p>
+<p>然后在links目录中添加一个link文件,里面存放插件地址,比如:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">path = F://Program Files//eclipse-jee-galileo-SR2-win32//eclipse//dropins//eclipse_svn_site-1.6.5</pre>
+<!--CRLF--></div>
+</div>
+<p>注意斜线问题,如果是"/"则需要"//",如果是"/",则一个斜线就够了.</p>
+<p>重启Eclipse之后,在Window的"Show View"里面看到SVN资源库,就说明SVN插件安装成功了.</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302535800i56f.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_1302535801lXR6.gif" border="0" alt="image" width="444" height="296" /></a></p>
+<p>打开SVN资源库视图:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302535801E7zf.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_13025358010SRy.gif" border="0" alt="image" width="493" height="316" /></a></p>
+<p>点击右上方的添加新的SVN资源库:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302535802KtZP.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_130253580280xO.gif" border="0" alt="image" width="491" height="418" /></a></p>
+<p>验证通过后就能看到刚刚添加的版本库了:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302535802OZw0.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_13025358030cz6.gif" border="0" alt="image" width="438" height="185" /></a></p>
+<p>如果版本库中有文件,则使用导入功能来导入版本库.</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302535803f75Q.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_1302535807lgiL.gif" border="0" alt="image" width="354" height="206" /></a></p>
+<p>如果不是一个完整的工程,则需要即时的创建一个工程来存放从版本库中导入的文件.通过验证后就能取出版本库中的文件:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302535807128u.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_13025358083663.gif" border="0" alt="image" width="455" height="170" /></a></p>
+<p>附带图标说明:</p>
+<blockquote>
+<p>灰色向右箭头:本地修改过<br />蓝色向左箭头:SVN上修改过<br />灰色向右且中间有个加号的箭头:本地比SVN上多出的文件<br />蓝色向左且中间有个加号的箭头:SVN上比本地多出的文件<br />灰色向右且中间有个减号的箭头:本地删除了,而SVN上未删除的文件<br />蓝色向左且中间有个减号的箭头:SVN上删除了,而本地未删除的文件<br />红色双向箭头:SVN上修改过,本地也修改过的文件</p>
+</blockquote>
+<p>SVN的相关操作在Team中进行.另外还有Compare With可以对历史版本进行对比.若要恢复到以前提交的版本,右键点击文件R<em>eplace</em> W<em>ith即可.</em></p>
+<p>断开连接也在Team中.</p>
+<p>&nbsp;</p>
+<hr />
+<p>
+在Apache中整合也是很有用的,可以在互联网上即时地看到版本库文件的变化和代码.并且用Apache整合更安全,可以对密码进行加密,而不是在密码相关的文件中直接写入明码密码.也不需要开启SVN或者Windows的服务.不过配置起来稍微麻烦一些.</p>
+<p>&nbsp;</p>
+<p>安装完Apache之后,打开Apache安装目录下Apache2.2/conf/httpd.conf 配置文件：</p>
+<blockquote>
+<p>将下列2行前方的#移除(第83 行)：
+</p>
+<p>LoadModule dav_module modules/mod_dav.so
+</p>
+<p>LoadModule dav_fs_module modules/mod_dav_fs.so
+</p>
+<p>并同时在上面两行下面增加以下两行（一定放在这个位置）
+</p>
+<p>LoadModule dav_svn_module modules/mod_dav_svn.so
+</p>
+<p>LoadModule authz_svn_module modules/mod_authz_svn.so</p>
+</blockquote>
+<p>并且找到Subversion 安装目录下的以下两个文件复制到Apache 安装目录下modules 目录中:</p>
+<blockquote>
+<p>bin/mod_authz_svn.so
+</p>
+<p>bin/mod_dav_svn.so</p>
+</blockquote>
+<p>接下来再对密码进行加密.使用Apache 安装目录下的bin/htpasswd.exe 可执行文件来生成授权文件，第一次生成使用-cb 参数(c代表创建)：</p>
+<blockquote>
+<p>htpasswd -cb [filename] [username] [password]
+</p>
+<p>例如：htpasswd -cb passwd.apache 用户名 密码 （其中用户名需为svn中添加的用户名）</p>
+</blockquote>
+<p>将生成的passwd.apache 文件移动到SVN版本库中/conf 目录下之后.然后在apache安装目录下的conf/httpd.conf 文件的最后面加入：
+</p>
+<blockquote>
+<p>#配置虚拟目录#
+</p>
+<p>&lt;location /svn/仓库名&gt;
+</p>
+<p>#引用远程访问模块
+</p>
+<p>DAV svn
+</p>
+<p>#项目版本库路径#
+</p>
+<p>SVNPath F:/software/repository/svn/firstsvn/版本库的路径和名称
+</p>
+<p>#授权文件#
+</p>
+<p>AuthzSVNAccessFile F:/software/repository/svn/firstsvn/conf/authz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (指定授权文件)
+</p>
+<p>#所有用户都需要身份验证#
+</p>
+<p>Satisfy Any
+</p>
+<p>Require valid-user
+</p>
+<p>#验证方式#
+</p>
+<p>AuthType Basic
+</p>
+<p>#项目的名称#
+</p>
+<p>AuthName "项目名称"
+</p>
+<p>#用户文件#
+</p>
+<p>AuthUserFile F:/software/repository/svn/firstsvn/conf/生成的密码文件
+</p>
+<p>&lt;/location&gt;</p>
+</blockquote>
+<p>改完之后,重启Apache.访问方式为:<strong><span style="color: #ff0000;">http://localhost/svn/仓库名</span></strong>,一切配置正确后,就能看到类似于以下的界面:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/11/0_1302535808Dr34.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/11/0_1302535809zBHI.gif" border="0" alt="image" width="550" height="272" /></a></p>
+<p>点击后可以下载或者查看代码.</p>
+<hr />
+<p>最后,应该注意几点<strong><span style="color: #ff0000;">SVN的使用</span></strong>,以免给其他人制造麻烦:
+</p>
+<p><strong><span style="color: #ff0000;">经常更新：降低冲突的可能性</span></strong>
+</p>
+<p><strong><span style="color: #ff0000;">提交前需在本机测试通过：降低将问题代码传到版本库</span></strong>
+</p>
+<p><strong><span style="color: #ff0000;">提交时一定写备注：方便其他员工查看和自己以后回顾</span></strong>
+</p>
+<p><strong><span style="color: #ff0000;">对于不需要提交的文件不要提交到版本库</span></strong></p>

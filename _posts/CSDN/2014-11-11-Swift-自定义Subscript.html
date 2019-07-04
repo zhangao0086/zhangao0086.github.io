@@ -1,0 +1,55 @@
+---
+layout: post
+title: "Swift 自定义Subscript"
+date: 2014-11-11 14:24:17
+categories: [iOS,Swift]
+---
+
+
+<p>Swift可以方便给自定义类加下标，其中参数和返回值可以在类里定义为任意类型：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">subscript</span><span style="color:#000000">(</span>parameters<span style="color:#000000">) -&gt;&nbsp;</span>ReturnType<span style="color:#000000">&nbsp;{</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">get</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>//return someValue</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">set</span>&nbsp;(newValue) {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>//setSomeValue()</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p>下标通常是访问某些方法的快捷方式，就算对NSArray操作的时候一样。</p>
+
+<p>和计算属性一样，下标也能以只读或只写的方式出现，如只读下标：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">subscript</span><span style="color:#000000">(</span>parameters<span style="color:#000000">) -&gt;&nbsp;</span>ReturnType<span style="color:#000000">&nbsp;{</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;someValue</p>
+
+<p>}</p>
+
+<p>如果一个类中支持多种下标，而且参数类型也是一样的，可以在访问该下标的时候显式地申明类型：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">let</span>&nbsp;player:&nbsp;<span style="color:#703daa">Type</span>&nbsp;= Class[(<span style="color:#272ad8">3</span>,<span style="color:#272ad8">4</span>)]</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

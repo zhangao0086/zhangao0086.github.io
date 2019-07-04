@@ -1,0 +1,469 @@
+---
+layout: post
+title: "raywenderlich.com的Swift编程风格指南"
+date: 2014-08-06 22:28:53
+categories: [Swift]
+---
+
+
+<p>翻译自：<a href="https://github.com/raywenderlich/swift-style-guide">https://github.com/raywenderlich/swift-style-guide</a></p>
+
+<p>这个风格指南可能和你从其他地方看到的不同，我们的焦点主要集中在互联网和文章上的可读性，创建这个编程风格指南是为了保持我们的书籍、教程和入门工具包中代码的优雅与一致性------尽管我们有和许多不同的作者合作。</p>
+
+<p>我们的首要目的是简洁、可读性和简单。</p>
+
+<p>你在写Objective-C吗？看看我们的<a href="https://github.com/raywenderlich/objective-c-style-guide">Objective-C风格指南</a>吧。&nbsp;</p>
+
+<h2>目录</h2>
+
+<p>&nbsp;</p>
+
+<h2>命名</h2>
+
+<p>对类、方法、变量等使用包含描述性的驼峰式（CamelCase）命名。类名和全局常量的所有首字母大写，方法和变量名开始第一个字母小写。</p>
+
+<p>建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let MaximumWidgetCount = 100
+
+class WidgetContainer {
+  var widgetButton: UIButton
+  let widgetHeightPercentage = 0.85
+}</code></pre>
+
+<p>不建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let MAX_WIDGET_COUNT = 100
+
+class app_widgetContainer {
+  var wBut: UIButton
+  let wHeightPct = 0.85
+}</code></pre>
+
+<p>对于函数和init方法，所有的参数都要拥有一个有着良好命名的参数名，除非上下文已经很清晰了。如果在外部调用函数的时候包含了参数名，将会使函数调用更加易读：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">func dateFromString(dateString: NSString) -&gt; NSDate
+func convertPointAt(column: Int, row: Int) -&gt; CGPoint
+func timedAction(delay: NSTimeInterval, perform action: SKAction) -&gt; SKAction!
+
+// would be called like this:
+dateFromString("2014-03-14")
+convertPointAt(column: 42, row: 13)
+timedAction(delay: 1.0, perform: someOtherAction)</code></pre>
+
+<p>对于方法而言，按照Apple的习惯，在方法名里引用第一个参数：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">class Guideline {
+  func combineWithString(incoming: String, options: Dictionary?) { ... }
+  func upvoteBy(amount: Int) { ... }
+}</code></pre>
+
+<p>当我们在文章中需要引用方法的地方，要从调用者的角度包含所有必须的参数名。如果上下文很清晰，而且准确的方法签名不重要时，你就能只使用方法名。</p>
+
+<p><em><span style="color:#999999">从你自己的init方法实现中调用<strong>convertPointAt(column:row:)</strong>。</span></em></p>
+
+<p><em><span style="color:#999999">如果你实现了<strong>didSelectRowAtIndexPath</strong>，那么记得在你完成工作后取消选择行。</span></em></p>
+
+<p><em><span style="color:#999999">你不能直接调用dataSource的<strong>tableView(_:cellForRowAtIndexPath:)</strong> 。</span></em></p>
+
+<p>&nbsp;</p>
+
+<h3>类前缀</h3>
+
+<p>Swift的类型都自动的有其模块的命名空间，其结果是不用为了减少名称冲突而必须使用前缀。如果有两个来自于不同模块的名称起了冲突，你可以通过在类型名称前加上模块名来消除两者间的歧义：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">import MyModule
+
+var myClass = MyModule.MyClass()</code></pre>
+
+<p>你<strong>不应该</strong>为Swift类型加上前缀。</p>
+
+<p>如果你需要暴露一个Swift类型在Objective-C里使用，你也能提供一个合适的前缀，就像下面这样：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">@objc (RWTChicken) class Chicken {
+   ...
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>间隔</h2>
+
+<ul>
+	<li>使用2个空格来缩进，而不是用tab，这可以节省空间，并有助于防止换行。请务必在Xcode的偏好设置里设置。</li>
+	<li>方法的大括号和其他语句的大括号（if / else / switch / while等等）总是和语句在同一行打开，在新的一行关闭。</li>
+</ul>
+
+<p>建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">if user.isHappy {
+  //Do something
+} else {
+  //Do something else
+}</code></pre>
+
+<p>不建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">if user.isHappy
+{
+    //Do something
+}
+else {
+    //Do something else
+}</code></pre>
+
+<ul>
+	<li>在方法之间应该正好有一个空行，这能使结构看起来更加清晰。在方法内用空行分隔功能，但如果分隔成太多段的话，常常意味着你需要把一个方法重构成多个方法。</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>注释</h2>
+
+<p>在需要的时候，用注释来解释一段特殊的代码<strong>为什么</strong>要这么做，注释必须保持更新或者干脆删掉。</p>
+
+<p>避免在代码里嵌入大块注释，应该让代码本身作为自己的文档。</p>
+
+<p><em>例外：这不适用于那些通过注释来生成文档的情况。</em></p>
+
+<p>&nbsp;</p>
+
+<h2>类和结构体</h2>
+
+<p>这里有一个风格很好的定义类的例子：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">class Circle: Shape {
+  var x: Int, y: Int
+  var radius: Double
+  var diameter: Double {
+    get {
+      return radius * 2
+    }
+    set {
+      radius = newValue / 2
+    }
+  }
+
+  init(x: Int, y: Int, radius: Double) {
+    self.x = x
+    self.y = y
+    self.radius = radius
+  }
+
+  convenience init(x: Int, y: Int, diameter: Double) {
+    self.init(x: x, y: y, radius: diameter / 2)
+  }
+
+  func describe() -&gt; String {
+    return "I am a circle at \(centerString()) with an area of \(computeArea())"
+  }
+
+  override func computeArea() -&gt; Double {
+    return M_PI * radius * radius
+  }
+
+  private func centerString() -&gt; String {
+    return "(\(x),\(y))"
+  }
+}</code></pre>
+
+<p>上面的这个例子清楚地展示了以下规则：</p>
+
+<ul>
+	<li>为属性、变量、常量、参数定义以及其他申明指定类型的时候，在冒号后面而不是前面增加一个空格，比如：x: Int 和 Circle: Shape。</li>
+	<li>对于多个变量，如果它们有相同的结构和上下文环境（比如x、y），则把它们定义在同一行。</li>
+	<li>缩进属性（property）的getter/setter定义。</li>
+	<li>不要添加像interal这样的默认修饰符，同样的，当覆盖一个方法时，不要在方法上再次写上它的访问修饰符。</li>
+</ul>
+
+<h3>Self的使用</h3>
+
+<p>避免使用self。因为Swift并不需要使用self来访问对象中的属性或是调用对象的方法。</p>
+
+<p>对于需要使用self的唯一原因是：在初始化一个类或结构体时，要区别开属性和参数名的不同：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">class BoardLocation {
+  let row: Int, column: Int
+
+  init(row: Int,column: Int) {
+    self.row = row
+    self.column = column
+  }
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>函数定义</h2>
+
+<p>在一行中定义函数声明（包括左括号）：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">func reticulateSplines(spline: [Double]) -&gt; Bool {
+  // reticulate code goes here
+}</code></pre>
+
+<p>对于拥有长签名的函数，在合适的地方添加一个换行符，并为随后的几行添加一个额外的缩进：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">func reticulateSplines(spline: [Double], adjustmentFactor: Double,
+    translateConstant: Int, comment: String) -&gt; Bool {
+  // reticulate code goes here
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>闭包</h2>
+
+<p>尽可能地使用尾随闭包语法（Trailing Closure Syntax）。在任何情况下，给闭包中的参数具有描述性的名称：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">return SKAction.customActionWithDuration(effect.duration) { node, elapsedTime in 
+  // more code goes here
+}</code></pre>
+
+<p>对上下文清晰的单行表达式闭包，使用隐式的return：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">attendeeList.sort { a, b in
+  a &gt; b
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>类型</h2>
+
+<p>如果可能的话， 总是使用Swift的原生类型。Swift提供了桥接（Bridging）到Objective-C的功能，在需要时你也能使用Objective-C的完整方法：</p>
+
+<p>建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let width = 120.0                                    //Double
+let widthString = (width as NSNumber).stringValue    //String</code></pre>
+
+<p>不建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let width: NSNumber = 120.0                                 //NSNumber
+let widthString: NSString = width.stringValue               //NSString</code></pre>
+
+<p>在使用Sprite Kit的代码里，使用CGFloat能使代码更加简洁，同时能避免太多的类型转换。</p>
+
+<p>&nbsp;</p>
+
+<h3>常量</h3>
+
+<p>常量使用let关键字定义，变量使用var关键字定义。用let适当地定义那些永远不会被修改的值，你可能会因此发现你自己用let远超过用var。</p>
+
+<p><strong>提示：</strong>一个技巧能帮助我们达到这个标准：把所有的东西都定义成常量，只有当编译器报错时才将其替换为变量。</p>
+
+<p>&nbsp;</p>
+
+<h3>Optional</h3>
+
+<p>用?定义变量和方法的返回值为optional，表示该值能够接受nil。</p>
+
+<p>如果你知道一个实例变量一定会在使用前被初始化，如viewDidLoad方法里会设置所有的子视图，你就能用 ! 对这个变量做隐式的拆包。</p>
+
+<p>当访问一个optional的值时，如果该值只访问一次，或者有太多的optioanl值关联，那么就用Optional Chaining：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">myOptional?.anotherOne?.optionalView?.setNeedsDisplay()</code></pre>
+
+<p>如果想更方便的做一次拆包然后执行多个操作，用Optional Binding：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">if let view = self.optionalView {
+  // do many things with view
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<h3>结构体的初始化</h3>
+
+<p>使用Swift原生的结构体初始化方式比以前的CGGeometry构造方式要好。</p>
+
+<p>建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let bounds = CGRect(x: 40, y: 20, width: 120, height: 80)
+var centerPoint = CGPoint(x: 96, y: 42)</code></pre>
+
+<p>不建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let bounds = CGRectMake(40, 20, 120, 80)
+var centerPoint = CGPointMake(96, 42)</code></pre>
+
+<p>&nbsp;</p>
+
+<h3>类型推断</h3>
+
+<p>Swift编译器能够推断出变量和常量的数据类型。你可以通过提供类型别名（就是冒号后面的）来显式声明数据类型，但大多数情况下不需要这么做。</p>
+
+<p>我们喜欢简明扼要的代码，让编译器去推断变量和常量的类型吧。</p>
+
+<p>（在某些情况下可能需要显式声明，比如你对一个变量赋一个浮点型，Swift会将这个变量推断为double，而不是float，如果你一定要用float，就只能显式声明了）</p>
+
+<p>建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let message = "Click the button"
+var currentBounds = computeViewBounds()</code></pre>
+
+<p>不建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let message: String = "Click the button"
+var currentBounds: CGRect = computeViewBounds()</code></pre>
+
+<p><strong>备注：</strong>按照本原则：取一个具有描述性的名字比什么都要重要。</p>
+
+<p>&nbsp;</p>
+
+<h3>语法糖</h3>
+
+<p>定义泛型类型时使用快捷方式比使用完整语法要更好。</p>
+
+<p>建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var deviceModels: [String]
+var employees: [Int: String]
+var faxNumber: Int?</code></pre>
+
+<p>不建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var deviceModels: Array&lt;String&gt;
+var employees: Dictionary&lt;Int, String&gt;
+var faxNumber: Optional&lt;Int&gt;</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>控制流</h2>
+
+<p>for-in比完整的for-condition-increment样式要好：</p>
+
+<p>建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">for _ in 0..&lt;3 {
+  println("Hello three times")
+}
+
+for person in attendeeList {
+  // do something
+}</code></pre>
+
+<p>不建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">for var i = 0; i &lt; 3; i++ {
+  println("Hello three times")
+}
+
+for var i = 0; i &lt; attendeeList.count; i++ {
+  let person = attendeeList[i]
+  // do something
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>分号</h2>
+
+<p>Swift不再需要你的每一行代码后面加上分号，只要当你想把多条语句放在同一行的时候才是必须的。</p>
+
+<p>不要把多条语句用分号分隔写在一行。</p>
+
+<p>只有一种例外情况：构造for-condition-increment的时候必须用分号。然而，尽可能地使用for-in循环。</p>
+
+<p>建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var swift = "not a scripting language"</code></pre>
+
+<p>不建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var swift = "not a scripting language";</code></pre>
+
+<p><strong>备注：</strong>Swift与JavaScript有很大不同，在JavaScript里省略分号通常被认为是不安全的。</p>
+
+<p>&nbsp;</p>
+
+<h2>语言</h2>
+
+<p>使用美式英语去适应Apple的API。</p>
+
+<p>建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var color = "red"</code></pre>
+
+<p>不建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var colour = "red"</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>笑脸</h2>
+
+<p>笑脸是raywenderlick.com网站很突出的特色功能！正确的笑脸意味着对编程有着无比的快乐与兴奋，这是非常重要的。使用右方括号]代表了能被ASCII Art记录的最大的微笑，而右括号）表示创建了一个半心半意的笑脸，因此这是不可取的。</p>
+
+<p>建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">:]</code></pre>
+
+<p>不建议：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">:)</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>功臣</h2>
+
+<p>这份风格指南是最时尚的raywenderlich.com团队成员们努力协作的成果：</p>
+
+<ul>
+	<li>Soheil Moayedi Azarpour</li>
+	<li>Scott Berrevoets</li>
+	<li>Eric Cerney</li>
+	<li>Sam Davies</li>
+	<li>Evan Dekhayser</li>
+	<li>Jean-Pierre Distler</li>
+	<li>Colin Eberhardt</li>
+	<li>Greg Heo</li>
+	<li>Matthijs Hollemans</li>
+	<li>Erik Kerber</li>
+	<li>Christopher LaPollo</li>
+	<li>Andy Pereira</li>
+	<li>Ryan Nystrom</li>
+	<li>Cesare Rocchi</li>
+	<li>Ellen Shapiro</li>
+	<li>Marin Todorov</li>
+	<li>Chris Wagner</li>
+	<li>Ray Wenderlich</li>
+	<li>Jack Wu</li>
+</ul>
+
+<p>向Nicholas Waynik和<a href="https://github.com/raywenderlich/objective-c-style-guide">Objective-C风格指南</a>的团队致敬！</p>
+
+<p>我们的灵感来自于苹果的Swift参考材料：</p>
+
+<ul>
+	<li><a href="https://developer.apple.com/library/prerelease/ios/documentation/swift/conceptual/swift_programming_language/index.html">The Swift Programming Language</a></li>
+	<li><a href="https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/BuildingCocoaApps/index.html">Using Swift with Cocoa and Objective-C</a></li>
+	<li><a href="https://developer.apple.com/library/prerelease/ios/documentation/General/Reference/SwiftStandardLibraryReference/index.html">Swift Standard Library Reference</a></li>
+</ul>

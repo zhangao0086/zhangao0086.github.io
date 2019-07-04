@@ -1,0 +1,80 @@
+---
+layout: post
+title: "Java 图片切割"
+date: 2011-08-02 14:43:18
+categories: [Java]
+---
+
+
+<p>将图片横切或者竖切为两张</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-java">	public void carveImage(String dir, File file, String orient, int width, int height) {
+		ImageFilter cropFilter;
+		Image img;
+		try {
+			// 读取源图像
+			BufferedImage bi = ImageIO.read(file);
+			int srcWidth = bi.getWidth(); // 源图宽度
+			int srcHeight = bi.getHeight(); // 源图高度
+
+			int destWidth, destHeight;
+			int j = 1, k = 1;
+			// 判断
+			if ("2".equals(orient)) {// 竖切
+				destWidth = srcWidth / 2;
+				destHeight = srcHeight;
+				k = 0;
+			} else if ("1".equals(orient)) {// 横切
+				destWidth = srcWidth;
+				destHeight = srcHeight / 2;
+				j = 0;
+			} else {
+				return;
+			}
+			String fileName;
+			String filePath;
+			if (srcWidth &gt;= destWidth &amp;&amp; srcHeight &gt;= destHeight) {
+				Image image = bi.getScaledInstance(srcWidth, srcHeight, Image.SCALE_DEFAULT);
+				for (int i = 0; i &lt; 2; i++) {
+					fileName = System.currentTimeMillis() + ".jpg";
+					filePath = dir + "/" + fileName;
+					cropFilter = new CropImageFilter(i * destWidth * j, i * destHeight * k, destWidth, destHeight);
+					img = Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(image.getSource(), cropFilter));
+					BufferedImage tag = new BufferedImage(destWidth, destHeight, BufferedImage.TYPE_INT_RGB);
+					Graphics g = tag.getGraphics();
+					new CropThread(g, img).start();
+					ImageIO.write(tag, "JPEG", new File(filePath));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+class CropThread extends Thread {
+	Graphics g = null;
+	Image img = null;
+
+	public CropThread(Graphics g, Image img) {
+		this.g = g;
+		this.img = img;
+	}
+
+	public void run() {
+		g.drawImage(img, 0, 0, null); // 绘制缩小后的图
+		g.dispose();
+	}
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

@@ -1,0 +1,96 @@
+---
+layout: post
+title: "Java 报表打印"
+date: 2011-08-02 17:34:25
+categories: [Java]
+---
+
+
+<p>在项目中需要涉及这一块,在此之前是从未接触过的.在此记录一些方法和问题.</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-java">// 得到测试用的绑定数据
+PolicyDatasource datasource = new PolicyDatasource(new PolicyService().getAll());
+response.setCharacterEncoding("utf-8");
+// 把模板文件读取进内存
+InputStream in = this.getServletContext().getResourceAsStream(reportPath);// reportPath:模板路径
+try {
+	// 1.在Chrome上直接显示PDF或是下载
+	// response.addHeader("Content-Disposition", "attachment;filename=PO.pdf");
+	// response.setContentType("application/pdf");
+	// JasperRunManager.runReportToPdfStream(in, response.getOutputStream(), new HashMap(), datasource);
+	// 2.
+	// File reportFile = new File(this.getServletContext().getRealPath(reportPath));
+	// byte[] bytes = null;
+	// try {
+	// bytes = JasperRunManager.runReportToPdf(reportFile.getPath(), new HashMap(), datasource);
+	// response.setContentLength(bytes.length);
+	// out.write(bytes, 0, bytes.length);
+	// out.flush();
+	// out.close();
+	// } catch (JRException e) {
+	// throw new RuntimeException(e);
+	// }
+	// 3.直接在HTML页面上显示出来
+	response.setContentType("text/html");
+	// 填充数据或者叫绑定数据,in代表模板文件,datasource代表填充的数据,已经给定了datasource,就直接给个空的HashMap就行了
+	JasperPrint print = JasperFillManager.fillReport(in, new HashMap(), datasource);
+	// 构建一个JRHtmlExporter,用于把填充好的模板打印在HTML页面上
+	JRHtmlExporter exporter = new JRHtmlExporter();
+	// 设置一些显示参数
+	exporter.setParameter(JRHtmlExporterParameter.SIZE_UNIT, JRHtmlExporterParameter.SIZE_UNIT_POINT);
+	exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+	// exporter.setParameter(JRHtmlExporterParameter.IS_USING_IMAGES_TO_ALIGN, false);
+	exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, response.getWriter());
+	exporter.setParameter(JRHtmlExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
+	exporter.setParameter(JRExporterParameter.CHARACTER_ENCODING, "UTF-8");
+	exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "../servlets/image?image=");
+	request.getSession().setAttribute(ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print);
+	// 导出到页面
+	exporter.exportReport();
+} catch (Exception e) {
+	throw new RuntimeException(e);
+} finally {
+	in.close();
+}</code></pre>
+
+<p>如果模板中的线条重叠,会导致在HTML页面上没有显示.</p>
+
+<p>&nbsp;</p>
+
+<p>字体未找到的问题,来自网络:</p>
+
+<p>&nbsp;</p>
+
+<p>1、下载jasperreport（本人用的是3.7.4版本）工程，将demo/fonts/net/sf/jasperreports/fonts/dejavu下的demo字体清除</p>
+
+<p>2、将windows系统下的字体文件SIMSUN.TTC文件（XP在%SYSTEM%/WINDOWS/Fonts下）copy到demo /fonts/net/sf/jasperreports/fonts/dejavu下，并将名称后缀改为ttf。这个要记着改，ttf是AIX下的字体 格式，否则不会识别。</p>
+
+<p>3、修改demo/fonts/net/sf/jasperreports/fonts下的fonts.xml，将原来字体配置指定到上步骤copy到dejavu目录下的字体文件，如我的改名后叫songti.ttf，所以改后fonts.xml为以下内容（供参考）</p>
+
+<p>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br />
+&lt;fontFamilies&gt;<br />
+&nbsp;&nbsp;&nbsp; &lt;fontFamily name=&quot;宋体&quot;&gt;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;normal&gt;net/sf/jasperreports/fonts/dejavu/songti.ttf&lt;/normal&gt;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;bold&gt;net/sf/jasperreports/fonts/dejavu/songti.ttf&lt;/bold&gt;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;italic&gt;net/sf/jasperreports/fonts/dejavu/songti.ttf&lt;/italic&gt;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;boldItalic&gt;net/sf/jasperreports/fonts/dejavu/songti.ttf&lt;/boldItalic&gt;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;pdfEncoding&gt;Identity-H&lt;/pdfEncoding&gt;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;pdfEmbedded&gt;true&lt;/pdfEmbedded&gt;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;exportFonts&gt;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;export key=&quot;net.sf.jasperreports.html&quot;&gt;&#39;宋体&#39;, Arial, Helvetica, sans-serif&lt;/export&gt;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;export key=&quot;net.sf.jasperreports.xhtml&quot;&gt;&#39;宋体&#39;, Arial, Helvetica, sans-serif&lt;/export&gt;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;/exportFonts&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp; &lt;/fontFamily&gt;<br />
+&lt;/fontFamilies&gt;</p>
+
+<p>4、将demo/fonts下的内容打成jar包，并放到程序的类路径下。<br />
+5、在Web根目录下增加配置文件jasperreports.properties，内容如下</p>
+
+<p>net.sf.jasperreports.awt.ignore.missing.font=true<br />
+net.sf.jasperreports.extension.registry.factory.simple.font.families=net.sf.jasperreports.engine.fonts.SimpleFontExtensionsRegistryFactory<br />
+net.sf.jasperreports.extension.simple.font.families.dejavu=net/sf/jasperreports/fonts/fonts.xml</p>
+
+<p>&nbsp;</p>

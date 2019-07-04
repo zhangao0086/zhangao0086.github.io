@@ -1,0 +1,64 @@
+---
+layout: post
+title: "iOS 基于键盘的编程所需技巧"
+date: 2011-12-12 17:34:37
+categories: [iOS]
+---
+
+
+<p>首先，你得监听键盘的事件，最基本的两个事件：</p>
+
+<p style="margin-left:0.0px; margin-right:0.0px">UIKeyboardWillShowNotification</p>
+
+<p style="margin-left:0px; margin-right:0px">&nbsp;</p>
+
+<p style="margin-left:0px; margin-right:0px">UIKeyboardWillHideNotification</p>
+
+<p style="margin-left:0px; margin-right:0px">UIKeyboard...</p>
+
+<p>iOS 5新增加了一些</p>
+
+<p style="margin-left:0.0px; margin-right:0.0px">&nbsp;</p>
+
+<p style="margin-left:0.0px; margin-right:0.0px">UIKeyboardDidChangeFrameNotification（will）</p>
+
+<p style="margin-left:0px; margin-right:0px">一般情况下，前两个事件已经可以完成你要做的事情。在你的事件处理方法中加上<span style="color:#7041a7">NSNotification</span>参数可以为你获得更多的东西：</p>
+
+<p style="margin-left:0px; margin-right:0px">&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-objc">- (void)keyboardWillShow:(NSNotification *)notification
+{ 
+    CGPoint beginCentre = [[[notification userInfo] valueForKey:UIKeyboardCenterBeginUserInfoKey] CGPointValue];
+    CGPoint endCentre = [[[notification userInfo] valueForKey:UIKeyboardCenterEndUserInfoKey] CGPointValue];
+    CGRect keyboardBounds = [[[notification userInfo] valueForKey:UIKeyboardBoundsUserInfoKey] CGRectValue];
+    CGRect keyboardFrames = [[[notification userInfo] valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    UIViewAnimationCurve animationCurve = [[[notification userInfo] valueForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
+    NSTimeInterval animationDuration = [[[notification userInfo] valueForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<p style="margin-left:0px; margin-right:0px">&nbsp;</p>
+
+<p style="margin-left:0px; margin-right:0px">如果你要在程序中使用键盘的高度和宽度，永远不要尝试去手动指定，动态获取也很简单而且一定准确，不会出现键盘挡住输入框的问题。</p>
+
+<p style="margin-left:0px; margin-right:0px">你可以利用这些参数把动画做的和键盘一致。假设你要把一个控件放在Window上，并且想让它的交互方式和键盘一样，</p>
+
+<p style="margin-left:0px; margin-right:0px">如果只是简单的做个向下偏移动画并不能很好的完成，因为你还要考虑从导航栏中Pop出来的时候，这个时候的键盘动画是</p>
+
+<p style="margin-left:0px; margin-right:0px">在x轴上偏移的，你用<span style="color:#7041a7">UIKeyboardFrameEndUserInfoKey</span>获取的frame可以很准确的做到。</p>
+
+<p style="margin-left:0px; margin-right:0px">&nbsp;</p>
+
+<p style="margin-left:0px; margin-right:0px">&nbsp;</p>
+
+<p style="margin-left:0px; margin-right:0px">如果在某些特殊的字段上，你不想用默认的键盘，而是用类似于Picker这样的拾取器，你只需要设置<span style="color:#009900">inputView</span>就行了，用你自定义的视图去替换掉键盘；如果你想在键盘上面再增加一个视图，比如toolbar，那么你可以不用自己对toolbar的位置进行控制，只需要设置<span style="color:#009900">inputAccessoryView</span>就行了，这个值默认为nil，设置的视图将在你的控件变成第一响应者的时候显示在inputView的上方。</p>
+
+<p style="margin-left:0px; margin-right:0px"><img alt="" class="has" src="http://hi.csdn.net/attachment/201112/12/0_1323679088F4kD.gif" /><img alt="" class="has" src="http://hi.csdn.net/attachment/201112/12/0_1323680144F4hl.gif" /></p>
+
+<h3><span style="color:#cc0000">UPDATED:</span></h3>
+
+<p style="margin-left:0px; margin-right:0px">在UITableView上，当你触碰控件使之变成第一响应者的时候，系统会自动调整位置，避免键盘挡住控件。如果在代码中用<span style="color:#3d227f">becomeFirstResponder</span>使之变成第一响应者将不会出现自动调整。你可以设置contentOffset去手动调整。其他视图，最简单的方法就是修改控件的frame属性，让控件总是显示在可见区域。</p>
+
+<p style="margin-left:0px; margin-right:0px">如果是UIScrollView，你要自己设置contentSize，但是可以不用改变frame（子视图也不会接受到layoutSubviews），设置内容偏移（contentInset）和滚动条偏移（scrollIndicatorInsets）就行了。</p>

@@ -1,0 +1,79 @@
+---
+layout: post
+title: "简单的屏幕截图"
+date: 2011-04-16 19:55:00
+categories: [Java]
+---
+
+
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #0000ff">import</span> java.awt.Dimension;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #0000ff">import</span> java.awt.Rectangle;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #0000ff">import</span> java.awt.Robot;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #0000ff">import</span> java.awt.Toolkit;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #0000ff">import</span> java.awt.image.BufferedImage;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #0000ff">import</span> java.io.File;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #0000ff">import</span> javax.imageio.ImageIO;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #0000ff">public</span> <span style="color: #0000ff">class</span> Screenshot {</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">    <span style="color: #0000ff">public</span> <span style="color: #0000ff">void</span> captureScreen(String nameOfScreenshotFile, String formatOfFile, String screenshotPath) <span style="color: #0000ff">throws</span> Exception {</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        <span style="color: #008000">/*Dimension对象能帮助我们轻松地调整图片的高度和宽度 */</span></pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        <span style="color: #008000">/*创建一个矩形,这个矩形的尺寸宽高从0坐标到screenSize的宽和高 */</span></pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        Rectangle screenRectangle = <span style="color: #0000ff">new</span> Rectangle(screenSize);</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        Robot robot = <span style="color: #0000ff">new</span> Robot();</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        BufferedImage image = robot.createScreenCapture(screenRectangle);</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        <span style="color: #008000">/*创建的图片将不会包含鼠标光标*/</span></pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        ImageIO.write(image, formatOfFile, <span style="color: #0000ff">new</span> File(screenshotPath + nameOfScreenshotFile + <span style="color: #006080">"."</span> + formatOfFile));</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">    }</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">    <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">void</span> main(String args[]) {</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        Screenshot obj = <span style="color: #0000ff">new</span> Screenshot();</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        <span style="color: #0000ff">try</span> {</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">            obj.captureScreen(<span style="color: #006080">"trial"</span>, <span style="color: #006080">"jpeg"</span>, "C://");</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        } <span style="color: #0000ff">catch</span> (Exception e) {</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">            e.printStackTrace();</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">        }</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">    }</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">}</pre>
+<!--CRLF--></div>
+</div>

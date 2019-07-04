@@ -1,0 +1,65 @@
+---
+layout: post
+title: "CSDN博客导出工具 Mac By Swift"
+date: 2014-07-23 15:03:28
+categories: [iOS,Swift]
+---
+
+
+<p>写这个的目的主要是用于了解Swift语言本身，以及如何与Objc和第三方框架交互<br />
+<br />
+需要先使用CSDN账号来登录，可以导出所有的博客文章，添加YAML头信息的时候，会在头信息里面包含文章对应的标签和分类，以及对应的文章类型（原创、转载、翻译)<br />
+&nbsp;</p>
+
+<p><img alt="" class="has" height="361" src="https://img-blog.csdn.net/20140724220311906" width="454" /></p>
+
+<p><img alt="" class="has" height="361" src="https://img-blog.csdn.net/20140724220315057" width="454" /></p>
+
+<h2>开发环境</h2>
+
+<p><br />
+OS X 10.10，Xcode6 Beta4，由于Beta4较之前版本对Swift更新较大，之前版本编译出报错</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>使用的第三方框架</h2>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<ol>
+	<li>AFNetworking</li>
+	<li>GTM</li>
+	<li>RegExCategories</li>
+</ol>
+
+<p>&nbsp;</p>
+
+<p>Swift与Cocoa和ObjC交互比较简单，只用Bridging（桥接）一下就行了，具体的做法是使用Bridging Header文件，这个文件不管是Xcode自动生成的还是自己手动添加的都可以，一般这个文件为：ProductName-Bridging-Header.h：</p>
+
+<p><img alt="" class="has" height="82" src="https://img-blog.csdn.net/20140724105533062" width="230" /></p>
+
+<p>在里面直接导入即可：</p>
+
+<p><img alt="" class="has" height="135" src="https://img-blog.csdn.net/20140724105854148" width="341" /></p>
+
+<p>然后找到Build Settings，搜索Bridging，把Bridging-Header.h文件添加进去就可以了：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140724110153720" /></p>
+
+<p>编译。</p>
+
+<p><a href="http://download.csdn.net/download/zhangao0086/7671647">CSDN下载地址</a></p>
+
+<p><a href="https://github.com/zhangao0086/CSDNBlogExporter-Mac-Swift">GitHub地址</a></p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color:#cc0000">UPDATED:</span></h2>
+
+<p>GitHub上已更新至Xcode6 Beta6，之前版本编译会报错，具体看<a href="http://blog.csdn.net/zhangao0086/article/details/38728479">这里</a>。</p>

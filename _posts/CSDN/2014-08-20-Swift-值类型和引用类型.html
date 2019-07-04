@@ -1,0 +1,74 @@
+---
+layout: post
+title: "Swift 值类型和引用类型"
+date: 2014-08-20 16:58:08
+categories: [iOS,Swift]
+---
+
+
+<p>原文地址：<a href="https://developer.apple.com/swift/blog/?id=10">https://developer.apple.com/swift/blog/?id=10</a></p>
+
+<p>Swift中的类型分为两类：一，值类型(value types)，每个值类型的实例都拥有各自唯一的数据，通常它们是结构体，枚举或元组；二，引用类型(reference types)，引用类型的实例共享它们的数据，通常是一个类。在这篇文章中我们将会探索值类型和引用类型的价值，以及如何在它们二者间抉择。</p>
+
+<p>&nbsp;</p>
+
+<h2>有什么区别？</h2>
+
+<p>值类型最基本的特征就是复制在赋值、初始化和传递参数过程中的数据，并为这个数据创建一个独立的实例：</p>
+
+<p>&nbsp;</p>
+
+<pre>
+<code><span style="color:#007400">// 值类型例子</span>
+<span style="color:#aa0c91">struct</span> S { <span style="color:#aa0c91">var</span> data: <span style="color:#5c2699">Int</span> = <span style="color:#1c00cf">-1</span> }
+<span style="color:#aa0c91">var</span> a = <span style="color:#3f6e74">S</span>()
+<span style="color:#aa0c91">var</span> b = <span style="color:#3f6e74">a</span>						<span style="color:#007400">// 把a复制给b</span>
+<span style="color:#3f6e74">a</span>.<span style="color:#3f6e74">data</span> = <span style="color:#1c00cf">42</span>						<span style="color:#007400">// a被改变了, b却没有</span>
+<span style="color:#2e0d6e">println</span>(<span style="color:#c41a16">&quot;</span>\(<span style="color:#3f6e74">a</span>.<span style="color:#3f6e74">data</span>)<span style="color:#c41a16">,</span> \(<span style="color:#3f6e74">b</span>.<span style="color:#3f6e74">data</span>)<span style="color:#c41a16">&quot;</span>)	<span style="color:#007400">// prints &quot;42, -1&quot;</span></code></pre>
+
+<p>复制一个引用类型的时候，其实是隐式地创建了一个共享的实例。在复制后，两个实例指向了同一块数据，所以当修改其中一个实例数据的时候，另一个实例的数据也被修改了，比如：</p>
+
+<p>&nbsp;</p>
+
+<pre>
+<code><span style="color:#007400">// 引用类型的例子</span>
+<span style="color:#aa0c91">class</span> C { <span style="color:#aa0c91">var</span> data: <span style="color:#5c2699">Int</span> = <span style="color:#1c00cf">-1</span> }
+<span style="color:#aa0c91">var</span> x = <span style="color:#3f6e74">C</span>()
+<span style="color:#aa0c91">var</span> y = <span style="color:#3f6e74">x</span>						<span style="color:#007400">// x被复制给了y</span>
+<span style="color:#3f6e74">x</span>.<span style="color:#3f6e74">data</span> = <span style="color:#1c00cf">42</span>						<span style="color:#007400">// x指向的数据被修改了 (同时y也被修改了)</span>
+<span style="color:#2e0d6e">println</span>(<span style="color:#c41a16">&quot;</span>\(<span style="color:#3f6e74">x</span>.<span style="color:#3f6e74">data</span>)<span style="color:#c41a16">,</span> \(<span style="color:#3f6e74">y</span>.<span style="color:#3f6e74">data</span>)<span style="color:#c41a16">&quot;</span>)	<span style="color:#007400">// prints &quot;42, 42&quot;</span></code></pre>
+
+<h2>可变性在安全中的作用</h2>
+
+<p>选择值类型而不是引用类型的一个主要原因是能让你的代码变得更加简单。你在任何情况下用一个值类型，都能够假设你的其他代码不会使它改变，这通常在多线程环境中很有用，如果一个线程中使用的数据被另一个线程给意外的修改了，这通常会产生非常严重的Bug，且相当难以调试。</p>
+
+<p>由于只有当你需要修改数据时两者的区别才会得到体现，所以当你的实例不会对数据进行修改的时候，值类型和引用类型看起来是完全相同的。</p>
+
+<p>你也许会想，写一个完全不可变的类，这或许是有价值的，使用Cocoa的NSObject能简化这个过程，并且能很好地保持原有的语义。现在，你能通过使用不可变的存储属性，以及避免暴露修改数据的接口，从而在Swift里实现一个不可变的类。事实上，大多数的Cocoa类，比如NSURL等，都被设计为不可变的类，然而，Swift当前并没有提供任何语言机制去强制申明一个类不可改变（比如子类化就能修改一个类的实现），只有结构体和枚举才是强制不可变的。</p>
+
+<p>&nbsp;</p>
+
+<h2>如何选择？</h2>
+
+<p>所以如果你想要创建一个新的类型，你怎么选择？当你写Cocoa程序的时候，大多数APIs都需要从NSObject继承，你就已经是一个类了（引用类型），针对其他情况，这里有些指导规则：</p>
+
+<p>使用值类型，当...：</p>
+
+<ul>
+	<li>通过使用==去比较实例的数据</li>
+	<li>你想得到一个实例的独立副本</li>
+	<li>数据在多线程环境下被修改</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>使用引用类型(比如使用一个类)，当...：</p>
+
+<ul>
+	<li>通过使用===去判断两个实例是否恒等</li>
+	<li>你想要创建一个共享的，可变的对象</li>
+</ul>
+
+<p>在Swift里，Array、String和Dictionary都是值类型，他们的行为和C语言中的int类似，每个实例都有自己的数据，你不需要额外做任何事情，比如做一个显式的copy，防止其他代码在你不知情的情况下修改等，更重要的是，你能安全地在线程间传递它，而不需要使用同步技术。在提高安全性的精神下，这个模型将帮助你在Swift中写出更多可预知的代码。</p>
+
+<p>&nbsp;</p>

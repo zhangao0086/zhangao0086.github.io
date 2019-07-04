@@ -1,0 +1,115 @@
+---
+layout: post
+title: "程序员应该避免写注释"
+date: 2014-07-31 17:38:16
+categories: [随笔]
+---
+
+
+<p><em>&ldquo;程序员工作效率有多高，取决于他大脑中对当前项目的熟悉程度，即变量名称、数据结构、编程接口以及工具类甚至是目录等，这些细节记住的越多，效率也越高。&rdquo;</em></p>
+
+<p>注释不是用来翻译程序代码的，用代码能说清楚的东西，就不要再用自然语言费脑子去写了，集中精力写出最优雅、质量高的代码才是首要的。这并不是说可以完全不写注释，而是说不要为了添加<strong>不必要的注释</strong>而打乱你的思路。我很赞成这两篇文章的观点《<a href="http://www.vaikan.com/the-worlds-two-worst-variable-names/">世上最糟糕的两个变量名</a>》以及陆其明老师翻译的《<a href="http://blog.csdn.net/happydeer/article/details/8672989">避免在代码里写注释</a>》，有一个好的变量名、方法名其实就是一段很好的注释了，并且还会&ldquo;自动更新&rdquo;，你不用在未来优化这段代码的时候同步更新注释。</p>
+
+<p>我们写注释的目的不是说这段代码如何执行，而是想解释为什么要这么执行，这也正是与其研究代码、研究注释，不如研究写下这些代码的人，借用一下阿特伍德的<a href="http://blog.codinghorror.com/coding-without-comments/">博客原文</a>中的例子：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-java">r = n / 2;
+while ( abs( r - (n/r) ) &gt; t ) {
+r = 0.5 * ( r + (n/r) );
+}
+System.out.println( "r = " + r );
+</code></pre>
+
+<p>这段代码没有注释就完全看不懂了，如果加上一点注释说明一下则效果要好得多：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-java">// 用“牛顿-拉夫逊”近似法求解n的平方根
+r = n / 2;
+while ( abs( r - (n/r) ) &gt; t ) {
+r = 0.5 * ( r + (n/r) );
+}
+System.out.println( "r = " + r );
+</code></pre>
+
+<p>这么一来注释的作用就完成体现出来了，但是如果不用注释呢？像这样：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-java">private double SquareRootApproximation(n) {
+r = n / 2;
+while ( abs( r - (n/r) ) &gt; t ) {
+r = 0.5 * ( r + (n/r) );
+}
+return r;
+}
+System.out.println( "r = " + SquareRootApproximation(r) );
+</code></pre>
+
+<table border="1" cellpadding="10" cellspacing="1">
+	<tbody>
+		<tr>
+			<td><em>&ldquo;我一行注释也没有加，但这段神秘的代码现在已经非常容易理解了。&rdquo;</em></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p>我们每个人在项目中应该都有遇到过这样的事情，与其让他写下一堆注释，不如告诉他命名的重要性，能完全、准确地描述所代表的事物，这无疑能提高整个项目的可读性。在命名方面也有一些陷阱，如果一个命名不能做到准确的命名，这就和一段错误的注释描述正确的行为一样让人更加费解，而且如果你在命名一个类时没有考虑太多，在后期发觉不好，要更换名称的时候会很麻烦，你可能要改头文件的名称、实现文件的名称，各种调用以及导入的地方，甚至是创建文件时自动生成的一点注释，就这要求我们在创建一个类和方法时，头脑中至少要对将要做的事情&ldquo;优化&rdquo;好几遍，能准确无误的表达自己想表达的东西，对一些人来说，这个过程会很累，但确实是有必要。</p>
+
+<p>&nbsp;</p>
+
+<p>对命名使用准确的对仗词，有助于保持代码一致性，最终提高可读性。针对变量使用的对仗词：</p>
+
+<ul>
+	<li>begin/end</li>
+	<li>first/last</li>
+	<li>locked/unlocked</li>
+	<li>min/max</li>
+	<li>next/previous</li>
+	<li>old/new</li>
+	<li>opened/closed</li>
+	<li>visible/invisible</li>
+	<li>source/target</li>
+	<li>source/destination</li>
+	<li>up/down</li>
+	<li>等</li>
+</ul>
+
+<p>针对方法名使用的对仗词：</p>
+
+<ul>
+	<li>add/remove</li>
+	<li>increment/decrement</li>
+	<li>open/close</li>
+	<li>begin/end</li>
+	<li>insert/delete</li>
+	<li>show/hide</li>
+	<li>create/destroy</li>
+	<li>lock/unlock</li>
+	<li>source/target</li>
+	<li>first/last</li>
+	<li>min/max</li>
+	<li>start/stop</li>
+	<li>get/put</li>
+	<li>next/previous</li>
+	<li>up/down</li>
+	<li>get/set</li>
+	<li>old/new</li>
+	<li>等</li>
+</ul>
+
+<p>对于子程序（方法实现）过长的情况，要检查子程序的设计以及实现是否合理，必要的时候把子程序拆分为多个子程序，保持每个子程序的高内聚性（只做好一件事）总是有好处的。</p>
+
+<p>&nbsp;</p>
+
+<p>《<a href="http://justjavac.com/other/2012/11/12/do-not-bool-as-function-parameters.html">千万不要把 bool 当成函数参数</a><span style="color:#333333">》这篇文章提出的问题很有意思，对于布尔变量，可以给布尔变量赋予隐含&ldquo;真假&rdquo;含义的名字。</span></p>
+
+<p>最后，对你自己写下的代码，不要心存畏惧，不要把它尘封在那里，保持它的活跃度，在适当的时间对它进行重构，如果要问重构到什么地步，那就是：<strong>到你没时间重构为止</strong>。</p>
+
+<p>&nbsp;</p>

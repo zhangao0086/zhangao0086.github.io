@@ -1,0 +1,45 @@
+---
+layout: post
+title: "iOS8 用UITableViewRowAction实现Cell自定义滑动操作"
+date: 2015-01-25 21:48:44
+categories: [iOS,Swift]
+---
+
+
+<p>在iOS 8以前，如果想自定义一个UITableViewCell的滑动操作是一件比较麻烦的事情，系统只支持删除，如果我们想加上一个类似于&ldquo;置顶&rdquo;的操作需要处理不少逻辑，而进入iOS 8以后，系统提供了UITableViewRowAction以及新的delegate方法，使得自定义一些操作变得非常容易，如果想加上一个置顶，只需要这样：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">override</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;tableView(tableView:&nbsp;<span style="color:#703daa">UITableView</span>, editActionsForRowAtIndexPath indexPath:&nbsp;<span style="color:#703daa">NSIndexPath</span>) -&gt; [<span style="color:#703daa">AnyObject</span>]? {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;topAction =&nbsp;<span style="color:#703daa">UITableViewRowAction</span>(style: .<span style="color:#3d1d81">Default</span>, title:&nbsp;<span style="color:#d12f1b">&quot;置顶&quot;</span>) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; (action:&nbsp;<span style="color:#703daa">UITableViewRowAction</span>!, indexPath:&nbsp;<span style="color:#703daa">NSIndexPath</span>!) -&gt;&nbsp;<span style="color:#703daa">Void</span>&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; tableView.<span style="color:#703daa">editing</span>&nbsp;=&nbsp;<span style="color:#bb2ca2">false</span></p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;[topAction]</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p>在这里可以添加任意多个操作。要确保这个代码生效，还是需要实现commitEditingStyle这个delegate方法，哪怕里面什么也不处理：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">override</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;tableView(tableView:&nbsp;<span style="color:#703daa">UITableView</span>, commitEditingStyle editingStyle:&nbsp;<span style="color:#703daa">UITableViewCellEditingStyle</span>, forRowAtIndexPath indexPath:&nbsp;<span style="color:#703daa">NSIndexPath</span>) {</p>
+
+<p>&nbsp;</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

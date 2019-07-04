@@ -1,0 +1,133 @@
+---
+layout: post
+title: "iOS 全局修改UINavigation 后退按钮"
+date: 2014-03-28 23:55:59
+categories: [iOS]
+---
+
+
+<p>快两年没有更新blog了，现在有点时间随便写点东西吧。</p>
+
+<p>做iOS项目中，可能会经常遇到要定制后退按钮的情况，比如把后退按钮的title固定为&ldquo;返回&rdquo;（修改title对后面push的vc生效），比如用图片，这时候大家一般会选择添加一个vc的基类，因为这个问题其实很简单，随便做点什么都能解决，今天我用另一种优雅的方法来解决这个问题。</p>
+
+<p><span contenteditable="false" tabindex="-1"><img alt="" data-widget="image" src="https://img-blog.csdn.net/20140328225047125?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></span></p>
+
+<p>默认iOS7的后退按钮是一个箭头+文字，如果想只要箭头的话，只要把title设为空就行了，我先用普通的类别方式来做，首先添加类别：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">@implementation</span>&nbsp;UINavigationItem (CustomBackButton)</p>
+
+<p>&nbsp;</p>
+
+<p>@end</p>
+
+<p>&nbsp;</p>
+
+<p>覆盖原有的方法：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>-(<span style="color:#703daa">UIBarButtonItem</span>&nbsp;*)backBarButtonItem{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">return</span><span style="color:#000000">&nbsp;[[</span><span style="color:#703daa">UIBarButtonItem</span><span style="color:#000000">&nbsp;</span>alloc<span style="color:#000000">]&nbsp;</span>initWithTitle<span style="color:#000000">:</span><span style="color:#d12f1b">@&quot;&quot;</span><span style="color:#000000">&nbsp;</span>style<span style="color:#000000">:</span>UIBarButtonItemStyleBordered<span style="color:#000000">&nbsp;</span>target<span style="color:#000000">:</span><span style="color:#bb2ca2">nil</span><span style="color:#000000">&nbsp;</span>action<span style="color:#000000">:</span><span style="color:#bb2ca2">NULL</span><span style="color:#000000">];</span></p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p>这种方式乍一看可以达到目的，运行起来看也是那么回事，但是如果你在某个vc里面用：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<div contenteditable="false" tabindex="-1">
+<pre class="has" data-widget="codeSnippet" name="code">
+<code class="language-objc hljs">self.navigationItem.backBarButtonItem</code></pre>
+</div>
+
+<p>想取得backBarButtonItem然后修改默认title的话，就不行了，这样一来就违背了我们使用类别的初衷：不影响原有的代码及使用方式。<br />
+接下来我们使用Swizzling。首先添加load方法交换实现：</p>
+
+<p>&nbsp;</p>
+
+<p>+(<span style="color:#bb2ca2">void</span>)load{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">static</span>&nbsp;<span style="color:#703daa">dispatch_once_t</span>&nbsp;onceToken;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#78492a">dispatch_once</span>(&amp;onceToken, ^{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#703daa">Method</span>&nbsp;originalMethodImp =&nbsp;<span style="color:#3d1d81">class_getInstanceMethod</span>(<span style="color:#bb2ca2">self</span>,&nbsp;<span style="color:#bb2ca2">@selector</span>(backBarButtonItem));</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#703daa">Method</span>&nbsp;destMethodImp =&nbsp;<span style="color:#3d1d81">class_getInstanceMethod</span>(<span style="color:#bb2ca2">self</span>,&nbsp;<span style="color:#bb2ca2">@selector</span>(myCustomBackButton_backBarbuttonItem));</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">method_exchangeImplementations</span>(originalMethodImp, destMethodImp);</p>
+
+<p>&nbsp; &nbsp; });</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p>objective c的运行时编程是非常强大的，这里我们仅仅只是交换一下两个方法的实现而已，接下来实现myCustomBackButton_backBarButtonItem（为了防止命名冲突，一般我们会这么命名）。</p>
+
+<p>&nbsp;</p>
+
+<p>在此之前，我们需要知道，vc的navigationItem.backBarButtonItem默认是nil的，而且只有在nil的时候，系统才会把vc的title当作后退文字来使用：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">static</span>&nbsp;<span style="color:#bb2ca2">char</span>&nbsp;kCustomBackButtonKey;</p>
+
+<p>-(<span style="color:#703daa">UIBarButtonItem</span>&nbsp;*)myCustomBackButton_backBarbuttonItem{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#703daa">UIBarButtonItem</span><span style="color:#000000">&nbsp;*item = [</span><span style="color:#bb2ca2">self</span><span style="color:#000000">&nbsp;</span>myCustomBackButton_backBarbuttonItem<span style="color:#000000">];</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;(item) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;item;</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; item =&nbsp;</span>objc_getAssociatedObject<span style="color:#000000">(</span><span style="color:#bb2ca2">self</span><span style="color:#000000">, &amp;</span><span style="color:#4f8187">kCustomBackButtonKey</span><span style="color:#000000">);</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;(!item) {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; item = [[</span><span style="color:#703daa">UIBarButtonItem</span><span style="color:#000000">&nbsp;</span>alloc<span style="color:#000000">]&nbsp;</span>initWithTitle<span style="color:#000000">:</span><span style="color:#d12f1b">@&quot;&quot;</span><span style="color:#000000">&nbsp;</span>style<span style="color:#000000">:</span>UIBarButtonItemStyleBordered<span style="color:#000000">&nbsp;</span>target<span style="color:#000000">:</span><span style="color:#bb2ca2">nil</span><span style="color:#000000">&nbsp;</span>action<span style="color:#000000">:</span><span style="color:#bb2ca2">NULL</span><span style="color:#000000">];</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>objc_setAssociatedObject<span style="color:#000000">(</span><span style="color:#bb2ca2">self</span><span style="color:#000000">, &amp;</span><span style="color:#4f8187">kCustomBackButtonKey</span><span style="color:#000000">, item,&nbsp;</span>OBJC_ASSOCIATION_RETAIN_NONATOMIC<span style="color:#000000">);</span></p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;item;</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p>第一行访问self的myCustomBarButton_backBarButtonItem其实是访问原始的backBarButtonItem，这么做的目的是针对vc自己对navigationItem.backBarButtonItem赋值的情况，如果不加上这个处理的话，vc自己对navigationItem.backBarButtonItem的自定义就会被忽略掉，我们需要保证：默认情况下就是只显示箭头而不带文字，如果有某个vc自己对backBarButtonItem赋值的话，就按vc自定义的来显示，这样我们才能总是得到真正想要的item。</p>
+
+<p>我们用对象关联把self和item关联起来，用的时候直接取即可。最后可以加上：</p>
+
+<p>&nbsp;</p>
+
+<p>- (<span style="color:#bb2ca2">void</span>)dealloc {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>objc_removeAssociatedObjects<span style="color:#000000">(</span><span style="color:#bb2ca2">self</span><span style="color:#000000">);</span></p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color:#cc0000">UPDATED:</span></h2>
+
+<p>忘记了很重要的一点：要导入&lt;objc/runtime.h&gt;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

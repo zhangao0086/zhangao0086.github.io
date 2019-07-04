@@ -1,0 +1,115 @@
+---
+layout: post
+title: "Java 图片压缩"
+date: 2011-07-26 17:40:00
+categories: [Java]
+---
+
+
+<p>先上传压缩后的效果图一张：</p>
+
+<p><span contenteditable="false" tabindex="-1"><img alt="" data-widget="image" src="http://hi.csdn.net/attachment/201107/26/0_1311672977OUjC.gif" /></span></p>
+
+<p>图片1是压缩前，2是压缩后，这是以最大压缩比压缩的，效果只有自己去看了。</p>
+
+<p>&nbsp;</p>
+
+<div contenteditable="false" tabindex="-1">
+<pre class="has" data-widget="codeSnippet" name="code">
+<code class="language-java hljs">package zhangao.main;
+
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Locale;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.ImageOutputStream;
+
+//这个类重写了setCompressionQuality方法，因为在压缩JPEG图片的时候可能会出现问题
+class MyImageWriteParam extends JPEGImageWriteParam {
+
+	public MyImageWriteParam() {
+		super(Locale.getDefault());
+	}
+
+	public void setCompressionQuality(float quality) {
+		if (quality &lt; 0.0F || quality &gt; 1.0F) {
+			throw new IllegalArgumentException(&quot;Quality out-of-bounds!&quot;);
+		}
+		this.compressionQuality = 256 - (quality * 256);
+	}
+
+}
+
+public class Main {
+
+	public void compressJpegFile(File infile, File outfile, float compressionQuality) {
+		try {
+			// 检索要压缩的图片
+			RenderedImage rendImage = ImageIO.read(infile);
+
+			// 找到一个jpeg writer
+			ImageWriter writer = null;
+			Iterator iter = ImageIO.getImageWritersByFormatName(&quot;jpg&quot;);
+			if (iter.hasNext()) {
+				writer = (ImageWriter) iter.next();
+			}
+
+			// 准备输出文件
+			ImageOutputStream ios = ImageIO.createImageOutputStream(outfile);
+			writer.setOutput(ios);
+
+			// 设置压缩比
+			ImageWriteParam iwparam = new MyImageWriteParam();
+			iwparam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+			iwparam.setCompressionQuality(compressionQuality);
+
+			// 写图片
+			writer.write(null, new IIOImage(rendImage, null, null), iwparam);
+
+			// 最后清理
+			ios.flush();
+			writer.dispose();
+			ios.close();
+		} catch (IOException e) {
+		}
+	}
+
+	public static void main(String[] args) {
+		String initSrc = &quot;c:\\1.jpg&quot;;
+		String dest = &quot;c:\\2.jpg&quot;;
+		new Main().compressJpegFile(new File(initSrc), new File(dest), 1);
+	}
+}</code></pre>
+</div>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>但是出现了异常（在windows下不会），我的环境是JDK1.4+TOMCAT5.5，系统是AIX5.3，都是很旧的版本，但是没办法，出现的异常如下:</p>
+
+<p>Can&#39;t connect to X11 window server using &#39;:0.0&#39; as the value of the DISPLAY variable.&nbsp;</p>
+
+<p>NoClassDefFoundError: sun/awt/X11GraphicsEnvironment.<br />
+&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>解决方式：</p>
+
+<p>修改CATALINA.SH文件，我把原JAVA_OPTS=&quot;$JAVA_OPTS -Dfile.encoding=GBK&quot;改为JAVA_OPTS=&quot;$JAVA_OPTS -Dfile.encoding=GBK;-Djava.awt.headless=true&quot;即可解决这个问题，我甚至还在程序中加入了System.setProperty(&quot;java.awt.headless&quot;, &quot;true&quot;);，但是不知道为什么压缩速度没windows下快。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

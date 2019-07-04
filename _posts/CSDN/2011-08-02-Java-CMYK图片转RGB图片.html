@@ -1,0 +1,82 @@
+---
+layout: post
+title: "Java CMYK图片转RGB图片"
+date: 2011-08-02 17:07:01
+categories: [Java]
+---
+
+
+<p>上传做完了交由测试的时候，反馈说上传失败，自己试了试，都是成功的，于是叫测试人员把图片发给我看看。刚开始以为是图片太大了（2.9M，其实也没多大），我后来用一个3M的图片上传都上传成功了，仔细对比了图片的信息，发现失败的那张是CMYK的颜色样式，就想着转成RGB就完事了:</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-java">public class ReadJPEGRaster extends JFrame {
+	static String file = "C:\\Users\\ZhangAo\\Desktop\\example-cmyk.jpg";
+
+	public static void main(String[] args) throws Throwable {
+		// 找一个reader
+		Iterator readers = ImageIO.getImageReadersByFormatName("JPEG");
+		ImageReader reader = null;
+		while (readers.hasNext()) {
+			reader = (ImageReader) readers.next();
+			if (reader.canReadRaster()) {
+				break;
+			}
+		}
+
+		// 设置input.
+		ImageInputStream input = ImageIO.createImageInputStream(new File(file));
+		reader.setInput(input);
+
+		// 创建图片.
+		BufferedImage image;
+		try {
+			// 尝试读取图片 (包括颜色的转换).
+			image = reader.read(0);
+		} catch (IIOException e) {
+			// 读取Raster (没有颜色的转换).
+			Raster raster = reader.readRaster(0, null);
+
+			// 随意选择一个BufferedImage类型.
+			int imageType;
+			switch (raster.getNumBands()) {
+				case 1:
+					imageType = BufferedImage.TYPE_BYTE_GRAY;
+					break;
+				case 3:
+					imageType = BufferedImage.TYPE_3BYTE_BGR;
+					break;
+				case 4:
+					imageType = BufferedImage.TYPE_4BYTE_ABGR;
+					break;
+				default:
+					throw new UnsupportedOperationException();
+			}
+
+			// 创建一个BufferedImage.
+			image = new BufferedImage(raster.getWidth(), raster.getHeight(), imageType);
+
+			// 设置图片数据.
+			image.getRaster().setRect(raster);
+		}
+
+		// 显示图片.
+		new ReadJPEGRaster(image);
+	}
+
+	ReadJPEGRaster(RenderedImage image) {
+		super();
+
+		getContentPane().add(new com.sun.media.jai.widget.DisplayJAI(image));
+		pack();
+		show();
+	}
+}</code></pre>
+
+<p><br />
+可惜无法做到无损转换...用ImageMagick的命令行工具倒是可以无损转换,还有据说使用了JNI的jmagick也可以.但是没有权限在服务器上安装..</p>
+
+<p>&nbsp;</p>
+
+<p>如果哪位知道其他CMYK无损转RGB的方法(不需要安装其他工具),还请告知..<strong>Thank you in advance!</strong></p>

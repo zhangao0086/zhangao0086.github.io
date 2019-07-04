@@ -1,0 +1,21 @@
+---
+layout: post
+title: "has been modified since the precompiled header问题的几种解决方案"
+date: 2014-09-28 18:05:39
+categories: [iOS,Swift]
+---
+
+
+<p>有时候不小心就报了这个错误，在以下步骤中，只有没解决问题的情况下，才继续往下操作：</p>
+
+<p>&nbsp;</p>
+
+<ol>
+	<li>Clean工程</li>
+	<li>按住option键，再次Clean（Clean Build Folder...）</li>
+	<li>进入Window -&gt; Organizer，在上面的Tab中选择Project，在左侧选中当前的工程，在右侧把Derived Data删除</li>
+	<li>报has been modified since the precompiled header错误的时候会显示很长的错误信息，其中有个包含DerivedData目录的路径，把路径指向的文件删掉</li>
+	<li>关闭Xcode，直接把 /Users/你的用户名/Library/Developer/Xcode/ 目录删掉，然后启动Xcode自动重建此目录。如果你配置了自定义的快捷键，建议先把&nbsp;/Users/你的用户名/Library/Developer/Xcode/UserData/KeyBindings 目录下你自定义的KeyBindings文件备份，之后再复制过来</li>
+</ol>
+
+<p>&nbsp;</p>

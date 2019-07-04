@@ -1,0 +1,338 @@
+---
+layout: post
+title: "Vim 笔记"
+date: 2011-07-30 12:29:35
+categories: [macOS,随笔]
+---
+
+
+<p>发现以前记得很清楚的命令也变得模糊了，总是在需要用到的时候不能及时地想起来。我将自己会用到的命令记录在此，基本的移动和搜索以及正则表达式就不记录了，其它的只要是用过，哪怕只是一遍。</p>
+
+<p>首先是自己Vim的全局配置：</p>
+
+<p>set showmode &nbsp; &nbsp; &nbsp; &nbsp; 显示当前的模式</p>
+
+<p>set number &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 显示行号</p>
+
+<p>set nocompatible &nbsp; &nbsp;使用Vim改进的兼容模式</p>
+
+<p>set fileencodings=ucs-bom,utf-8,cp936</p>
+
+<p>&nbsp;</p>
+
+<blockquote>
+<pre class="has" id="content-626322339">
+<code class="language-mb10">Vim 启动时会按照它所列出的字符编码方式逐一探测即将打开的文件的字符编码方式，并且将 fileencoding 设置为最终探测到的字符编码方式。因此最好将 Unicode 编码方式放到这个列表的最前面，将拉丁语系编码方式 latin1 放到最后面。另外ucs-bom是指“ucs with byte-order-mark”，如果要使用这个编码，不能放在utf-8编码的后面。</code></pre>
+</blockquote>
+
+<p>set fileencoding=utf-8</p>
+
+<blockquote>
+<p>Vim 中当前编辑文件的字符编码方式，Vim保存文件时也会将文件保存为这种编码的方式</p>
+</blockquote>
+
+<p>set encoding=cp936</p>
+
+<blockquote>
+<p>Vim 内部使用的字符编码方式，包括Vim 的缓冲区、菜单文本、消息文本等。用户手册上建议只在.vimrc中改变它的值，事实上似乎也只有在.vimrc中改变它的值才有意义。另外在Windows里把cp936编码映射到GBK编码上了。</p>
+</blockquote>
+
+<p>set guifont=consolas:h12 &nbsp; &nbsp; 设置字体</p>
+
+<p>set sw=4 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 设置自动缩进时的空格个数</p>
+
+<p>set ignorecase &nbsp; &nbsp; &nbsp; &nbsp;忽略大小写</p>
+
+<p>set ts=4 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 设置&lt;Tab&gt;的空格数</p>
+
+<p>set lbr &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;不拆分单词</p>
+
+<p>map &lt;F5&gt; :set filetype=java&lt;Enter&gt; &nbsp; &nbsp; &nbsp; 映射&lt;F5&gt;键，设置当前文件为Java文件</p>
+
+<p>set nobackup &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 不备份</p>
+
+<p>set backspace=indent,eol,start</p>
+
+<blockquote>
+<p>在Insert模式下退格键何时可以删除光标前的字符。选项中以逗号分隔的三项内容分别指定了Vim 可以删除位于行首的空格，断行，以及开始进入Insert模式之前的位置。</p>
+</blockquote>
+
+<p>set autoindent &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;自动缩进</p>
+
+<p>set showcmd &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 显示一个没有完成的命令已经完成的部分</p>
+
+<p>set so=5 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;当光标离窗口上下边界的最小行距为5时自动滚动</p>
+
+<p>set nowrap &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;不要折行</p>
+
+<p>set sidescroll=10 &nbsp; &nbsp; 查看光标所在字符的左右10个字符的上下文</p>
+
+<p>set whichwrap &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;设置移动到行边界时可以跨界的按键</p>
+
+<p>let $DESKTOP=&#39;c:\users\*\desktop&#39; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 设置桌面的环境变量(*为用户名)</p>
+
+<p>map &lt;C-m&gt; :call CalCharCount()&lt;cr&gt; &nbsp; &nbsp; &nbsp; &nbsp;映射命令ctrl+m调用统计字符个数的函数</p>
+
+<p>统计字符个数的函数：</p>
+
+<p>if !exists(&quot;*CalCharCount&quot;)<br />
+&nbsp; &nbsp; function CalCharCount()<br />
+&nbsp; &nbsp; &nbsp; &nbsp; exe &#39;%s/\S/&amp;/gn&#39;<br />
+&nbsp; &nbsp; endfunction<br />
+endif</p>
+
+<p>其次是常用的快捷键：</p>
+
+<p>CTRL-f &nbsp; &nbsp; 屏幕向下移动一页</p>
+
+<p>CTRL-b &nbsp; &nbsp; 屏幕向上移动一页</p>
+
+<p>CTRL-] &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 跳转到标签</p>
+
+<p>CTRL-T &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;弹出标签</p>
+
+<p>CTRL-O &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 跳转到较早的位置</p>
+
+<p>CTRL-G &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 文件当前位置信息</p>
+
+<p>CTRL-U &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 文本向下滚动半屏</p>
+
+<p>CTRL-D &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 文本向上滚动半屏</p>
+
+<p>CTRL-O &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 跳回更早之前的位置</p>
+
+<p>CTRL-I &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 跳回后来更新的位置</p>
+
+<p>H &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 移动到屏幕第一行</p>
+
+<p>M &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 移动到屏幕中间</p>
+
+<p>L &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;移动到屏幕最后一行</p>
+
+<p>zz &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;当前位置置于屏幕中央</p>
+
+<p>zt &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 当前位置置于屏幕顶端</p>
+
+<p>zb &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;当前位置置于屏幕底端</p>
+
+<p>* &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;取当前光标所在的word,并将它作用目标字符串进行搜索</p>
+
+<p># &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; *的反向版</p>
+
+<p>`` &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 跳回</p>
+
+<p>ma &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;在屏幕上定义一个标记a，用于跳转（大写代表全局标记）</p>
+
+<blockquote>
+<p>`a &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 跳转到标记a所在的行和列</p>
+
+<p>&#39;a &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 跳转到标记a所在的行头</p>
+</blockquote>
+
+<p>x &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 代表dl（删除光标下的字符）</p>
+
+<p>X &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;代表dh（删除光标前的字符）</p>
+
+<p>D &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 代表d$（删除光标到行尾的内容）&nbsp;</p>
+
+<p>C &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 代表c$（修改到行尾的内容）</p>
+
+<p>s &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;代表cl（修改一个字符）</p>
+
+<p>S &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;代表cc（修改整行）</p>
+
+<p>r &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;替换一个字符，并回到normal模式</p>
+
+<p>. &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;重复上一次做出修改的命令</p>
+
+<p>o &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; visual模式下，让光标置于被选文本的另一端</p>
+
+<p>O &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;矩形文本选择时，将光标置于同一行的左右两个角</p>
+
+<p>p &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 将删除的内容取回，放在下一行或者光标后</p>
+
+<p>p &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; p的反向版，取回后放在前一行或者光标前</p>
+
+<p>q{a-z}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;命令记录，q为结束，@{a-z}为执行，@@执行上一次的命令记录</p>
+
+<p>&quot;*yy &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 将一行内容复制到剪贴板</p>
+
+<p>&quot;*p &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;将剪贴板的内容复制过来</p>
+
+<p>&quot;fyas &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 复制一个句子到寄存器f中</p>
+
+<p>&quot;fp &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 取出寄存器f中的内容</p>
+
+<p>&quot;wdaw &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;删除一个word并把它放到寄存器w中</p>
+
+<p>daw &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;当光标在一个词的中间时，用于将词删除 aw(a word)</p>
+
+<p>das &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 删除一个整句 as(a sentence)</p>
+
+<p>cis &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;修改一个整句 is(insert sentence)</p>
+
+<p>~ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 改变当前字符的大小写，并将光标置于下一个字符</p>
+
+<p>I &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;将光标置于当前行第一个非空白字符，并进行insert</p>
+
+<p>A &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 将光标置于当前行尾，并进行insert</p>
+
+<p>经常用到的命令：</p>
+
+<p>:help pattern&lt;CTRL-D&gt; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 同时列出所有匹配&#39;pattern&#39;的帮助主题</p>
+
+<p>:helpgrep pattern &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;在所有帮助文件中搜索&#39;pattern&#39;，并且定位到第一个匹配的位置</p>
+
+<blockquote>
+<p>:cn &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;下一个匹配项</p>
+</blockquote>
+
+<blockquote>
+<p>:cprev? :cN &nbsp; 上一个匹配项</p>
+
+<p>:cfirst :clast &nbsp; 第一个和最后一个匹配项</p>
+</blockquote>
+
+<p>:set matchpairs &nbsp; &nbsp; &nbsp; &nbsp;设置匹配的括号</p>
+
+<p>:set ruler &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 在右下角显示当前光标的行列位置</p>
+
+<p>:set hlsearch &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;高亮显示搜索结果</p>
+
+<p>:nohlsearch &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;取消当前的高亮显示</p>
+
+<p>:set incsearch &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;在键入目标字符串的过程中就同时开始搜索</p>
+
+<p>:set nowrapscan &nbsp; &nbsp; &nbsp; 会使搜索过程在文件结束（或开始）时就停止</p>
+
+<p>:scriptnames &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;用于找到Vim的所有启动文件</p>
+
+<p>:jumps &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 列出曾经跳转到的位置列表</p>
+
+<p>:marks &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 列出标记列表</p>
+
+<p>:set iskeyword&amp; &nbsp; &nbsp; &nbsp; &nbsp; 设置选项值为默认值</p>
+
+<p>:set iskeyword &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;设置一个单词中可以包含的字符（@代表所有字母）</p>
+
+<p>:set list &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 显示制表符</p>
+
+<p>:set cmdheight &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 设置信息显示区的高度</p>
+
+<p>:set filetype &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;设置当前编辑的文件类型</p>
+
+<p>:syntax enable &nbsp; &nbsp; &nbsp;开启语法高亮</p>
+
+<p>:syntax clear &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;暂时关闭语法高亮</p>
+
+<p>:syntax off &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;彻底关闭语法高亮</p>
+
+<p>:source $VIMRUNTIME/syntax/2html.vim &nbsp; 把当前文件转到HTML格式</p>
+
+<p>:write &gt;&gt; log &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;将当前文件的内容追加到log文件的最后</p>
+
+<p>:file file &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 重命名当前编辑的文件</p>
+
+<p>:[高度]split &nbsp;[其他文件] &nbsp;将窗口分隔为上下两个窗口，并定位到上面的窗口中</p>
+
+<blockquote>
+<p>CTRL-W &nbsp; &nbsp; &nbsp; &nbsp; 切换当前活动窗口</p>
+
+<p>:close &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 关闭当前窗口，可以阻止关闭最后一个窗口</p>
+
+<p>:only &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;关闭除当前窗口以外的所有窗口</p>
+
+<p>:new &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;打开一个新的窗口&nbsp;</p>
+
+<p>CTRL-W+ &nbsp; &nbsp; &nbsp;增加当前窗口的高度（可使用命令记数）</p>
+
+<p>CTRL-w- &nbsp; &nbsp; &nbsp; &nbsp;减少当前窗口的高度（可使用命令记数）</p>
+
+<p>[高度]CTRL-W_ &nbsp; 指定固定的高度</p>
+</blockquote>
+
+<p>:vsplit &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;垂直分隔</p>
+
+<blockquote>
+<p>:vnew &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 垂直分隔窗口，并打开一个新的缓冲区</p>
+
+<p>CTRL-W h &nbsp; &nbsp; &nbsp;到左边的窗口</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;j &nbsp; &nbsp; &nbsp; 到下面的窗口</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;k &nbsp; &nbsp; &nbsp;到上面的窗口</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;l &nbsp; &nbsp; &nbsp; 到右边的窗口</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;t &nbsp; &nbsp; &nbsp; 到顶部窗口</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;b &nbsp; &nbsp; &nbsp;到底部窗口</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;K &nbsp; &nbsp; &nbsp;提升窗口</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;H &nbsp; &nbsp; &nbsp;向左移动窗口</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;J &nbsp; &nbsp; &nbsp; 向下移动窗口</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;L &nbsp; &nbsp; &nbsp; 向右移动窗口</p>
+
+<p>:qall &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 退出所有窗口</p>
+
+<p>:wall &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 保存所有更改过的窗口</p>
+
+<p>:wqall &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 保存并退出所有窗口</p>
+</blockquote>
+
+<p>:tabedit file &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 在新的标签编辑文件</p>
+
+<blockquote>
+<p>gt &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;切换标签</p>
+
+<p>:tabonly &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 关闭当前标签以外的所有标签</p>
+</blockquote>
+
+<p>Shell命令：</p>
+
+<p>vim -o file file... &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;为每一个文件打开一个窗口（水平分隔）</p>
+
+<p>vim -O file file... &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;为每一个文件打开一个窗口（垂直分隔）</p>
+
+<p>vim -R file &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 以只读方式运行Vim，可强制保存</p>
+
+<p>view file &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;以只读方式运行Vim，可强制保存（Unix）</p>
+
+<p>vim c:\mian.m $VIM/_vimrc &nbsp; 在Shell命令中启动Vim并编辑多个文件</p>
+
+<blockquote>
+<p>:next &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;下一个编辑的文件</p>
+
+<p>:wnext &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 先保存，再编辑下一个文件</p>
+
+<p>:args &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 查看整个列表中的文件</p>
+
+<p>:previous &nbsp; &nbsp; &nbsp; &nbsp;上一个编辑的文件</p>
+
+<p>:wprevious &nbsp; &nbsp; 先保存，再编辑上一个文件</p>
+
+<p>:last &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 移到最后一个文件</p>
+
+<p>:first &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 移到第一个文件</p>
+
+<p>:2next &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;跳过两个文件</p>
+</blockquote>
+
+<blockquote>
+<p>:set autowrite &nbsp; &nbsp; 每当需要的时候保存文件</p>
+</blockquote>
+
+<blockquote>
+<blockquote>
+<p>noautowrite</p>
+</blockquote>
+
+<p>:args *.txt &nbsp; &nbsp; &nbsp; &nbsp;重新定义文件列表</p>
+
+<p>CTRL+^ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;两个文件中快速切换</p>
+</blockquote>
+
+<p>&nbsp;</p>

@@ -1,0 +1,160 @@
+---
+layout: post
+title: "Mac下最好用的文本编辑器"
+date: 2014-08-25 20:19:30
+categories: [随笔]
+---
+
+
+<p>&nbsp;</p>
+
+<p><strong><span style="color:#cc0000">友情提醒：图多杀猫。</span></strong></p>
+
+<p>&nbsp;</p>
+
+<p>以前在Windows下一直用gVim，可以用键盘控制一切，操作起来是又快又爽，还支持一大堆插件，想怎么玩就怎么玩。后来转Mac后，也沿袭着之前的习惯，一直在用终端的Vim，偶尔会觉得插件管理起来不方便，但没有插件也是万万不能的，慢慢地就开始想找另一款替代品，Sublime就这样映入眼帘，经过几个月的使用，越来越觉得爱不释手了。而且该编辑器是&ldquo;免费&rdquo;的，只是偶尔有个弹窗刷下存在感而已。</p>
+
+<p>首先是原版的Sublime就已经很强了：</p>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>右侧提供Minimap预览，避免对整个文件&ldquo;视线不良&rdquo;</li>
+	<li>支持TextMate的主题</li>
+	<li>自动完成</li>
+	<li>项目支持</li>
+	<li>专心模式</li>
+	<li>快速跳转以及快速切换文件</li>
+	<li>多行块操作</li>
+	<li>同样支持完全的键盘操作</li>
+	<li>众多的插件</li>
+	<li>......</li>
+</ul>
+
+<p><a href="http://www.sublimetext.com">官网在此</a>，首页就有主要功能的介绍，分享下我平时用的最多的插件：</p>
+
+<h3>PackageControl：</h3>
+
+<p><a href="https://sublime.wbond.net/installation">安装方法</a></p>
+
+<p>它是Sublime下的插件包管理工具，有超过2000个以上的插件可供安装，这几乎是每个Sublime用户都必装的插件，在Sublime的控制台里面粘贴相关的代码就会自动安装了。安装完之后重启Sublime，按⌘⇧P进入Command Palette，输入&ldquo;Install Package&rdquo;会过滤掉其他的功能，点击后会自动更新可供安装的插件列表，并在更新成功后显示一个窗口，要卸载插件时输入&ldquo;Remove Package&rdquo;就行了：</p>
+
+<p><img alt="" class="has" height="385" src="https://img-blog.csdn.net/20140825184902617?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="700" /></p>
+
+<p>&nbsp;</p>
+
+<h3>Emmet</h3>
+
+<p>直接通过PackageControl来安装</p>
+
+<p>这个插件对于写HTML\CSS的人来说简直是神器，而对于我这种轻量级偶尔写点HTML的人来说也是必不可少的，我安装这个插件最初的目的只是为了解决：我有一个span标签，我想把span改成div，或者把ol改成ul，通常前后都要改，用Emmet就只需要按下Cmd+Shift+K (on OS X) 或者 Ctrl+Shift+&#39; (Windows and Linux)就行了。但是这个插件比我想像中强大太多，<a href="http://emmet.io">官网</a>demo：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140827113339566" /></p>
+
+<p>&nbsp;</p>
+
+<h3>SyncedSideBar</h3>
+
+<p>直接通过PackageControl来安装</p>
+
+<p>Sublime对项目工程有相应的支持，具体的，你可以直接用Sublime打开一个目录，左侧就会显示该目录下的所有文件，像极了我们使用过的IDE，而且还支持大多数IDE没有的功能：快速跳转。Sublime可以快速的在目录下的多文件中切换，你只需要知道目标文件名的某一部分就行了，被选中的文件会变成当前编辑的文件，但是左侧的树不会自动选择到你当前正在编辑的文件上，如果你希望左侧的树总是高亮你当前正在编辑的文件，你就会喜欢上这个插件：</p>
+
+<p><img alt="" class="has" height="458" src="https://img-blog.csdn.net/20140825193750328" width="700" /></p>
+
+<p>&nbsp;</p>
+
+<h3>Git</h3>
+
+<p>直接通过PackageControl来安装</p>
+
+<p>安装Git插件后，在Sublime的Command Palette里就能支持Git操作了，控制台会有成功/错误的输出，相当实用：</p>
+
+<p><img alt="" class="has" height="458" src="https://img-blog.csdn.net/20140825194314381?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="700" /></p>
+
+<p>&nbsp;</p>
+
+<h3>Modific</h3>
+
+<p>直接通过PackageControl来安装，需要依赖Git插件</p>
+
+<p>安装Modific后，在Git环境下修改文件后，所修改的行会有相应的标识，话说Git都安装了，那这个也是少不了的了：</p>
+
+<p><img alt="" class="has" height="458" src="https://img-blog.csdn.net/20140825194826350?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="700" /></p>
+
+<p>&nbsp;</p>
+
+<h3>Color Highlighter</h3>
+
+<p>直接通过PackageControl来安装</p>
+
+<p>写CSS的朋友，可能会喜欢这个，还支持其他的样式，可以在Color Highlighter的配置文件里自定义：</p>
+
+<p><img alt="" class="has" height="495" src="https://img-blog.csdn.net/20140825195037187?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="700" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h3>Markdown Preview</h3>
+
+<p>直接通过PackageControl来安装</p>
+
+<p>Sublime 原生支持Markdown，并且能够在编写md文件的时候给予支持，但是没有提供预览功能，该插件支持将Markdown文件转成HTML格式的文件，还支持直接在浏览器里打开，你可以在编写的同时即时刷新该页面。由于GitHub对md有额外的支持，导致你在本地预览的可能和你上传到GitHub上预览到的不一样，所以该插件还支持以GitHub的方式解析：</p>
+
+<p><img alt="" class="has" height="246" src="https://img-blog.csdn.net/20140903102736609?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" width="640" /></p>
+
+<p>&nbsp;</p>
+
+<h3>Glue</h3>
+
+<p>直接通过PackageControl来安装</p>
+
+<p>允许你在Sublime里运行shell命令，并且能直接显示运行结果：</p>
+
+<p><img alt="" class="has" height="458" src="https://img-blog.csdn.net/20140825195316916?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="700" /></p>
+
+<p>&nbsp;</p>
+
+<p><strong><span style="color:#cc0000">这些都是我强烈推荐安装的插件，虽然不多，但对我来说都是必备的，其他的都可以在偶尔使用是在安装。</span></strong></p>
+
+<p>&nbsp;</p>
+
+<p>另外我很喜欢Sublime的专心模式，实在是太让我专心了.....</p>
+
+<p><img alt="" class="has" height="438" src="https://img-blog.csdn.net/20140825200347844?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="700" /><img alt="" class="has" height="438" src="https://img-blog.csdn.net/20140825200352664?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="700" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<table border="1" cellpadding="10" cellspacing="1">
+	<tbody>
+		<tr>
+			<td><em><span style="color:#cc0000">你还可以把左边的目录结构树隐藏掉，进行加强版专心模式。</span></em></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h3>从终端启动</h3>
+
+<p>如果想让Sublime从终端启动的话，具体的，在终端输入subl就能启动Sublime，需要经过下面几个步骤：</p>
+
+<ol>
+	<li><em>检查你的用户目录下有没有bin这个目录，没有的话创建一个&ldquo;mkdir bin&rdquo;</em></li>
+	<li><em>在你的bin目录下建立一个别名，注意App的名称是不是Sublime Text：sudo ln -s &quot;/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl&quot; ~/bin/subl</em></li>
+</ol>
+
+<p>一般来讲这样就可以了，如果还是不行的话，需要注意下环境变量：</p>
+
+<ol>
+	<li><em>检查你的用户目录下有没有&quot;.bash_profile&quot;文件，一般是隐藏的，没有的话新建一个&quot;touch .bash_profile&quot;</em></li>
+	<li><em>直接编辑这个文件(比如用vi .bash_profile)，在PATH后加上你的bin目录，不要把之前的PATH覆盖了，使用PATH追加的方式，如：export PATH=&quot;~/bin:$PATH&quot;，更新完之后保存，终端重新启动之后输入subl应该就能打开Sublime了。</em></li>
+</ol>
+
+<p>如果想通过sudo subl来启动的话，还要修改根目录下的.bash_profile文件，因为切换到super用户的时候，~代表的目录就不是你用户名下的目录了，自然就找不到用户名下的bin目录，修改根目录下的.bash_profile之后就像这样：export PATH=&quot;~/bin:/Users/{你的用户名}/bin:$PATH&quot;</p>
+
+<p>&nbsp;</p>

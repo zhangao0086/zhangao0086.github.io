@@ -1,0 +1,342 @@
+---
+layout: post
+title: "Swift 可选值(Optional Values)介绍"
+date: 2014-08-17 19:02:15
+categories: [iOS,Swift]
+---
+
+
+<h2>Optional的定义</h2>
+
+<p>Optional也是Objective-C没有的数据类型，是苹果引入到Swift语言中的全新类型，它的特点就和它的名字一样：可以有值，也可以没有值，当它没有值时，就是nil。此外，Swift的nil也和Objective-C有些不一样，在Objective-C中，只有对象才能为nil，而在Swift里，当基础类型（整形、浮点、布尔等）没有值时，也是nil，而不是一个初始值，没有初始值的值，是不能使用的，这就产生了Optional类型。定义一个Optional的值很容易，只需要在类型后面加上问号(?)就行了，如：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;str:&nbsp;<span style="color:#703daa">String</span>?</p>
+
+<p>&nbsp;</p>
+
+<p>一个Optional值和非Optional值的区别就在于：Optional值未经初始化虽然为nil，但普通变量连nil都没有：</p>
+
+<p>&nbsp;</p>
+
+<p>//未被初始化，但是是一个Optional类型，为nil</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;str:&nbsp;<span style="color:#703daa">String</span>?</p>
+
+<p><span style="color:#4f8187">str</span><span style="color:#000000">&nbsp;</span>//输出nil</p>
+
+<p>//未被初始化，也不是Optional类型</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;str2:&nbsp;<span style="color:#703daa">String</span></p>
+
+<p><span style="color:#4f8187">str2</span><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>//使用时出错</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>Optional的拆包</h2>
+
+<h3>显式拆包</h3>
+
+<p>Optional类型的值不能被直接使用，当需要用时要显式拆包，以表明我知道这个Optional是一定有值的：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;str:&nbsp;</span><span style="color:#703daa">String</span><span style="color:#000000">? =&nbsp;</span>&quot;Hello World!&quot;</p>
+
+<p><span style="color:#4f8187">str</span><span style="color:#000000">!&nbsp;</span>//Hello World!</p>
+
+<p>&nbsp;</p>
+
+<p>对比拆包前后，对str的输出：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;str:&nbsp;</span><span style="color:#703daa">String</span><span style="color:#000000">? =&nbsp;</span>&quot;Hello World!&quot;</p>
+
+<p><span style="color:#4f8187">str</span><span style="color:#000000">&nbsp;&nbsp; &nbsp;&nbsp;</span>//{Some &quot;Hello World!&quot;}</p>
+
+<p><span style="color:#4f8187">str</span><span style="color:#000000">!&nbsp; &nbsp;&nbsp;</span>//Hello World!</p>
+
+<p>&nbsp;</p>
+
+<p>之所以要拆包使用，是因为Optional类型其实是一个枚举：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">enum</span><span style="color:#000000">&nbsp;Optional&lt;T&gt; :&nbsp;</span>Reflectable<span style="color:#000000">,&nbsp;</span>NilLiteralConvertible<span style="color:#000000">&nbsp;{</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">case</span>&nbsp;None</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">case</span>&nbsp;Some(T)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">init</span>()</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">init</span>(<span style="color:#bb2ca2">_</span>&nbsp;some:&nbsp;<span style="color:#703daa">T</span>)</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>/// Haskell&#39;s fmap, which was mis-named</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;map&lt;U&gt;(f: (<span style="color:#703daa">T</span>) -&gt;&nbsp;<span style="color:#703daa">U</span>) -&gt;&nbsp;<span style="color:#703daa">U</span>?</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;getMirror() -&gt;&nbsp;<span style="color:#703daa">MirrorType</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">static</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;convertFromNilLiteral() -&gt;&nbsp;<span style="color:#703daa">T</span>?</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p>当Optional没有值时，返回的nil其实就是Optional.None，即没有值。除了None以外，还有一个Some，当有值时就是被Some&lt;T&gt;包装的真正的值，所以我们拆包的动作其实就是将Some里面的值取出来。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<table border="1" cellpadding="10" cellspacing="1">
+	<tbody>
+		<tr>
+			<td>有没有似曾相识的感觉？Java里面也有泛型。</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<h3>隐式拆包</h3>
+
+<p>&nbsp;</p>
+
+<p>除了显式拆包，Optional还提供了隐式拆包，通过在声明时的数据类型后面加一个感叹号(!)来实现：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;str:&nbsp;</span><span style="color:#703daa">String</span><span style="color:#000000">! =&nbsp;</span>&quot;Hello World!&quot;</p>
+
+<p><span style="color:#4f8187">str</span><span style="color:#000000">&nbsp;</span>//Hello World!</p>
+
+<p>&nbsp;</p>
+
+<p>可以看到没有使用(?)进行显式的折包也得到了Some中的值，这个语法相当于告诉编译器：在我们使用Optional值前，这个Optional值就会被初始化，并且总是会有值，所以当我们使用时，编译器就帮我做了一次拆包。如果你确信你的变量能保证被正确初始化，那就可以这么做，否则还是不要尝试为好。</p>
+
+<p>&nbsp;</p>
+
+<p><strong><span style="color:#cc0000">另外：</span></strong>在上面可以看到，Optional其实就是一个枚举，然后给它指定一个类型就行了，所以下面这两种方法都能声明一个Optional值：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;str:&nbsp;</span><span style="color:#703daa">String</span><span style="color:#000000">! =&nbsp;</span>&quot;Hello World!&quot;</p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;str2:&nbsp;</span>Optional<span style="color:#000000">&lt;</span>String<span style="color:#000000">&gt;</span></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>Optional Binding</h2>
+
+<p>&nbsp;</p>
+
+<p>在说Optional Binding之前，我想先说下Xcode6 Beta5在这一版中的一个小变化：在Xcode6 Beta5之前，如果是一个Optional值，可以直接放到条件判断语句中，如：</p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;str:&nbsp;</span><span style="color:#703daa">String</span><span style="color:#000000">? =&nbsp;</span>&quot;Hello World!&quot;</p>
+
+<p><span style="color:#bb2ca2">if</span>&nbsp;str {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>&quot;not nil&quot;</p>
+
+<p>}&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>&quot;nil&quot;</p>
+
+<p>}</p>
+
+<p>如果不是nil，则右边的Playground会显示&ldquo;not nil&rdquo;；反之则显示&ldquo;nil&rdquo;，但是至Xcode6 Beta5开始，这样就不能通过编译器了，你需要用下面这种方式来代替：</p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;str:&nbsp;</span><span style="color:#703daa">String</span><span style="color:#000000">? =&nbsp;</span>&quot;Hello World!&quot;</p>
+
+<p><span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#4f8187">str</span>&nbsp;!=&nbsp;<span style="color:#bb2ca2">nil</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>&quot;not nil&quot;</p>
+
+<p>}&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>&quot;nil&quot;</p>
+
+<p>}</p>
+
+<p>看似合理，但是在某种情况下会非常不爽<img alt="难过" class="has" src="http://static.blog.csdn.net/xheditor/xheditor_emot/default/sad.gif" />，比如你在str != nil条件成真后接着在上下文中使用str，会被要求进行拆包，我们以一个Int类型的Optional来做示例：</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;count:&nbsp;<span style="color:#703daa">Int</span>?</p>
+
+<p>count<span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#272ad8">100</span></p>
+
+<p><span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#4f8187">count</span>&nbsp;!=&nbsp;<span style="color:#bb2ca2">nil</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#d12f1b">&quot;count is &quot;</span><span style="color:#000000">&nbsp;+&nbsp;</span><span style="color:#703daa">String</span><span style="color:#000000">(</span><span style="color:#4f8187">count</span><span style="color:#000000">!)&nbsp; &nbsp;&nbsp;</span>//count is 100</p>
+
+<p>}&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>&quot;nil&quot;</p>
+
+<p>}</p>
+
+<p>我在把count强转成String的时候被要求拆包了，这是因为count本身是一个Optional的类型，为了避免在条件判断语句后执行一次或更多次的拆包，Swift引进了Optional Binding，我们就可以这样做：</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;count:&nbsp;<span style="color:#703daa">Int</span>?</p>
+
+<p>count<span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#272ad8">100</span></p>
+
+<p><span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;validCount =&nbsp;<span style="color:#4f8187">count</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;count is &quot;</span>&nbsp;+&nbsp;<span style="color:#703daa">String</span>(validCount)&nbsp; &nbsp;&nbsp;<span style="color:#008400">//count is 100</span></p>
+
+<p>}&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>&quot;nil&quot;</p>
+
+<p>}</p>
+
+<p>通过在条件判断语句中（如if、while等）把Optional值直接给一个临时常量，Swift会自动检测Optional是否包含值，如果包含值，会隐式的拆包并给那个临时常量，在接下来的上下文中就能直接使用这个临时常量了，这样是不是就觉得很爽呢<img alt="微笑" class="has" src="http://static.blog.csdn.net/xheditor/xheditor_emot/default/smile.gif" /></p>
+
+<p>&nbsp;</p>
+
+<table border="1" cellpadding="10" cellspacing="1">
+	<tbody>
+		<tr>
+			<td>注：在Optional Binding中，除了以常量的方式去接收拆包的值之外，也能以一个变量的形式<br />
+			去接收，但相信在大多数情况下我们只是使用那个值就行了，并不会去改变它。</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#990000"><strong>Swift 1.2 新语法：</strong></span></p>
+
+<p>在if let 中可以使用条件判断了：&nbsp;</p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;a:&nbsp;</span>NSString<span style="color:#000000">?</span></p>
+
+<p><span style="color:#4f8187">a</span><span style="color:#000000">&nbsp;=&nbsp;</span>&quot;test&quot;</p>
+
+<p><span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;b =&nbsp;<span style="color:#4f8187">a</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; b</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#bb2ca2">true</span>,&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;b =&nbsp;<span style="color:#4f8187">a</span>&nbsp;<span style="color:#bb2ca2">where</span>&nbsp;b ==&nbsp;<span style="color:#d12f1b">&quot;test&quot;</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>&quot;true&quot;</p>
+
+<p>}&nbsp;</p>
+
+<p>如果a 不是<span style="color:#990000"><strong>&quot;test&quot;</strong></span>，则不会打印出<span style="color:#990000"><strong>&quot;true&quot;</strong></span>。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>Optional Chaining</h2>
+
+<p>Optional Chaining对Swift来说是很基本但又必不可少的东西，相对于简单类型(Int、String等)来说，Optional更主要的应用场景是在复杂对象上，当一个对象包含另一个对象，同时这两个对象都有可能为nil的情况下才是Optional派上用场的地方，在Objective-C里，向nil发消息得到的就是一个nil，但是Swift不能在nil上直接调用方法或属性，同时为了方便我们使用，从而引入了Optional类型，可是这还不够，我们做一个简单的例子：</p>
+
+<p><span style="color:#bb2ca2">class</span> Person {</p>
+
+<p>&nbsp; &nbsp; <span style="color:#bb2ca2">var</span> pet: <span style="color:#4f8187">Pet</span>?</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">class</span> Pet {</p>
+
+<p>&nbsp; &nbsp; <span style="color:#bb2ca2">var</span> name: <span style="color:#703daa">String</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; <span style="color:#bb2ca2">var</span> favoriteToy: <span style="color:#4f8187">Toy</span>?</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; <span style="color:#bb2ca2">init</span> (name: <span style="color:#703daa">String</span>) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">name</span> = name</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">class</span> Toy {</p>
+
+<p>&nbsp; &nbsp; <span style="color:#bb2ca2">var</span> name: <span style="color:#703daa">String</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; <span style="color:#bb2ca2">init</span> (name: <span style="color:#703daa">String</span>) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">name</span> = name</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p>一个Person对象代表一个人，这个人可能有一个宠物，宠物会有它自己的名字，而且宠物可能会有自己喜爱的玩具，按照前面提到的知识，我们要首先判断这个人有没有宠物，然后再判断他的宠物有没有喜爱的玩具，然后才能得到这个玩具的名称，利用Optional Binding，我们写出来的可能就像这样：</p>
+
+<p><span style="color:#bb2ca2">let</span> jackon = <span style="color:#4f8187">Person</span>()</p>
+
+<p><span style="color:#4f8187">jackon</span>.<span style="color:#4f8187">pet</span> = <span style="color:#4f8187">Pet</span>(name: <span style="color:#d12f1b">&quot;Max&quot;</span>)</p>
+
+<p>jackon<span style="color:#000000">.</span>pet<span style="color:#000000">?.</span>favoriteToy<span style="color:#000000"> = </span>Toy<span style="color:#000000">(name: </span><span style="color:#d12f1b">&quot;Ball&quot;</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#bb2ca2">if</span> <span style="color:#bb2ca2">let</span> pet = <span style="color:#4f8187">jackon</span>.<span style="color:#4f8187">pet</span> {</p>
+
+<p>&nbsp; &nbsp; <span style="color:#bb2ca2">if</span> <span style="color:#bb2ca2">let</span> toy = pet.<span style="color:#4f8187">favoriteToy</span> {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; toy.<span style="color:#4f8187">name</span></p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p>这里用到了两个if，因为pet和toy对象都可能为nil，我们需要预防每一个可能为nil的对象，如果这个对象再复杂一点，那if也就更多了，而使用Optional Chaining的话，写出来的就像这样：</p>
+
+<p><span style="color:#bb2ca2">let</span> jackon = <span style="color:#4f8187">Person</span>()</p>
+
+<p><span style="color:#4f8187">jackon</span>.<span style="color:#4f8187">pet</span> = <span style="color:#4f8187">Pet</span>(name: <span style="color:#d12f1b">&quot;Max&quot;</span>)</p>
+
+<p>jackon<span style="color:#000000">.</span>pet<span style="color:#000000">?.</span>favoriteToy<span style="color:#000000"> = </span>Toy<span style="color:#000000">(name: </span><span style="color:#d12f1b">&quot;Ball&quot;</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#bb2ca2">if</span><span style="color:#000000"> </span><span style="color:#bb2ca2">let</span><span style="color:#000000"> toy = </span>jackon<span style="color:#000000">.</span>pet<span style="color:#000000">?.</span>favoriteToy<span style="color:#000000"> {</span></p>
+
+<p>&nbsp; &nbsp; toy.<span style="color:#4f8187">name</span></p>
+
+<p>}</p>
+
+<p>当一个Optional值调用它的另一个Optional值的时候，Optional Chaining就形成了，基本上，Optional Chaining就是<strong><span style="color:#cc0000">总是返回一个Optional</span></strong>的值，只要这个Chaining中有一个值为nil，整条Chaining就为nil，和Objective-C的向nil发消息类似。</p>
+
+<p>有一点很有趣，就是Optional Chaining除了能将属性返回的类型变为Optional外，连方法的返回值都能强制变为Optional，哪怕这个方法没有返回值，但是别忘了，Void也算是一个类型：</p>
+
+<p><span style="color:#bb2ca2">typealias</span> Void = ()</p>
+
+<p>如果我们的Pet类有一个玩玩具的play方法的话，就可以这样来判断是否会调用成功：</p>
+
+<p><span style="color:#bb2ca2">if</span> <span style="color:#bb2ca2">let</span> p: <span style="color:#703daa">Void</span> = <span style="color:#4f8187">jackon</span>.<span style="color:#4f8187">pet</span>?.<span style="color:#31595d">play</span>() {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; </span>&quot;play is called&quot;</p>
+
+<p>}</p>
+
+<p>使用Optional Chaining，能使我们的代码变得更加可读，同时更加简洁。</p>

@@ -1,0 +1,254 @@
+---
+layout: post
+title: "利用Jekyll在GitHub Pages上部署博客"
+date: 2014-07-18 13:12:32
+categories: [随笔]
+---
+
+
+<h2>开始之前</h2>
+
+<p>我觉得阮一峰的《<a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">搭建一个免费的，无限流量的Blog----github Pages和Jekyll入门</a>》是一个很经典的入门，每个Jekyll初学者都应该先去看一看，另外<a href="https://pages.github.com">GitHub Pages官网</a>以及<a href="http://jekyllcn.com">Jekyllcn</a>也是遇到问题时首先要查找的站点。</p>
+
+<p>需要对Git的基本操作有些了解：</p>
+
+<h2>Git基本操作</h2>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-plain">##设置全局用户名和email，作为每次提交的记录
+git config --global user.name “name"
+git config --global user.email “mail.com”
+
+##添加一个仓库
+git remote add origin git@….git
+git push -u origin master
+
+##当提示权限不够时，添加ssh公钥
+##在用户的.ssh目录下找id_rsa.pub等文件，没有的话去生成
+ssh-keygen -t rsa -C "youremail@example.com”
+
+##设置pull的默认地址
+git branch --set-upstream-to=origin/master
+##设置push的默认地址
+git remote add origin git@….git
+
+##配置别名
+git config --global alias.xx ''
+
+##临时保存工作区
+git stash
+git stash pop
+
+## 回滚
+git reset —hard 版本号
+
+## 强行回滚远程服务器
+git push -f
+</code></pre>
+
+<p>配置别名后会很方便，如果我有一个这样的别名：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-plain">bogon:portfolio zhangao$ git config --global alias.ci
+commit -m</code></pre>
+
+<p>在提交的时候用ci就行了。单个人使用Git，不协同工作的话，还是比较简单的。<br />
+&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>GitHub Pages</h2>
+
+<p>GitHub Pages上比较简单，只需要建立一个和你用户名相同的Repository就行了，比如：</p>
+
+<p><img alt="" class="has" height="63" src="https://img-blog.csdn.net/20140718100143265?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="454" /></p>
+
+<p>这样就建立了一个Repository，这样就能通过username.github.io来访问了。</p>
+
+<p>你也可以在设置里面选择生成一个默认的页面。</p>
+
+<p>&nbsp;</p>
+
+<h2>下面主要还是说下在使用Jekyll过程中实际的问题</h2>
+
+<h2>评论系统</h2>
+
+<p>我之前使用的是Disqus，后来感觉速度不怎么样，就换了<a href="http://duoshuo.com">多说</a>，多说还是很好用的，适合国内环境。</p>
+
+<p>&nbsp;</p>
+
+<h2>博客搬家</h2>
+
+<p>我之前没有找到mac版的，就自己做了一个：</p>
+
+<p><a href="https://github.com/zhangao0086/CSDN-sBlogExporter">CSDN博客导出工具Mac版</a></p>
+
+<p><a href="http://blog.csdn.net/zhangao0086/article/details/38064287">CSDN博客导出工具Mac By Swift</a></p>
+
+<p>&nbsp;</p>
+
+<h2>代码高亮</h2>
+
+<p>高亮的插件有很多，Jekyll的Pygments就已经超过<a href="http://pygments.org/languages/">100多种语言</a>，使用起来也很简单，在yml配置文件中设置：</p>
+
+<pre class="has" name="code">
+<code class="language-plain">pygments: true</code></pre>
+
+<p>然后在需要高亮的代码那里：</p>
+
+<pre class="has" name="code">
+<code class="language-plain">{% highlight ruby %}
+def foo
+  puts 'foo'
+end
+{% endhighlight %}</code></pre>
+
+<p>ruby替换为<a href="http://pygments.org/docs/lexers/">你所使用的语言的短名称</a>即可。如果设置了pygments之后编译出错的朋友需要再加一条配置：</p>
+
+<pre class="has" name="code">
+<code class="language-plain">excerpt_separator: ""</code></pre>
+
+<p>这是Jekyll的bug导致的，这样虽然可以用pygments完成代码高亮，却又不能用excerpt取到文章摘要了。</p>
+
+<p>最后我使用的是<a href="http://sunlightjs.com">Sunlight</a>，支持的语言比较多，完全可配置，可定制，能支持Objective-C的高亮：</p>
+
+<p><img alt="" class="has" height="345" src="https://img-blog.csdn.net/20140718110656079?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="454" /></p>
+
+<p>但是和我发表在CSDN上的文章使用的代码高亮插件不一样，我又想要使用这个Sunlight，就只能自己写个用正则查找替换的工具转了：</p>
+
+<p><a href="https://github.com/zhangao0086/GlobalReplace-Mac">全文本替换工具Mac</a></p>
+
+<p>&nbsp;</p>
+
+<h2>显示分类</h2>
+
+<p><img alt="" class="has" height="390" src="https://img-blog.csdn.net/20140718121727522?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="169" /></p>
+
+<p>显示分类：</p>
+
+<pre class="has" name="code">
+<code class="language-html">&lt;h4&gt;分类列表&lt;/h4&gt;
+	&lt;hr&gt;
+    {% for category in site.categories %}
+    &lt;li class="category_list_item"&gt;&lt;a href="/showCategory.html?categoryName={{ category | first }}"&gt;{{ category | first }}&lt;/a&gt; ({{ category | last | size }})
+    &lt;/li&gt;
+    {% endfor %}</code></pre>
+
+<p>显示所有的分类一般都没什么问题，主要在具体分类页面进行处理。</p>
+
+<p>基于Jekyll的静态特性，这个地方处理起来不太优雅，我参考了其他人的做法，最后选择将文章列表储存在JSON里面：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var articleList = [{% for post in site.posts %}
+		&lt;span style="white-space:pre"&gt;	&lt;/span&gt;{"title":"{{post.title}}",
+			"url":"{{site.url}}{{post.url}}",
+	&lt;span style="white-space:pre"&gt;	&lt;/span&gt;	"date":"{{ post.date | date:'%Y-%m-%d' }}",
+			"excerpt": '{{ post.excerpt | strip_html | strip_newlines | truncate:170 }}'
+			{% if post.categories != empty %}
+			,
+			"categories":[{% for category in post.categories %}"{{category}}"{% if forloop.last == false %},{% endif %}{% endfor %}]{% endif %}}
+			{% if forloop.last == false %},{% endif %}{% endfor %}];</code></pre>
+
+<p>我在这里判断了文章有没有分类，如果没有分类的话，就不添加到这个JSON里了，另外说下post.excerpt：</p>
+
+<ul>
+	<li>excerpt 是获取文章的摘要信息，这个信息可以显示在文章列表里面</li>
+	<li>strip_html 是除去HTML标签，因为摘要里面不需要显示图片之类的，纯文本即可</li>
+	<li>strip_newlines 是去掉换行符</li>
+	<li>truncate 这个就是字面意思了，摘要的长度</li>
+</ul>
+
+<p>然后在JS里面去取请求的参数，筛选出需要显示的文章，做法比较常规就不说了。</p>
+
+<p>如果参数中有特殊符号（比如我就有这样的分类名称：cvs||svn）或是中文（比如&ldquo;分享&rdquo;），url就用encodeURI函数转义一下：</p>
+
+<pre class="has" name="code">
+<code class="language-html">&lt;a href="javascript:void(window.location.href=encodeURI('/showCategory.html?categoryName={{ category | first }}'))"&gt;{{ category | first }}&lt;/a&gt;</code></pre>
+
+<p>取的时候用decodeURI函数去取。</p>
+
+<p>&nbsp;</p>
+
+<h2>strip_newlines无法去除换行符，或者遇到其他换行符之类的问题</h2>
+
+<p>比如我有遇到strip_newlines无法去除换行符的问题，如果去不掉的话，某些内容放进JSON的时候，自然而然的就出现问题了，因为不能连接字符串，但是又跨行了。strip_newlines只能去掉Unix的换行符，于是我就再一次使用了我之前写的<a href="https://github.com/zhangao0086/GlobalReplace-Mac">全文本替换工具Mac</a>，做了一次替换：</p>
+
+<p><img alt="" class="has" height="334" src="https://img-blog.csdn.net/20140720151106350?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="461" /></p>
+
+<p>&nbsp;</p>
+
+<h2>实现分页</h2>
+
+<p>&nbsp;</p>
+
+<p>Jekyll本身对分页限制很多，只支持<strong>HTML</strong>文件，不支持md，其次，对分类和标签的分页也不支持，这就很令人难受，只能将就用用了。</p>
+
+<p>在_config.yml文件里面添加：</p>
+
+<pre class="has" name="code">
+<code class="language-html">paginate: 10
+paginate_path: "page:num"</code></pre>
+
+<p>paginate表示开启分页并设置每页的数量；paginate_path是指定分页时Jekyll寻找HTML文件的路径，比如这里设置为page:num，那么Jekyll在分页时，第一页还是你的博客的index.html，第二页就是/page2/index.html，第三页就是/page3/index.html。如果指定的path不存在会自动往上级目录找，直到根目录的index.html，或者这个参数没有设置的话默认值就是page:num。</p>
+
+<p>在首页里面对文章进行分页，用一个简单的循环：</p>
+
+<pre class="has" name="code">
+{% raw %}
+{% for post in paginator.posts %}
+    &lt;a href="{{ post.url }}"&gt;{{ post.title }}&lt;/a&gt;
+{% endfor %}
+{% endraw %}
+</pre>
+
+<p>为了生成分页的链接，在根目录的index.html文件里面加上：</p>
+
+<pre class="has" name="code">
+{% raw %}
+{% if paginator.total_pages &gt; 1 %}
+	{% if paginator.previous_page %}
+		&lt;a href="{{ paginator.previous_page_path }}"&gt;上一页&lt;/a&gt;
+	{% endif %}
+	
+	{% if paginator.next_page %}
+		&lt;a href="{{ paginator.next_page_path }}"&gt;下一页&lt;/a&gt;
+	{% endif %}
+{% endif %}
+{% endraw %}
+</pre>
+
+<p>如果想要显示所有的页码：</p>
+
+<pre class="has" name="code">
+{% raw %}
+{% for page in (1..paginator.total_pages) %}
+	{% if page == 1 %}
+		&lt;a href="/index.html"&gt;{{ page }}&lt;/a&gt;
+	{% else %}
+		&lt;a href="{{ site.paginate_path | replace: ':num',page }}"&gt;{{ page }}&lt;/a&gt;
+	{% endif %}
+{% endfor %}
+{% endraw %}
+</pre>
+
+<p>因为第一页是index.html，不是page1，所以要特殊处理一下。这样一个简单的分页就完成了。</p>
+
+<p>附分页对象paginator的所有属性：</p>
+
+<ul>
+	<li>page 当前页码</li>
+	<li>per_page 每页文章数量</li>
+	<li>posts 当前页的文章列表</li>
+	<li>total_posts 总文章数</li>
+	<li>total_pages 总页数</li>
+	<li>previous_page 上一页页码 或 nil</li>
+	<li>previous_page_path 上一页路径 或 nil</li>
+	<li>next_page 下一页页码 或 nil</li>
+	<li>next_page_path 下一页路径 或 nil</li>
+</ul>
+
+<p>本来在显示分类页面也准备加上分页的，后来一想，所有的文章信息已经存在JSON里了，做分页也是一个假分页，就作罢了。</p>

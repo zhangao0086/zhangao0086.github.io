@@ -1,0 +1,242 @@
+---
+layout: post
+title: "Xcode 常用编译选项设置"
+date: 2011-09-17 14:15:28
+categories: [iOS]
+---
+
+
+<p>乍一看，这些设置可能太麻烦，其实它真的可以节省许多调试应用的时间，在xcconfig文件中指定即可。</p>
+
+<p>用标准库连接</p>
+
+<p>LINK_WITH_STANDARD_LIBRARIES = YES</p>
+
+<p><span style="color:#333333">如果激活此设置，那么编译器<span style="color:#333333">在链接过程中</span>会自动使用通过标准库的链接器</span><span style="color:#333333">。</span></p>
+
+<p>&nbsp;</p>
+
+<p>Info.plist 输出编码</p>
+
+<p><span style="color:#333333">INFOPLIST_OUTPUT_FORMAT = binary</span></p>
+
+<p><span style="color:#333333">指定Info.plist文件的输出编码（默认情况下，输出与输入的编码保持不变），这个输出编码能指定&ldquo;binary&rdquo;或者&ldquo;XML&rdquo;。</span></p>
+
+<p>&nbsp;</p>
+
+<p>生成调试符号</p>
+
+<p>GCC_GENERATE_DEBUGGING_SYMBOLS = NO</p>
+
+<p>当启用的时候，详情等级能够通过build的&#39;Level of Debug Symbols&#39;设置去控制。</p>
+
+<p>&nbsp;</p>
+
+<p>隐藏内联方法</p>
+
+<p>GCC_INLINES_ARE_PRIVATE_EXTERN = YES</p>
+
+<p>&nbsp;</p>
+
+<p>Objective－C GC</p>
+
+<p>GCC_ENABLE_OBJC_GC = Unsupported</p>
+
+<p>&nbsp;</p>
+
+<p>优化级别</p>
+
+<p>GCC_OPTIMIZATION_LEVEL = Fastest, Smallest &nbsp; [-OS]</p>
+
+<ul>
+	<li>None: 不做优化使用这个设置，编译器的目标是减少编译成本，使调试产生预期的结果。</li>
+	<li>Fast：<span style="color:#333333">优化编译将为<span style="color:#333333">大函数</span>占用更多的时间和内存</span>使用这个设置，编译器将尝试减少代码的大小和执行时间，不进行任何优化，需要大量编译时间。</li>
+	<li>Faster：编译器执行几乎所有支持的优化，它不考虑空间和速度之间的平衡与&ldquo;Fast&rdquo;设置相比，该设置会增加编译时间和生成代码的性能。编译器不进行循环展开、内联函数和寄存器变量的重命名。</li>
+	<li>Fastest：开启&ldquo;Faster&rdquo;支持的所有的优化，同时也开启内联函数和寄存器变量的重命名选项</li>
+	<li>Fastest,smallest：优化代码大小这个设置启用&ldquo;Faster&rdquo;所有的优化，一般不增加代码大小，它还执行旨在减小代码大小的进一步优化。</li>
+</ul>
+
+<p>C语言方言</p>
+
+<p>GCC_C_LANGUAGE_STANDARD = C89</p>
+
+<p>&nbsp;</p>
+
+<p>警告</p>
+
+<p>&nbsp;</p>
+
+<p>检查Switch语句</p>
+
+<p>GCC_WARN_CHECK_SWITCH_STATEMENTS = YES</p>
+
+<p>&nbsp;</p>
+
+<p>隐藏局部变量</p>
+
+<p>GCC_WARN_SHADOW = YES</p>
+
+<p>&nbsp;</p>
+
+<p>隐式转换成32位的类型</p>
+
+<p>GCC_WARN_64_TO_32_BIT_CONVERSION = YES</p>
+
+<p>&nbsp;</p>
+
+<p>未完成的Objective－C协议</p>
+
+<p>GCC_WARN_ALLOW_INCOMPLETE_PROTOCOL = YES</p>
+
+<p>&nbsp;</p>
+
+<p>抑制所有的警告</p>
+
+<p>GCC_WARN_INHIBIT_ALL_WARNINGS = NO</p>
+
+<p>&nbsp;</p>
+
+<p>初始化时没有完整的括号</p>
+
+<p>GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES</p>
+
+<p>例子（a没有完全的括号，b有）：</p>
+
+<pre class="has" name="code">
+<code class="language-cpp">int a[ 2 ][ 2 ] = { 0, 1, 2, 3 }; 
+int b[ 2 ][ 2 ] = { { 0, 1 }, { 2, 3 } };</code></pre>
+
+<p><br />
+不匹配的返回类型</p>
+
+<p>GCC_WARN_ABOUT_RETURN_TYPE = YES</p>
+
+<p>&nbsp;</p>
+
+<p>缺少括号</p>
+
+<p>GCC_WARN_MISSING_PARENTHESES = YES</p>
+
+<p>例子：</p>
+
+<pre class="has" name="code">
+<code class="language-cpp">{
+    if( a )
+        if( b )
+            foo();
+        else
+            bar();
+}</code></pre>
+
+<pre class="has" name="code">
+<code class="language-cpp">{
+    if( a )
+    {
+        if( b )
+            foo();
+        else
+            bar();
+    }
+}</code></pre>
+
+<p><br />
+在结构体初始化时缺少字段<br />
+GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES</p>
+
+<p>&nbsp;</p>
+
+<p>缺少函数原型</p>
+
+<p>GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES</p>
+
+<p>&nbsp;</p>
+
+<p>在文件结尾缺少新行</p>
+
+<p>GCC_WARN_ABOUT_MISSING_NEWLINE = YES</p>
+
+<p>&nbsp;</p>
+
+<p>选择了多个定义的类型(@Selector)</p>
+
+<p>GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO</p>
+
+<p>&nbsp;</p>
+
+<p>严格的Selector匹配</p>
+
+<p>GCC_WARN_STRICT_SELECTOR_MATCH = YES</p>
+
+<p>&nbsp;</p>
+
+<p>把缺少函数原型当作错误</p>
+
+<p>GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES</p>
+
+<p>&nbsp;</p>
+
+<p>把所有的警告当作错误</p>
+
+<p>GCC_TREAT_WARNINGS_AS_ERRORS = YES</p>
+
+<p>&nbsp;</p>
+
+<p>未定义的Selector</p>
+
+<p>GCC_WARN_UNDECLARED_SELECTOR = YES</p>
+
+<p>&nbsp;</p>
+
+<p>未初始化的自动变量</p>
+
+<p>GCC_WARN_UNINITIALIZED_AUTOS = YES</p>
+
+<p>&nbsp;</p>
+
+<p>未知的Pragma指令</p>
+
+<p>GCC_WARN_UNKNOWN_PRAGMAS = YES</p>
+
+<p>&nbsp;</p>
+
+<p>未使用的函数</p>
+
+<p>GCC_WARN_UNUSED_FUNCTION = YES</p>
+
+<p>&nbsp;</p>
+
+<p>未使用的标签</p>
+
+<p>GCC_WARN_UNUSED_LABEL = YES</p>
+
+<p>&nbsp;</p>
+
+<p>未使用的参数</p>
+
+<p>GCC_WARN_UNUSED_PARAMETER = YES</p>
+
+<p>&nbsp;</p>
+
+<p>未使用的值</p>
+
+<p>GCC_WARN_UNUSED_VALUE = YES</p>
+
+<p>当一个语句计算的结果显式的未使用的时候发出警告</p>
+
+<p>&nbsp;</p>
+
+<p>未使用的变量</p>
+
+<p>GCC_WARN_UNUSED_VARIABLE = YES</p>
+
+<p>&nbsp;</p>
+
+<p>警告－所有过时的函数</p>
+
+<p>GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES</p>
+
+<p>&nbsp;</p>
+
+<p>offsetof宏未定义使用的警告</p>
+
+<p>GCC_WARN_ABOUT_INVALID_OFFSETOF_MACRO = YES</p>

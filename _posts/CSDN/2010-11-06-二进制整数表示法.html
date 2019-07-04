@@ -1,0 +1,35 @@
+---
+layout: post
+title: "二进制整数表示法"
+date: 2010-11-06 11:50:00
+categories: []
+---
+
+
+<p>一个字节通常包括8个位,这8个位可以从左到右看作是从7到0.</p>
+<p>&nbsp;</p>
+<p><span style="white-space: pre;">	</span>&nbsp;&nbsp;7 <span style="white-space: pre;">	</span>&nbsp;6<span style="white-space: pre;">	</span> 5<span style="white-space: pre;">	</span> 4<span style="white-space: pre;">	</span> 3<span style="white-space: pre;">	</span> 2<span style="white-space: pre;">	</span> 1<span style="white-space: pre;">	</span> 0</p>
+<p>&nbsp;</p>
+<p><span style="white-space: pre;">	</span>&nbsp;&nbsp;0 <span style="white-space: pre;">	</span>&nbsp;1<span style="white-space: pre;">	</span> 0<span style="white-space: pre;">	</span> 0<span style="white-space: pre;">	</span> 1<span style="white-space: pre;">	</span> 0<span style="white-space: pre;">	</span> 0<span style="white-space: pre;">	</span> 1(二进制数,该字节的值为,64+8+1 = 73)</p>
+<p>&nbsp;</p>
+<p><span style="white-space: pre;">	</span>128 &nbsp;64<span style="white-space: pre;">	</span>32<span style="white-space: pre;">	</span>16<span style="white-space: pre;">	</span>&nbsp;8<span style="white-space: pre;">	</span>&nbsp;4<span style="white-space: pre;">	</span>&nbsp;2<span style="white-space: pre;">	</span>&nbsp;1</p>
+<p>&nbsp;</p>
+<p>位7称为高位,位0称为低位.每位数字都是2的指数.</p>
+<p>&nbsp;</p>
+<p>于是128是2的7次幂,64是2的6次幂,依次类推.</p>
+<p>&nbsp;</p>
+<p>这个字节所能存储的最大数就是所有位都为1的数,则是:11111111</p>
+<p>&nbsp;</p>
+<p>值为:128+64+32+16+8+4+2+1 = 255</p>
+<p>&nbsp;</p>
+<p>最小的数是所有位都为0的数,00000000.值就为0.则该字节可以存储的范围为:0到255总共256个值.</p>
+<p>&nbsp;</p>
+<p>这个字节能够存储256个值,除了可以表示为0到255,也能够表示为-128到127之间的整数.总共还是256个值.</p>
+<p>&nbsp;</p>
+<p>如一个unsigned char 可以表示0到255,一个singed char 可以表示&nbsp;-128到127.</p>
+<p>&nbsp;</p>
+<p>有符号数的最简单的表示方法就是保留一位(比如高位)来表示数的符号.在1个字节值中,该方法为数本身留下7位(即0到6位),如:</p>
+<p>&nbsp;</p>
+<p>10000001表示-1,00000001表示1,这就是符号量(sign-magnitude)表示法,能够表达-127到127.</p>
+<p>&nbsp;</p>
+<p>缺点是0的表示也分为+0和-0两种方法,这会引起混淆,而且用两个位组合表示一个值也有些浪费.</p>

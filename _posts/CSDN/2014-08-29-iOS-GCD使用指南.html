@@ -1,0 +1,385 @@
+---
+layout: post
+title: "iOS GCD使用指南"
+date: 2014-08-29 15:09:33
+categories: [iOS,Swift]
+---
+
+
+<p>Grand Central Dispatch（GCD）是异步执行任务的技术之一。一般将应用程序中记述的线程管理用的代码在系统级中实现。开发者只需要定义想执行的任务并追加到适当的Dispatch Queue中，GCD就能生成必要的线程并计划执行任务。由于线程管理是作为系统的一部分来实现的，因此可统一管理，也可执行任务，这样就比以前的线程更有效率。</p>
+
+<p>&nbsp;</p>
+
+<h2>Dispatch Queue</h2>
+
+<p>Dispatch Queue是用来执行任务的队列，是GCD中最基本的元素之一。</p>
+
+<p>Dispatch Queue分为两种：</p>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>Serial Dispatch Queue，按添加进队列的顺序（先进先出）一个接一个的执行</li>
+	<li>Concurrent Dispatch Queue，并发执行队列里的任务</li>
+</ul>
+
+<p>简而言之，Serial Dispatch Queue只使用了一个线程，Concurrent Dispatch Queue使用了多个线程（具体使用了多少个，由系统决定）。&nbsp;</p>
+
+<p>可以通过两种方式来获得Dispatch Queue，第一种方式是自己创建一个：</p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;myQueue:&nbsp;</span><span style="color:#703daa">dispatch_queue_t</span><span style="color:#000000">&nbsp;=&nbsp;</span>dispatch_queue_create<span style="color:#000000">(</span><span style="color:#d12f1b">&quot;com.xxx&quot;</span><span style="color:#000000">,&nbsp;</span><span style="color:#bb2ca2">nil</span><span style="color:#000000">)</span>&nbsp;</p>
+
+<p>第一个参数是队列的名称，一般是使用倒序的全域名。虽然可以不给队列指定一个名称，但是有名称的队列可以让我们在遇到问题时更好调试；当第二个参数为nil时返回Serial Dispatch Queue，如上面那个例子，当指定为<strong><span style="color:#cc0000">DISPATCH_QUEUE_CONCURRENT</span></strong>时返回Concurrent Dispatch Queue。</p>
+
+<p>需要注意一点，如果是在<strong><span style="color:#cc0000">OS X 10.8或iOS 6以及之后版本</span></strong>中使用，Dispatch Queue将会由ARC自动管理，如果是在此之前的版本，需要自己手动释放，如下：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;myQueue:&nbsp;</span><span style="color:#703daa">dispatch_queue_t</span><span style="color:#000000">&nbsp;=&nbsp;</span>dispatch_queue_create<span style="color:#000000">(</span><span style="color:#d12f1b">&quot;com.xxx&quot;</span><span style="color:#000000">,&nbsp;</span><span style="color:#bb2ca2">nil</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#3d1d81">dispatch_async</span>(myQueue, { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#3d1d81">println</span><span style="color:#000000">(</span>&quot;in Block&quot;<span style="color:#000000">)</span></p>
+
+<p>})</p>
+
+<p>dispatch_release<span style="color:#000000">(myQueue)</span>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>以上是通过手动创建的方式来获取Dispatch Queue，第二种方式是直接获取系统提供的Dispatch Queue。</p>
+
+<p>要获取的Dispatch Queue无非就是两种类型：</p>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>Main Dispatch Queue</li>
+	<li>Global Dispatch Queue / Concurrent Dispatch Queue</li>
+</ul>
+
+<p>一般只在需要更新UI时我们才获取Main Dispatch Queue，其他情况下用Global Dispatch Queue就满足需求了：</p>
+
+<p>//获取Main Dispatch Queue</p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;mainQueue =&nbsp;</span>dispatch_get_main_queue<span style="color:#000000">()</span></p>
+
+<p>//获取Global Dispatch Queue</p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;globalQueue =&nbsp;</span><span style="color:#3d1d81">dispatch_get_global_queue</span><span style="color:#000000">(</span>DISPATCH_QUEUE_PRIORITY_DEFAULT<span style="color:#000000">,&nbsp;</span><span style="color:#272ad8">0</span><span style="color:#000000">)</span></p>
+
+<p>得到的Global Dispatch Queue实际上是一个Concurrent Dispatch Queue，Main Dispatch Queue实际上就是Serial Dispatch Queue（并且只有一个）。</p>
+
+<p>获取Global Dispatch Queue的时候可以指定优先级，可以根据自己的实际情况来决定使用哪种优先级。</p>
+
+<p>一般情况下，我们通过第二种方式获取Dispatch Queue就行了。</p>
+
+<p>&nbsp;</p>
+
+<h2>dispatch_after</h2>
+
+<p>dispatch_after能让我们添加进队列的任务延时执行，比如想让一个Block在10秒后执行：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;time =&nbsp;</span><span style="color:#3d1d81">dispatch_time</span><span style="color:#000000">(</span>DISPATCH_TIME_NOW<span style="color:#000000">, (</span>Int64<span style="color:#000000">)(</span><span style="color:#272ad8">10</span><span style="color:#000000">&nbsp;*&nbsp;</span>NSEC_PER_SEC<span style="color:#000000">))</span></p>
+
+<p><span style="color:#3d1d81">dispatch_after</span>(time, globalQueue) { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#3d1d81">println</span><span style="color:#000000">(</span>&quot;在10秒后执行&quot;<span style="color:#000000">)</span></p>
+
+<p>}&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>NSEC_PER_SEC表示的是秒数，它还提供了NSEC_PER_MSEC表示毫秒。</p>
+
+<p>上面这句dispatch_after的真正含义是在10秒后把任务添加进队列中，并不是表示在10秒后执行，大部分情况该函数能达到我们的预期，只有在对时间要求非常精准的情况下才可能会出现问题。</p>
+
+<p>获取一个dispatch_time_t类型的值可以通过两种方式来获取，以上是第一种方式，即通过dispatch_time函数，另一种是通过dispatch_walltime函数来获取，dispatch_walltime需要使用一个timespec的结构体来得到dispatch_time_t。通常dispatch_time用于计算相对时间，dispatch_walltime用于计算绝对时间，我写了一个把NSDate转成dispatch_time_t的Swift方法：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;getDispatchTimeByDate(date:&nbsp;<span style="color:#703daa">NSDate</span>) -&gt;&nbsp;<span style="color:#703daa">dispatch_time_t</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;interval = date.<span style="color:#703daa">timeIntervalSince1970</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;second =&nbsp;<span style="color:#272ad8">0.0</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;subsecond =&nbsp;<span style="color:#3d1d81">modf</span>(interval, &amp;second)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;time =&nbsp;<span style="color:#703daa">timespec</span>(tv_sec:&nbsp;<span style="color:#703daa">__darwin_time_t</span>(second), tv_nsec: (<span style="color:#703daa">Int</span>)(subsecond * (<span style="color:#703daa">Double</span>)(<span style="color:#703daa">NSEC_PER_SEC</span>)))</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">return</span><span style="color:#000000">&nbsp;</span>dispatch_walltime<span style="color:#000000">(&amp;time,&nbsp;</span><span style="color:#272ad8">0</span><span style="color:#000000">)</span></p>
+
+<p>}&nbsp;</p>
+
+<p>这个方法接收一个NSDate对象，然后把NSDate转成dispatch_walltime需要的timespec结构体，最后再把dispatch_time_t返回，同样是在10秒后执行，之前的代码在调用部分需要修改成：&nbsp;</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;<span style="color:#3d1d81">time</span>&nbsp;=&nbsp;<span style="color:#31595d">getDispatchTimeByDate</span>(<span style="color:#703daa">NSDate</span>(timeIntervalSinceNow:&nbsp;<span style="color:#272ad8">10</span>))</p>
+
+<p><span style="color:#3d1d81">dispatch_after</span>(time, globalQueue) { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#3d1d81">println</span><span style="color:#000000">(</span>&quot;在10秒后执行&quot;<span style="color:#000000">)</span></p>
+
+<p>}</p>
+
+<p>这就是通过绝对时间来使用dispatch_after的例子。</p>
+
+<p>&nbsp;</p>
+
+<h2>dispatch_group</h2>
+
+<p>可能经常会有这样一种情况：我们现在有3个Block要执行，我们不在乎它们执行的顺序，我们只希望在这3个Block执行完之后再执行某个操作。这个时候就需要使用dispatch_group了：</p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;globalQueue =&nbsp;</span><span style="color:#3d1d81">dispatch_get_global_queue</span><span style="color:#000000">(</span>DISPATCH_QUEUE_PRIORITY_DEFAULT<span style="color:#000000">,&nbsp;</span><span style="color:#272ad8">0</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;group =&nbsp;</span>dispatch_group_create<span style="color:#000000">()</span></p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#3d1d81">dispatch_group_async</span>(group, globalQueue) { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>println<span style="color:#000000">(</span><span style="color:#d12f1b">&quot;1&quot;</span><span style="color:#000000">)</span></p>
+
+<p>}</p>
+
+<p><span style="color:#3d1d81">dispatch_group_async</span>(group, globalQueue) { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>println<span style="color:#000000">(</span><span style="color:#d12f1b">&quot;2&quot;</span><span style="color:#000000">)</span></p>
+
+<p>}</p>
+
+<p><span style="color:#3d1d81">dispatch_group_async</span>(group, globalQueue) { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>println<span style="color:#000000">(</span><span style="color:#d12f1b">&quot;3&quot;</span><span style="color:#000000">)</span></p>
+
+<p>}</p>
+
+<p><span style="color:#3d1d81">dispatch_group_notify</span>(group, globalQueue) { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#3d1d81">println</span><span style="color:#000000">(</span>&quot;completed&quot;<span style="color:#000000">)</span></p>
+
+<p>}</p>
+
+<p>输出的顺序与添加进队列的顺序无关，因为队列是Concurrent Dispatch Queue，但&ldquo;completed&rdquo;的输出一定是在最后的：</p>
+
+<pre class="has" name="code">
+<code class="language-plain">312
+completed</code></pre>
+
+<p>除了使用dispatch_group_notify函数可以得到最后执行完的通知外，还可以使用</p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;globalQueue =&nbsp;</span><span style="color:#3d1d81">dispatch_get_global_queue</span><span style="color:#000000">(</span>DISPATCH_QUEUE_PRIORITY_DEFAULT<span style="color:#000000">,&nbsp;</span><span style="color:#272ad8">0</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;group =&nbsp;</span>dispatch_group_create<span style="color:#000000">()</span></p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#3d1d81">dispatch_group_async</span>(group, globalQueue) { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>println<span style="color:#000000">(</span><span style="color:#d12f1b">&quot;1&quot;</span><span style="color:#000000">)</span></p>
+
+<p>}</p>
+
+<p><span style="color:#3d1d81">dispatch_group_async</span>(group, globalQueue) { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>println<span style="color:#000000">(</span><span style="color:#d12f1b">&quot;2&quot;</span><span style="color:#000000">)</span></p>
+
+<p>}</p>
+
+<p><span style="color:#3d1d81">dispatch_group_async</span>(group, globalQueue) { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>println<span style="color:#000000">(</span><span style="color:#d12f1b">&quot;3&quot;</span><span style="color:#000000">)</span></p>
+
+<p>}</p>
+
+<p>//使用dispatch_group_wait函数</p>
+
+<p><span style="color:#3d1d81">dispatch_group_wait</span><span style="color:#000000">(group,&nbsp;</span>DISPATCH_TIME_FOREVER<span style="color:#000000">)</span></p>
+
+<p><span style="color:#3d1d81">println</span><span style="color:#000000">(</span>&quot;completed&quot;<span style="color:#000000">)</span></p>
+
+<p>需要注意的是，dispatch_group_wait实际上会使当前的线程处于等待的状态，也就是说如果是在主线程执行dispatch_group_wait，在上面的Block执行完之前，主线程会处于卡死的状态。可以注意到dispatch_group_wait的第二个参数是指定超时的时间，如果指定为DISPATCH_TIME_FOREVER（如上面这个例子）则表示会永久等待，直到上面的Block全部执行完，除此之外，还可以指定为具体的等待时间，根据dispatch_group_wait的返回值来判断是上面block执行完了还是等待超时了。</p>
+
+<p>最后，同之前创建dispatch_queue一样，如果是在<strong><span style="color:#cc0000">OS X 10.8或iOS 6以及之后版本</span></strong>中使用，Dispatch Group将会由ARC自动管理，如果是在此之前的版本，需要自己手动释放。</p>
+
+<p>&nbsp;</p>
+
+<h2>dispatch_barrier_async</h2>
+
+<p>dispatch_barrier_async就如同它的名字一样，在队列执行的任务中增加&ldquo;栅栏&rdquo;，在增加&ldquo;栅栏&rdquo;之前已经开始执行的block将会继续执行，当dispatch_barrier_async开始执行的时候其他的block处于等待状态，dispatch_barrier_async的任务执行完后，其后的block才会执行。我们简单的写个例子，假设这个例子有读文件和写文件的部分：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;writeFile() {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#703daa">NSUserDefaults</span><span style="color:#000000">.</span>standardUserDefaults<span style="color:#000000">().</span>setInteger<span style="color:#000000">(</span><span style="color:#272ad8">7</span><span style="color:#000000">, forKey:&nbsp;</span><span style="color:#d12f1b">&quot;Integer_Key&quot;</span><span style="color:#000000">)</span></p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;readFile(){</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>print<span style="color:#000000">(</span><span style="color:#703daa">NSUserDefaults</span><span style="color:#000000">.</span>standardUserDefaults<span style="color:#000000">().</span>integerForKey<span style="color:#000000">(</span><span style="color:#d12f1b">&quot;Integer_Key&quot;</span><span style="color:#000000">))</span></p>
+
+<p>}&nbsp;</p>
+
+<p>写文件只是在NSUserDefaults写入一个数字7，读只是将这个数字打印出来而已。我们要避免在写文件时候正好有线程来读取，就使用dispatch_barrier_async函数：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#703daa">NSUserDefaults</span><span style="color:#000000">.</span>standardUserDefaults<span style="color:#000000">().</span>setInteger<span style="color:#000000">(</span><span style="color:#272ad8">9</span><span style="color:#000000">, forKey:&nbsp;</span><span style="color:#d12f1b">&quot;Integer_Key&quot;</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;globalQueue =&nbsp;</span><span style="color:#3d1d81">dispatch_get_global_queue</span><span style="color:#000000">(</span>DISPATCH_QUEUE_PRIORITY_DEFAULT<span style="color:#000000">,&nbsp;</span><span style="color:#272ad8">0</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#3d1d81">dispatch_async</span>(globalQueue) {<span style="color:#bb2ca2">self</span>.<span style="color:#31595d">readFile</span>()}</p>
+
+<p><span style="color:#3d1d81">dispatch_async</span>(globalQueue) {<span style="color:#bb2ca2">self</span>.<span style="color:#31595d">readFile</span>()}</p>
+
+<p><span style="color:#3d1d81">dispatch_async</span>(globalQueue) {<span style="color:#bb2ca2">self</span>.<span style="color:#31595d">readFile</span>()}</p>
+
+<p><span style="color:#3d1d81">dispatch_async</span>(globalQueue) {<span style="color:#bb2ca2">self</span>.<span style="color:#31595d">readFile</span>()}</p>
+
+<p><span style="color:#3d1d81">dispatch_barrier_async</span>(globalQueue) {<span style="color:#bb2ca2">self</span>.<span style="color:#31595d">writeFile</span>() ;&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#31595d">readFile</span>()}</p>
+
+<p><span style="color:#3d1d81">dispatch_async</span>(globalQueue) {<span style="color:#bb2ca2">self</span>.<span style="color:#31595d">readFile</span>()}</p>
+
+<p><span style="color:#3d1d81">dispatch_async</span>(globalQueue) {<span style="color:#bb2ca2">self</span>.<span style="color:#31595d">readFile</span>()}</p>
+
+<p><span style="color:#3d1d81">dispatch_async</span>(globalQueue) {<span style="color:#bb2ca2">self</span>.<span style="color:#31595d">readFile</span>()}&nbsp;</p>
+
+<p>我们先将一个9初始化到NSUserDefaults的Integer_Key中，然后在中间执行dispatch_barrier_async函数，由于这个队列是一个Concurrent Dispatch Queue，能同时并发多少线程是由系统决定的，如果添加dispatch_barrier_async的时候，其他的block（包括上面4个block）还没有开始执行，那么会先执行dispatch_barrier_async里的任务，其他block全部处于等待状态。如果添加dispatch_barrier_async的时候，已经有block在执行了，那么dispatch_barrier_async会等这些block执行完后再执行。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>dispatch_apply</h2>
+
+<p>dispatch_apply会将一个指定的block执行指定的次数。如果要对某个数组中的所有元素执行同样的block的时候，这个函数就显得很有用了，用法很简单，指定执行的次数以及Dispatch Queue，在block回调中会带一个索引，然后就可以根据这个索引来判断当前是对哪个元素进行操作：&nbsp;</p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;globalQueue =&nbsp;</span><span style="color:#3d1d81">dispatch_get_global_queue</span><span style="color:#000000">(</span>DISPATCH_QUEUE_PRIORITY_DEFAULT<span style="color:#000000">,&nbsp;</span><span style="color:#272ad8">0</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#3d1d81">dispatch_apply</span>(<span style="color:#272ad8">10</span>, globalQueue) { (index) -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">print</span>(index)</p>
+
+<p>}</p>
+
+<p><span style="color:#3d1d81">print</span><span style="color:#000000">(</span>&quot;completed&quot;<span style="color:#000000">)</span>&nbsp;</p>
+
+<p>由于是Concurrent Dispatch Queue，不能保证哪个索引的元素是先执行的，但是&ldquo;completed&rdquo;一定是在最后打印，因为dispatch_apply函数是同步的，执行过程中会使线程在此处等待，所以一般的，我们应该在一个异步线程里使用dispatch_apply函数：</p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;globalQueue =&nbsp;</span><span style="color:#3d1d81">dispatch_get_global_queue</span><span style="color:#000000">(</span>DISPATCH_QUEUE_PRIORITY_DEFAULT<span style="color:#000000">,&nbsp;</span><span style="color:#272ad8">0</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#3d1d81">dispatch_async</span>(globalQueue, { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">dispatch_apply</span>(<span style="color:#272ad8">10</span>, globalQueue) { (index) -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">print</span>(index)</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#3d1d81">print</span><span style="color:#000000">(</span>&quot;completed&quot;<span style="color:#000000">)</span></p>
+
+<p>})</p>
+
+<p><span style="color:#3d1d81">print</span><span style="color:#000000">(</span>&quot;在dispatch_apply之前&quot;<span style="color:#000000">)</span>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>dispatch_suspend / dispatch_resume</h2>
+
+<p>某些情况下，我们可能会想让Dispatch Queue暂时停止一下，然后在某个时刻恢复处理，这时就可以使用dispatch_suspend以及dispatch_resume函数：&nbsp;</p>
+
+<p>//暂停</p>
+
+<p>dispatch_suspend<span style="color:#000000">(globalQueue)</span></p>
+
+<p>//恢复</p>
+
+<p>dispatch_resume<span style="color:#000000">(globalQueue)</span></p>
+
+<p>暂停时，如果已经有block正在执行，那么不会对该block的执行产生影响。dispatch_suspend只会对还未开始执行的block产生影响。</p>
+
+<p>&nbsp;</p>
+
+<h2>Dispatch Semaphore</h2>
+
+<p>信号量在多线程开发中被广泛使用，当一个线程在进入一段关键代码之前，线程必须获取一个信号量，一旦该关键代码段完成了，那么该线程必须释放信号量。其它想进入该关键代码段的线程必须等待前面的线程释放信号量。</p>
+
+<p>信号量的具体做法是：当信号计数大于0时，每条进来的线程使计数减1，直到变为0，变为0后其他的线程将进不来，处于等待状态；执行完任务的线程释放信号，使计数加1，如此循环下去。</p>
+
+<p>下面这个例子中使用了10条线程，但是同时只执行一条，其他的线程处于等待状态：</p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;globalQueue =&nbsp;</span><span style="color:#3d1d81">dispatch_get_global_queue</span><span style="color:#000000">(</span>DISPATCH_QUEUE_PRIORITY_DEFAULT<span style="color:#000000">,&nbsp;</span><span style="color:#272ad8">0</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;semaphore =&nbsp;&nbsp;</span>dispatch_semaphore_create<span style="color:#000000">(</span><span style="color:#272ad8">1</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#bb2ca2">for</span>&nbsp;i&nbsp;<span style="color:#bb2ca2">in</span>&nbsp;<span style="color:#272ad8">0</span>&nbsp;...&nbsp;<span style="color:#272ad8">9</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">dispatch_async</span>(globalQueue, { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>dispatch_semaphore_wait<span style="color:#000000">(semaphore,&nbsp;</span><span style="color:#703daa">DISPATCH_TIME_FOREVER</span><span style="color:#000000">)</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;</span><span style="color:#3d1d81">time</span><span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#3d1d81">dispatch_time</span><span style="color:#000000">(</span>DISPATCH_TIME_NOW<span style="color:#000000">, (</span>Int64<span style="color:#000000">)(</span><span style="color:#272ad8">2</span><span style="color:#000000">&nbsp;*&nbsp;</span>NSEC_PER_SEC<span style="color:#000000">))</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">dispatch_after</span>(time, globalQueue) { () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">print</span>(<span style="color:#d12f1b">&quot;2</span><span style="color:#d12f1b">秒后执行</span><span style="color:#d12f1b">&quot;</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>dispatch_semaphore_signal<span style="color:#000000">(semaphore)</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; })</p>
+
+<p>}</p>
+
+<p>取得信号量的线程在2秒后释放了信息量，相当于是每2秒执行一次。</p>
+
+<p>通过上面的例子可以看到，在GCD中，用dispatch_semaphore_create函数能初始化一个信号量，同时需要指定信号量的初始值；使用dispatch_semaphore_wait函数分配信号量并使计数减1，为0时处于等待状态；使用dispatch_semaphore_signal函数释放信号量，并使计数加1。</p>
+
+<p>另外dispatch_semaphore_wait同样也支持超时，只需要给其第二个参数指定超时的时候即可，同Dispatch Group的dispatch_group_wait函数类似，可以通过返回值来判断。</p>
+
+<p>这个函数也需要注意，如果是在<strong><span style="color:#cc0000">OS X 10.8或iOS 6以及之后版本</span></strong>中使用，Dispatch Semaphore将会由ARC自动管理，如果是在此之前的版本，需要自己手动释放。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>dispatch_once</h2>
+
+<p>dispatch_once函数通常用在单例模式上，它可以保证在程序运行期间某段代码只执行一次，如果我们要通过dispatch_once创建一个单例类，在Swift可以这样：</p>
+
+<p><span style="color:#bb2ca2">class</span>&nbsp;SingletonObject {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">class</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;sharedInstance :&nbsp;<span style="color:#4f8187">SingletonObject</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">struct</span>&nbsp;Static {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">static</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;onceToken :&nbsp;<span style="color:#703daa">dispatch_once_t</span>&nbsp;=&nbsp;<span style="color:#272ad8">0</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">static</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;instance :&nbsp;<span style="color:#4f8187">SingletonObject</span>? =&nbsp;<span style="color:#bb2ca2">nil</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">dispatch_once</span>(&amp;<span style="color:#4f8187">Static</span>.onceToken) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">Static</span>.instance =&nbsp;<span style="color:#4f8187">SingletonObject</span>()</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;<span style="color:#4f8187">Static</span>.instance!</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p>这样就能通过GCD的安全机制保证这段代码只执行一次。</p>
+
+<p>&nbsp;</p>

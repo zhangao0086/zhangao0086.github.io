@@ -1,0 +1,47 @@
+---
+layout: post
+title: "AppleScript 读写plist文件"
+date: 2012-04-27 15:50:37
+categories: [macOS,随笔]
+---
+
+
+<p style="margin-left:41.6px; margin-right:0.0px; text-indent:-41.6px">&nbsp;</p>
+
+<p style="margin-left:39.2px; margin-right:0.0px; text-indent:-39.3px">--构建完整路径</p>
+
+<p style="margin-left:39.2px; margin-right:0px; text-indent:-39.3px"><strong>set</strong> <span style="color:#518e16">filePath</span> <strong>to</strong> (&quot;&quot; &amp; (<span style="color:#0936bb"><strong>path to&nbsp;</strong></span><span style="color:#332163">library folder</span> <span style="color:#0936bb">from&nbsp;</span><span style="color:#332163">user domain</span>) &amp; &quot;Preferences&quot; &amp; &quot;:com.eusoft.eudic.plist&quot;)</p>
+
+<p style="margin-left:39.2px; margin-right:0.0px; text-indent:-39.3px">--转为unix路径</p>
+
+<p style="margin-left:39.2px; margin-right:0.0px; text-indent:-39.3px"><span style="color:#000000"><strong>set</strong> </span>plistPath&nbsp;<span style="color:#000000"><strong>to</strong> </span><span style="color:#8039d8">POSIX path&nbsp;</span><span style="color:#000000"><strong>of</strong> </span>filePath</p>
+
+<p style="margin-left:39.2px; margin-right:0.0px; text-indent:-39.3px"><strong>tell</strong> <span style="color:#103ffb"><em>application</em></span> &quot;System Events&quot;</p>
+
+<p style="margin-left:78.5px; margin-right:0.0px; text-indent:-78.6px">--方法一</p>
+
+<p style="margin-left:78.5px; margin-right:0.0px; text-indent:-78.6px">&nbsp;</p>
+
+<p style="margin-left:78.5px; margin-right:0.0px; text-indent:-78.6px">(*</p>
+
+<p style="margin-left:78.5px; margin-right:0.0px; text-indent:-78.6px">tell property list file plistPath</p>
+
+<p style="margin-left:117.8px; margin-right:0.0px; text-indent:-117.8px">set value of property list item &quot;MAIN_TimesLeft&quot; to &quot;820711&quot;</p>
+
+<p style="margin-left:78.5px; margin-right:0.0px; text-indent:-78.6px">end tell</p>
+
+<p style="margin-left:39.2px; margin-right:0.0px; text-indent:-39.3px">*)</p>
+
+<p style="margin-left:78.5px; margin-right:0.0px; text-indent:-78.6px">&nbsp;</p>
+
+<p style="margin-left:78.5px; margin-right:0.0px; text-indent:-78.6px">--方法二</p>
+
+<p style="margin-left:78.5px; margin-right:0.0px; text-indent:-78.6px"><span style="color:#000000"><strong>set&nbsp;</strong></span><span style="color:#518e16">plist</span><span style="color:#000000"> <strong>to</strong> </span><em>property list file</em><span style="color:#000000"> </span><span style="color:#518e16">plistPath</span></p>
+
+<p style="margin-left:78.5px; margin-right:0.0px; text-indent:-78.6px"><strong>set</strong> <span style="color:#8039d8">value</span> <strong>of</strong> <span style="color:#103ffb"><em>property list item</em></span> &quot;MAIN_TimesLeft&quot;<strong>of</strong> <span style="color:#518e16">plist</span> <strong>to</strong> &quot;820711&quot;</p>
+
+<p style="margin-left:78.5px; margin-right:0.0px; text-indent:-78.6px">&nbsp;</p>
+
+<p style="margin-left:39.2px; margin-right:0.0px; text-indent:-39.3px"><strong>end tell</strong></p>
+
+<p style="margin-left:41.6px; margin-right:0.0px; text-indent:-41.6px">&nbsp;</p>

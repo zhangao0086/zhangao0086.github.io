@@ -1,0 +1,23 @@
+---
+layout: post
+title: "Objective-C 属性特性（assign , retain , copy , readonly , readwrite , atomic , nonatomic）"
+date: 2011-08-10 08:54:58
+categories: [iOS]
+---
+
+
+<p>文档地址：<a href="http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjectiveC/Chapters/ocProperties.html#//apple_ref/doc/uid/TP30001163-CH17-SW1" style="margin-left:0px">Property Declaration Attributes section of the Objective-C Programming Language</a></p>
+
+<p>assign：指定setter方法用简单的赋值，这是默认操作。你可以对标量类型（如int）使用这个属性。你可以想象一个float，它不是一个对象，所以它不能retain、copy。</p>
+
+<p>retain：指定retain应该在后面的对象上调用，前一个值发送一条release消息。你可以想象一个NSString实例，它是一个对象，而且你可能想要retain它。</p>
+
+<p>copy：指定应该使用对象的副本（深度复制），前一个值发送一条release消息。基本上像retain，但是没有增加引用计数，是分配一块新的内存来放置它。</p>
+
+<p>readonly：将只生成getter方法而不生成setter方法（getter方法没有get前缀）。</p>
+
+<p>readwrite：默认属性，将生成不带额外参数的getter和setter方法（setter方法只有一个参数）。</p>
+
+<p>atomic：对于对象的默认属性，就是setter/getter生成的方法是一个原子操作。如果有多个线程同时调用setter的话，不会出现某一个线程执行setter全部语句之前，另一个线程开始执行setter的情况，相关于方法头尾加了锁一样。</p>
+
+<p>nonatomic：不保证setter/getter的原子性，多线程情况下数据可能会有问题。</p>

@@ -1,0 +1,66 @@
+---
+layout: post
+title: "UIWebView 开发经验"
+date: 2012-04-19 15:48:41
+categories: [iOS]
+---
+
+
+<h2>禁止回弹</h2>
+
+<p style="margin-left:0px; margin-right:0px">jQuery方式：</p>
+
+<p style="margin-left:0px; margin-right:0px">&nbsp;</p>
+
+<pre class="has" name="code" style="margin-left:0px; margin-right:0px">
+<code class="language-javascript">$().ready(function(){
+    document.ontouchmove = function(e){ e.preventDefault(); }
+});</code></pre>
+
+<p>其他方式：</p>
+
+<p>&nbsp;</p>
+
+<p style="margin-left:0px; margin-right:0px">&nbsp;</p>
+
+<pre class="has" name="code" style="margin-left:0px; margin-right:0px">
+<code class="language-javascript">document.onload = function(){
+    document.ontouchmove = function(e){ e.preventDefault(); }
+};</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>在Home上添加快捷方式</h2>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-html">&lt;link rel="apple-touch-icon" href="custom_icon.png" /&gt;</code></pre>
+
+<p>要提供57*57的png图，圆角、阴影都不用管</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>去掉顶部和尾部的灰块</h2>
+
+<pre class="has" name="code">
+<code class="language-objc">webView.backgroundColor = COMMON_WHITE_COLOR;
+webView.opaque = NO;</code></pre>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

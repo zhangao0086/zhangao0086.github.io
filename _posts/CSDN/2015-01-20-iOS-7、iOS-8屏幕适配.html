@@ -1,0 +1,71 @@
+---
+layout: post
+title: "iOS 7、iOS 8屏幕适配"
+date: 2015-01-20 13:24:00
+categories: [iOS]
+---
+
+
+<p>在iOS 8中，[UIScreen bounds] 、[UIScreen applicationFrame] 、Status bar、Keyboard这些frame都是根据设备真实方向来返回frame的，而在iOS 7中，不过是横屏还是竖屏，iOS总是返回竖屏的frame，如以下输出：</p>
+
+<p>iOS 7：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-objc">竖屏：
+UIScreen.mainScreen().bounds: (0.0,0.0,320.0,568.0)
+横屏：
+UIScreen.mainScreen().bounds: (0.0,0.0,320.0,568.0)
+</code></pre>
+
+<p>iOS 8：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-plain">竖屏：
+UIScreen.mainScreen().bounds: (0.0,0.0,320.0,568.0)
+横屏：
+UIScreen.mainScreen().bounds: (0.0,0.0,568.0,320.0)</code></pre>
+
+<p>这就对某些支持横屏的App造成了困扰，其实也只需要加两个宏或者改造一下就行了：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-objc">#define SCREEN_WIDTH        (getScreenSize().width)
+#define SCREEN_HEIGHT       (getScreenSize().height)</code></pre>
+
+<pre class="has" name="code">
+<code class="language-objc">CGSize getScreenSize() {
+    CGSize screenSize = [UIScreen mainScreen].bounds.size;
+    if ((NSFoundationVersionNumber &lt;= NSFoundationVersionNumber_iOS_7_1) &amp;&amp;
+        UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        return CGSizeMake(screenSize.height, screenSize.width);
+    }
+    return screenSize;
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<p>虽然 contentInset 不属于屏幕适配的内容，但是我还是放在屏幕适配里说一下。iOS8 和 iOS7 对&nbsp;automaticallyAdjustsScrollViewInsets 属性的解释不一样：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>iOS8 会把该属性的影响作用到 controller 的 view 的 subviews 上</li>
+	<li>iOS7 仅会作用到 self.view 上</li>
+</ul>
+
+<p>另外当你还需要手动调用 contentInset 的时候，iOS7 似乎就不会自动调整了。解决办法就是将&nbsp;automaticallyAdjustsScrollViewInsets 设置为 NO，然后自己控制 contentInset。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

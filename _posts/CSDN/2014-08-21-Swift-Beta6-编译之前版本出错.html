@@ -1,0 +1,42 @@
+---
+layout: post
+title: "Swift Beta6 编译之前版本出错"
+date: 2014-08-21 13:21:41
+categories: [iOS,Swift]
+---
+
+
+<p>安装Xcode6 Beta6之后，编译之前的项目可能会出问题，比如出现__TFSs26_forceBridgeFromObjectiveCU__FTPSs9AnyObject_MQ__Q_的问题，如下图：</p>
+
+<p><img alt="" class="has" height="57" src="https://img-blog.csdn.net/20140821132138739?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" width="454" /></p>
+
+<p>遇到这个问题只要把Derived Data清除掉，重新编译就可以了：</p>
+
+<p><img alt="" class="has" height="316" src="https://img-blog.csdn.net/20140821131721541?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="448" /></p>
+
+<p><img alt="" class="has" height="144" src="https://img-blog.csdn.net/20140821131954734?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" width="454" /></p>
+
+<p>这样一来__TFSs26_forceBridgeFromObjectiveCU__FTPSs9AnyObject_MQ__Q_的问题就解决了。</p>
+
+<p>&nbsp;</p>
+
+<p>另外，如果基类里面定义了一个属性，而子类想去覆盖它，只能通过类似这种方式进行：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">override var name: String {
+    get {
+        return super.name
+    }
+    set {
+        println("subclass")
+        super.name = newValue
+    }
+}</code></pre>
+
+<p>并且如果重写了getter，还有重写setter，反之亦然，不能再像以前那样通过一个以属性名命名的方法去重写getter或setter。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

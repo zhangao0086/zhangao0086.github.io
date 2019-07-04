@@ -1,0 +1,28 @@
+---
+layout: post
+title: "在Lion中安装Xcode 3.x的方法"
+date: 2011-08-12 18:50:14
+categories: [iOS]
+---
+
+
+<p>在Lion中不支持旧的Xcode版本(3.x)，你只能安装Xcode4.x，这对使用第三方IB插件的Mac开发者来说不是一个好消息。</p>
+
+<p>如果你尝试去安装，就会发现Xcode Toolset组件不能选择（禁用），这会导致错误的安装结果，会有一些空的文件夹，没有Xcode应用程序或者没有SDK等。</p>
+
+<p>如果一定要在Lion上安装Xcode 3.x的版本，就用以下解决方式：</p>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>用Disk Utility（在实用工具里面）把Xcode 3.2.x的磁盘映像（dmg文件，我是使用3.2.6进行尝试）转换成一个可读写的dmg文件。</li>
+	<li>转换好后双击它，让Finder在设备里面显示它。</li>
+	<li>在Finder里面右键Xcode包（Xcode and iOS SDK），选择&ldquo;Show Packages&rdquo;</li>
+	<li>进入Contents文件夹，用TextEdit打开<strong>iPhoneSDKSL.dist</strong>文件</li>
+	<li>搜索&ldquo;10.7&ldquo;，并用&rdquo;10.8&ldquo;替换它</li>
+	<li>保存再运行这个安装包</li>
+</ul>
+
+<p>已测试通过。</p>
+
+<p>&nbsp;</p>

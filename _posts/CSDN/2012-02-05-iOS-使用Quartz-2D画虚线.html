@@ -1,0 +1,153 @@
+---
+layout: post
+title: "iOS 使用Quartz 2D画虚线"
+date: 2012-02-05 16:29:56
+categories: [iOS,Swift]
+---
+
+
+<p>画虚线需要用到函数：</p>
+
+<p style="margin-left:0.0px; margin-right:0.0px">CGContextSetLineDash</p>
+
+<p style="margin-left:0px; margin-right:0px">此函数需要四个参数：</p>
+
+<p style="margin-left:0px; margin-right:0px">&nbsp;</p>
+
+<ul style="margin-left:1.5em; margin-right:0px">
+	<li><strong>context</strong>&nbsp;&ndash; 这个不用多说</li>
+	<li><strong>phase</strong>&nbsp;- 稍后再说</li>
+	<li><strong>lengths</strong>&nbsp;&ndash; 指明虚线是如何交替绘制，具体看例子</li>
+	<li><strong>count</strong>&nbsp;&ndash;&nbsp;lengths数组的长度</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p style="margin-left:0px; margin-right:0px">&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-cpp">CGContextRef context =UIGraphicsGetCurrentContext();
+CGContextBeginPath(context);
+CGContextSetLineWidth(context, 2.0);
+CGContextSetStrokeColorWithColor(context, [UIColor whiteColor].CGColor);
+CGFloat lengths[] = {10,10};
+CGContextSetLineDash(context, 0, lengths,2);
+CGContextMoveToPoint(context, 10.0, 20.0);
+CGContextAddLineToPoint(context, 310.0,20.0);
+CGContextStrokePath(context);
+CGContextClosePath(context);</code></pre>
+
+<p>lengths的值｛10,10｝表示先绘制10个点，再跳过10个点，如此反复，如图：</p>
+
+<p><img alt="" class="has" src="http://hi.csdn.net/attachment/201202/5/0_1328429173RRMR.gif" /></p>
+
+<p>如果把lengths值改为｛10, 20, 10｝，则表示先绘制10个点，跳过20个点，绘制10个点，跳过10个点，再绘制20个点，如此反复，如图：</p>
+
+<p><img alt="" class="has" src="http://hi.csdn.net/attachment/201202/5/0_1328429523yqLp.gif" /></p>
+
+<p><strong><span style="color:#ff0000">注意count的值等于lengths数组的长度</span></strong></p>
+
+<p>phase参数表示在第一个虚线绘制的时候跳过多少个点，举例说明：</p>
+
+<p style="margin-left:0.0px; margin-right:0.0px">&nbsp;</p>
+
+<p style="margin-left:0px; margin-right:0px">&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-cpp">CGFloat lengths[] = {10,5};
+CGContextSetLineDash(context, 0, lengths, 2);  
+CGContextMoveToPoint(context, 0.0, 20.0);  
+CGContextAddLineToPoint(context, 310.0, 20.0);   
+CGContextStrokePath(context);
+                        
+CGContextSetLineDash(context, 5, lengths, 2);
+CGContextMoveToPoint(context, 0.0, 40.0);  
+CGContextAddLineToPoint(context, 310.0, 40.0);
+CGContextStrokePath(context);           
+                                            
+CGContextSetLineDash(context, 8, lengths, 2);   
+CGContextMoveToPoint(context, 0.0, 60.0);           
+CGContextAddLineToPoint(context, 310.0, 60.);           
+CGContextStrokePath(context); </code></pre>
+
+<p>如图显示：</p>
+
+<p>&nbsp;</p>
+
+<p style="margin-left:0.0px; margin-right:0.0px"><img alt="" class="has" src="http://hi.csdn.net/attachment/201202/5/0_13284305046O6f.gif" /></p>
+
+<p>由于lengths值为｛10，5｝，第一条线就是绘制10，跳过5，反复绘制。</p>
+
+<p>第二条线的phase值为5，则首先绘制【10减去5】，再跳过5，绘制10，反复绘制。</p>
+
+<p>第三条给也如此，先绘制2，再跳过5，如此反复。</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#cc0000">UPDATE:</span></p>
+
+<p>以下是一个Swift画虚线的小例子，总体上是差不多的，直接把这个View放到ViewController中即可使用：</p>
+
+<p><span style="color:#bb2ca2">class</span>&nbsp;CustomView:&nbsp;<span style="color:#703daa">UIView</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;beginPoint:&nbsp;<span style="color:#703daa">CGPoint</span>&nbsp;=&nbsp;<span style="color:#703daa">CGPointZero</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;endPoint:&nbsp;<span style="color:#703daa">CGPoint</span>?</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">override</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;touchesBegan(touches:&nbsp;<span style="color:#703daa">NSSet</span>, withEvent event:&nbsp;<span style="color:#703daa">UIEvent</span>) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">beginPoint</span>&nbsp;= touches.<span style="color:#3d1d81">anyObject</span>()!.locationInView(<span style="color:#bb2ca2">self</span>)</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">override</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;touchesMoved(touches:&nbsp;<span style="color:#703daa">NSSet</span>, withEvent event:&nbsp;<span style="color:#703daa">UIEvent</span>) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">endPoint</span>&nbsp;= touches.<span style="color:#3d1d81">anyObject</span>()?.locationInView(<span style="color:#bb2ca2">self</span>)</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>setNeedsDisplay<span style="color:#000000">()</span></p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">override</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;touchesEnded(touches:&nbsp;<span style="color:#703daa">NSSet</span>, withEvent event:&nbsp;<span style="color:#703daa">UIEvent</span>) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">endPoint</span>&nbsp;= touches.<span style="color:#3d1d81">anyObject</span>()?.locationInView(<span style="color:#bb2ca2">self</span>)</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>setNeedsDisplay<span style="color:#000000">()</span></p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">override</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;drawRect(rect:&nbsp;<span style="color:#703daa">CGRect</span>) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;point =&nbsp;<span style="color:#4f8187">endPoint</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;context =&nbsp;</span>UIGraphicsGetCurrentContext<span style="color:#000000">()</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;lengths: [<span style="color:#703daa">CGFloat</span>] = [<span style="color:#272ad8">5.0</span>,&nbsp;<span style="color:#272ad8">5.0</span>]</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">CGContextSetLineDash</span>(context,&nbsp;<span style="color:#272ad8">0</span>, lengths,&nbsp;<span style="color:#272ad8">2</span>);</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">CGContextMoveToPoint</span>(context,&nbsp;<span style="color:#4f8187">beginPoint</span>.<span style="color:#703daa">x</span>,&nbsp;<span style="color:#4f8187">beginPoint</span>.<span style="color:#703daa">y</span>);</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">CGContextAddLineToPoint</span>(context, point.<span style="color:#703daa">x</span>, point.<span style="color:#703daa">y</span>);</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">CGContextStrokePath</span>(context);</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20150125155923695?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>

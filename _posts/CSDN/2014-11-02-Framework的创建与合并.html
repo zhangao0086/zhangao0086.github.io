@@ -1,0 +1,25 @@
+---
+layout: post
+title: "Framework的创建与合并"
+date: 2014-11-02 14:53:59
+categories: [iOS]
+---
+
+
+<p>由于.a不能单独使用，必须要配合.h头文件，而且没有包含资源文件，所以用.framework就是更好的选择了。</p>
+
+<p>iOS 8有了新的方式创建Framework，不过创建的framework是embedded framework，不能兼容iOS 8以下的版本，所以在现阶段要兼容iOS 7和iOS 8的话，还是只能用以前的方式来创建。</p>
+
+<p>创建Framework：</p>
+
+<p><a href="http://www.2cto.com/kf/201403/282723.html">http://www.2cto.com/kf/201403/282723.html</a></p>
+
+<p>工程编译的时候需要针对真机和模拟器分别编译，如果想同时在真机和模拟器上使用的话，需要将真机、模拟器编译成的多个framework合并为一个framework。</p>
+
+<p>使用命令：</p>
+
+<p>lipo -create .framework/xxx .framework/xxx -output xxx</p>
+
+<p>就可以将多个framework合并为一个framework，其实被合并的是framework中的&ldquo;.a&rdquo;文件。</p>
+
+<p>如果被打入framework中的文件是C++文件，即.mm文件，可能会报&ldquo;___gxx_personality_sj0&rdquo;错误。</p>

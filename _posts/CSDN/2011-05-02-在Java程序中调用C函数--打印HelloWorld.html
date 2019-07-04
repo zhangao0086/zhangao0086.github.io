@@ -1,0 +1,167 @@
+---
+layout: post
+title: '在Java程序中调用C函数--打印"HelloWorld"'
+date: 2011-05-02 17:12:00
+categories: [Java]
+---
+
+
+<p>源地址:<a href="http://java.sun.com/docs/books/jni/html/start.html#26346" target="_blank">http://java.sun.com/docs/books/jni/html/start.html#26346</a></p>
+<p>本文是将书中的第二章单独抽出来,红色部分为译者注.</p>
+<p><span style="font-size: large; "><strong>1.概述</strong></span></p>
+<p>这个打印的过程是用JDK或Java 2 SDK写一个简单的Java程序,程序会调用一个C函数打印"HelloWorld".这个过程将包括以下步骤:</p>
+<ol>
+<li>创建一个Java类(HelloWorld.java),以及定义一个native方法.  </li>
+<li>使用javac去编译这个HelloWorld源文件,生成HelloWorld.class.  </li>
+<li>使用javah &ndash;jni 来生成C的头文件(HelloWorld.h),这个头文件包含native方法的实现原型.javah是JDK或者Java 2 SDK提供的一个工具.  </li>
+<li>编写C的代码(HelloWorld.c),实现这个native方法.  </li>
+<li>把这个C的实现编译到Java native库中,创建HelloWorld.dll或者libHello-World.so.  </li>
+<li>使用Java运行时解释器运行HelloWorld程序.无论是类文件(HelloWorld.class),还是native库(HelloWorld.dll或者libHelloWorld.so),都是在运行时加载.</li>
+</ol>
+<p>剩下的部分将详细介绍这些步骤:</p>
+<p><img src="http://java.sun.com/docs/books/jni/html/starta.gif" border="0" alt="" hspace="0" width="439" height="575" align="center" /></p>
+<p>&nbsp;</p>
+<p><span style="font-size: large; "><strong>2.Native方法声明</strong></span></p>
+<p>用Java语言写下面的程序.该程序定义的类名是HelloWorld,包含一个native方法,print.</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #0000ff">class</span> HelloWorld {</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">     <span style="color: #0000ff">private</span> <span style="color: #0000ff">native</span> <span style="color: #0000ff">void</span> print();</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">     <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">void</span> main(String[] args) {</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">         <span style="color: #0000ff">new</span> HelloWorld().print();</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">     }</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">     <span style="color: #0000ff">static</span> {</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">         System.loadLibrary(<span style="color: #006080">"HelloWorld"</span>);</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">     }</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"> }</pre>
+<!--CRLF--></div>
+</div>
+<p><span style="color: #ff0000; ">该类不在任何包中</span></p>
+<p>HelloWorld的类定义用一个print的本地方法开始.其次就是main方法,它实例化了一个HelloWorld,并且调用这个实例的print的本地方法.类定义的最后部分是一个静态代码块,它加载了包含print本地方法实现的native库.</p>
+<p>在native方法(例如print)的定义和常规的Java语言方法的定义中有这样的两个差异.一个本地方法声明必须包含native修饰符,native修饰符表明,该方法以另一种语言实现.此外,本地方法的定义是以分号结束,因为在类本身中,没有实现本地方法,我们将在一个独立的C文件中实现这个print方法.</p>
+<p>在调用本地方法print之前,native库必须要加载print的实现.在这种情况下,我们在HelloWorld类的静态代码块中加载native库,Java虚拟机会自动运行静态代码块,并且在调用任何HelloWorld类的方法之前,以确保native库在print本地方法调用之前就已经加载了.</p>
+<p>我们定义一个main方法能去运行HelloWorld,HelloWorld.main调用本地方法打印,就像是调用常规方法一样.</p>
+<p>System.loadLibrary需要一个库名,然后定位到符合这个名字的native库中,并加载到应用程序的native库.我们将在本书的后面讨论具体的加载过程.现在只需要简单地记住,为了System.loadLibrary("HelloWorld")成功,我们需要创建一个native库,用来调用Win32上的HelloWorld.dll或者在Solaris上的libHelloWorld.so.</p>
+<p><span style="font-size: large; "><strong>3.编译HelloWorld</strong></span></p>
+<p>在你定义HelloWorld类之后,保存源代码为文件HelloWorld.java,然后用javac 编译器编译源码:</p>
+<blockquote>
+<p>javac HelloWorld.java</p>
+</blockquote>
+<p>这个命令将在当前目录生成一个HelloWorld.class文件.</p>
+<p><strong><span style="font-size: large; ">4.创建Native方法的头文件</span></strong></p>
+<p>下一步,我们将使用javah工具来生成一个JNI风格(JNI-style)的头文件.当在C 上面实现本地方法时很有用.你可以在HelloWorld.class上运行javah,就像下面一样:</p>
+<blockquote>
+<p>javah &ndash;jni HelloWorld</p>
+</blockquote>
+<p>生成的头文件的名字是在类名后面追加一个".h".上面显示的命令将生成一个文件名为HelloWorld.h的文件.我们将不在这里列出生成的头文件.这个头文件最重要的部分Java_HelloWorld_print的函数原型,这是C 函数实现的HelloWorld.print方法:</p>
+<blockquote>
+<p>JNIEXPORT void JNICALL</p>
+<p>Java_HelloWorld_print (JNIEnv *, jobject);</p>
+</blockquote>
+<p>现在忽略<code>JNIEXPORT和<code>JNICALL宏.你可能已经注意到,本地方法C 的实现接收了两个参数,然而实际上对应的native方法声明不接收任何参数.对于每一个本地方法实现,第一个参数都是JNIEnv接口指针(<code>JNIEnv</code> interface pointer),第二个参数是一个指向HelloWorld对象本身(有点像C++的"this"指针)的引用.我们将在本书的后面讨论如何使用JNIEnv接口指针和jobject.但是现在这个简单的例子就忽略这两个参数.</code></code></p>
+<p><strong><span style="font-size: large; ">5.写本地方法的实现</span></strong></p>
+<p>用javah生成的JNI风格的头文件能够帮助你去完成C/C++的本地方法实现.你写的函数必须遵循生成的头文件的原型.你能在C 文件HelloWorld.c中实现HelloWorld.print方法,就像下面一样:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #cc6633">#include</span> &lt;jni.h&gt;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #cc6633">#include</span> &lt;stdio.h&gt;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"><span style="color: #cc6633">#include</span> <span style="color: #006080">"HelloWorld.h"</span></pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">JNIEXPORT <span style="color: #0000ff">void</span> JNICALL </pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">Java_HelloWorld_print(JNIEnv *env, jobject obj)</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">{</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">    printf(<span style="color: #006080">"Hello World!/n"</span>);</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">    <span style="color: #0000ff">return</span>;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">}</pre>
+<!--CRLF--></div>
+</div>
+<p>该本地方法的实现很简单,它使用了printf函数来显示字符串"HelloWorld!",然后返回.正如前面提到,两个参数,JNIEnv指针和指向对象的引用,都被忽略了.</p>
+<p>这个C 程序包含了三个头文件:</p>
+<ul>
+<li>jni.h--这个头文件提供了本地代码需要调用JNI函数的信息.当写本地方法的时候,你必须在你的C 或者 C++源文件中,永远包含这个文件. 
+</li>
+<li>stdio.h--以上代码段也包含了<code>stdio.h</code> ,因为它使用了<code>printf函数.</code> 
+</li>
+<li><code>HelloWorld.h--这是你用javah生成的头文件,它包含了Java_HelloWorld_print的函数原型.</code></li>
+</ul>
+<p><strong><span style="font-size: large; ">6.编译C 源码和创建native库</span></strong></p>
+<p>请记住,当你在HelloWorld.java创建HelloWorld.class的时候,你包含了一行加载native库的代码在你的程序里面:</p>
+<blockquote>
+<p>System.loadLibrary("HelloWorld");</p>
+</blockquote>
+<p>现在所有必要的C 代码已经写完了,你需要去编译HelloWorld.c和创建这个native库.</p>
+<p>不同的操作系统支持不同的方法来建立native库,在Solaris上面,下面的命令生成一个共享库调用libHelloWorld.so:</p>
+<blockquote>
+<pre>cc -G -I/java/include -I/java/include/solaris<br />    HelloWorld.c -o libHelloWorld.so</pre>
+</blockquote>
+<p>-G选项指示这个C 编译器去生成一个共享库,而不是一个普通的Solaris的可执行文件.因为本书页面宽度的限制,我把一行分成了两行,你需要在一行输入命令,或者把命令放在脚本中.在Win32的系统上,下面的命令将使用Microsoft Visual C++ 编译器建立一个动态链接库(DLL)HelloWorld.dll:</p>
+<blockquote>
+<pre>cl -Ic:/java/include -Ic:/java/include/win32<br />   -MD -LD HelloWorld.c -FeHelloWorld.dll</pre>
+</blockquote>
+<p>-MD选项将确保HelloWorld.dll已经连接到Win32的多线程C 库当中.-LD选项指示C 编译器去生成一个DLL,而不是一个普通的Win32可执行文件.当然,在Solaris和Win32,你都需要放到include路径中去,以反射你自己的安装配置.</p>
+<p><span style="color: #ff0000; ">-I&lt;dir&gt;把指定路径加到include的搜索路径中.<br />如果遇到"Cannot open include file:&rsquo;jni.h&rsquo;"的错误,则说明路径指定地有问题.有两种解决方案:<br />1.在你的JDK安装目录下有个include目录,把里面的jni.h和win32目录下的jawt_md.h和jni.md.h复制到你的C 编译器的include目录中(可能是vc/include).<br />2.指定正确的搜索路径.比如我的JDK安装在F:/Program Files/Java/jdk1.6.0_16/,那么上面的参数就改为:<br /></span><span style="color: #ff0000; ">-I"F:/Program Files/Java/jdk1.6.0_16/include" -I"F:/Program Files/Java/jdk1.6.0_16/include/win32"<br />如果目录中有空格要引起来.</span></p>
+<p><strong><span style="font-size: large; ">7 运行程序<br /></span></strong><br />此时,你要准备好两个组件去运行这个程序.类文件(HelloWorld.class)调用本地方法,native库(HelloWorld.dll)实现这个本地方法.</p>
+<p>因为HelloWorld类包含了它自己的main方法，你可以在Solaris 或者是Win32的操作系统上运行这个程序：</p>
+<blockquote>
+<p>java HelloWorld</p>
+</blockquote>
+<p>你应该会看到下列的输出:</p>
+<blockquote>
+<p>Hello World!</p>
+</blockquote>
+<p>设置好正确地native库路径对程序的运行是很重要的.native库路径是一个目录列表,是Java虚拟机装载native库时的搜索列表.如果你没有设置一个正确的native库路径,你就会看到类似于下列的错误：</p>
+<blockquote>
+<p>java.lang.UnsatisfiedLinkError: no HelloWorld in library path<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.Runtime.loadLibrary(Runtime.java)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.System.loadLibrary(System.java)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at HelloWorld.main(HelloWorld.java)</p>
+</blockquote>
+<p>要确保native库存在于native库路径的目录中.如果你是在Solaris上运行，LD_LIBRARY_PATH的环境变量是用来定义native库路径.请确保它包含的目录名称中包含了libHelloWorld.so 文件.如果libHelloWorld.so 文件在当前目录里面,你可以在标准shell(sh)或者KornShell(ksh)上发出两条命令去设置正确的<code>LD_LIBRARY_PATH环境变量属性</code>:</p>
+<blockquote>
+<pre>LD_LIBRARY_PATH=.<br />export LD_LIBRARY_PATH</pre>
+</blockquote>
+<p>这与在C shell(csh或者tcsh)中的下列命令等效:</p>
+<blockquote>
+<pre>setenv LD_LIBRARY_PATH .</pre>
+</blockquote>
+<p>如果你是在Windows95或者Windows NT 计算机上运行,设法确保HelloWorld.dll是在当前目录下,或者在PATH环境变量列出的目录中.</p>
+<p>在Java 2 SDK 1.2版本中,你也可以在java命令行中像系统属性一样指定native库路径,如下所述:</p>
+<blockquote>
+<pre>java -Djava.library.path=. HelloWorld</pre>
+</blockquote>
+<p>-D 命令行选项是设置Java平台的系统属性,设置java.library.path属性成".",表示JVM要搜索当前目录下的native库.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr />
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div id="csdnblog_allwrap">
+<div id="csdnblog_midwrap">
+<div id="csdnblog_content">
+<div class="gutter">
+<div class="default_contents">
+<div class="user_article">
+<div class="blogstory">
+<p><span style="color: red;">如果本文有任何问题,请及时指出,以免对后来者产生不必要的困扰,不胜感激!</span></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>

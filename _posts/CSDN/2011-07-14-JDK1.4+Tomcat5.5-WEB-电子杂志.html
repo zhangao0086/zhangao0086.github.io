@@ -1,0 +1,109 @@
+---
+layout: post
+title: "JDK1.4+Tomcat5.5 WEB 电子杂志"
+date: 2011-07-14 13:45:47
+categories: [Java]
+---
+
+
+<p>flash文件直接用的Flash Page Flip，但依然需要修改很多fla源文件才能为我所用（包括汉化，字体嵌入，中文影片剪辑的处理，菜单栏的自定义等），需要对ActionScript有一定的了解。</p>
+
+<p>首页显示所有的书：</p>
+
+<p><img alt="" class="has" height="400" src="http://hi.csdn.net/attachment/201108/5/0_13125338503mgi.gif" width="650" /></p>
+
+<p>增加书后，默认没有封面：</p>
+
+<p><img alt="" class="has" height="420" src="http://hi.csdn.net/attachment/201108/5/0_1312533945tqH2.gif" width="650" /></p>
+
+<p>编辑页面：</p>
+
+<p><img alt="" class="has" height="360" src="http://hi.csdn.net/attachment/201108/5/0_1312534096OjOp.gif" width="700" /></p>
+
+<p>上传的文件可以包括图片和swf，gif格式的图片也作为静态图片处理。后台对图片进行压缩、调整尺寸（由用户选择）以及切分（由用户选择，在一张图片过大，可以作为两张使用的时候）等。</p>
+
+<p>上传成功后：</p>
+
+<p><img alt="" class="has" height="400" src="http://hi.csdn.net/attachment/201108/5/0_13125343942D8n.gif" width="680" /></p>
+
+<p>在增加页之后：</p>
+
+<p><img alt="" class="has" height="420" src="http://hi.csdn.net/attachment/201108/5/0_1312534684Dyd0.gif" width="700" /></p>
+
+<p>手头上没有现成的大图，就将两张示例图片合成一张：</p>
+
+<p><img alt="" class="has" src="http://hi.csdn.net/attachment/201108/5/0_1312535024Lr8l.gif" /></p>
+
+<p>在页面上采用切分（竖切）上传成功后被切分为两张：</p>
+
+<p><img alt="" class="has" height="450" src="http://hi.csdn.net/attachment/201108/5/0_1312535128ac69.gif" width="700" /></p>
+
+<p>生成电子杂志效果图，使用修改后的Flash Page Flip的swf文件：</p>
+
+<p><img alt="" class="has" src="http://hi.csdn.net/attachment/201108/5/0_1312535351dv99.gif" /></p>
+
+<h3><strong><a href="http://download.csdn.net/source/3497735">电子杂志源码地址</a></strong></h3>
+
+<h3><strong><a href="http://download.csdn.net/source/3497830">电子杂志项目文档</a></strong></h3>
+
+<h3><strong><a href="http://download.csdn.net/source/3498692">FLASH源码</a></strong></h3>
+
+<p>flash中的问题：</p>
+
+<p>1.使用了动态文本，但是只嵌入了英文，故中文无法显示，我解决的方法就是直接修改库里已存在的字体组件，如果包含一个字体全部的字符，比如宋体，整个编译后的swf文件有近20M，显然不合适，所以我就将只使用到的字符嵌入进来，能够保证界面上可以显示就够了.</p>
+
+<p><img alt="" class="has" height="320" src="http://hi.csdn.net/attachment/201107/14/0_1310621604ThQH.gif" width="580" /></p>
+
+<p>2.由于业务需要可能会建立多本电子书，所以每本书有不同的内容，但是是由相同的ActionScript脚本组合起来的，所以除了公共资源以外，每本书的内容单独放在一个目录下，除了内容，我还把swf文件也每个子目录下放了一份，当用户读取指定的swf的时候，每个swf只需要检索各自的内容就行了，这种情况下我只用读取相对路径下的文件即可，但是问题是我在脚本里明明写的相对路径，但是实际上访问的却是我站点的根路径。</p>
+
+<p>原因：</p>
+
+<ul>
+	<li>所有加载的swf都是以最外层swf所在目录为根目录</li>
+	<li>被网页加载的swf都是以网页所在目录为根目录</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>只能在脚本里面处理了，还好_root._url返回的是我访问的文件路径，我只需要在它的基础上进行运算就行了：</p>
+
+<p>&nbsp;var 目录索引 = _url.lastIndexOf(&quot;/&quot;);<br />
+&nbsp;var 目录 = _url.substring(0, 目录索引);<br />
+&nbsp;var 文件名 = _url.substring(目录索引+1);</p>
+
+<p>&nbsp;</p>
+
+<p>3.管理员在线编辑页面内容后，前台用户能立即查看最新内容，但是<span style="color:#444444">原则上flash只会载入一次，以<span style="color:#444444">后的数据都会从浏览器缓存中读取，</span><span style="color:#444444">要么重新编译，要么:</span></span></p>
+
+<ol>
+	<li><span style="color:#444444">加随机数</span></li>
+	<li><span style="color:#444444">加时间<span style="color:#444444">字符串</span></span></li>
+	<li><span style="color:#444444">采用POST机制进行数据通信（POST是无法缓存的）</span></li>
+</ol>
+
+<p><span style="color:#444444">4. 项目要求采用JDK1.4...在解析XML文件，并保存的时候出现了问题，在1.6下没有出现过:</span></p>
+
+<p><span style="color:#444444">java.io.FileNotFoundException: file:\D:\.....\Pages.xml (文件名、目录名或卷标语法不正确。)</span></p>
+
+<p><span style="color:#444444">绝对不是路径的问题.解决方式如下（怪异）：</span></p>
+
+<pre class="has" name="code">
+<code class="language-java">File dest3 = new File(dest);
+File xslt2 = new File (xslt);
+Source srcSource = new StreamSource(src2);
+Result destResult = new StreamResult(dest3.toURI().getPath());//注意此处的Result实例方式
+Source xsltSource = new StreamSource(xslt2);</code></pre>
+
+<p>&nbsp;</p>
+
+<p>5.&nbsp;关于 TransformerFactoryImpl 类的冲突造成的问题:</p>
+
+<p>解决办法：&nbsp;</p>
+
+<ol>
+	<li>将xml-apis.jar移出endorsed文件夹。&nbsp;</li>
+	<li>用xalan系列jar包替换原来的xercesImpl.jar和xml-apis.jar。 xalan系列jar包：serializer.jar、xalan.jar、xercesImpl.jar和xml-apis.jar。</li>
+	<li>For other application, just check this file or dom3-xml-apis.jar in your class path.</li>
+</ol>
+
+<p>&nbsp;</p>

@@ -1,0 +1,117 @@
+---
+layout: post
+title: "Swift 柯里化(Currying)"
+date: 2014-08-26 20:06:29
+categories: [iOS,Swift]
+---
+
+
+<p>&nbsp;</p>
+
+<table border="1" cellpadding="1" cellspacing="1" style="width:0px">
+	<tbody>
+		<tr>
+			<td>
+			<p>在计算机科学中，柯里化（英语：Currying），又譯為卡瑞化或加里化，是把接受多个参数的函数变换成接受一个单一参数（最初函数的第一个参数）的函数，并且返回接受余下的参数而且返回结果的新函数的技术。这个技术由 Christopher Strachey 以逻辑学家哈斯凱爾&middot;加里命名的，尽管它是 Moses Sch&ouml;nfinkel 和 戈特洛布&middot;弗雷格 发明的。</p>
+
+			<p>------<a href="http://zh.wikipedia.org/wiki/Currying">维基百科</a></p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p>Swift支持将方法柯里化，类似于批量创建某个带有固定参数的方法，就像下面这个例子，用Swift做个简单的加法运算：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;sum(a:&nbsp;<span style="color:#703daa">Int</span>,b:&nbsp;<span style="color:#703daa">Int</span>) -&gt;&nbsp;<span style="color:#703daa">Int</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;a + b</p>
+
+<p>}</p>
+
+<p><span style="color:#31595d">sum</span>(<span style="color:#272ad8">1</span>,&nbsp;<span style="color:#272ad8">2</span>) &nbsp;&nbsp;<span style="color:#008400">//</span><span style="color:#008400">输出</span><span style="color:#008400">3</span></p>
+
+<p>&nbsp;</p>
+
+<p>创建一个柯里化的方法很容易，虽然看起来似乎和我们以前写的方法不太一样，但大体来说是相似的：</p>
+
+<p><span contenteditable="false" tabindex="-1"><img alt="" data-widget="image" src="https://img-blog.csdn.net/20140826185714864?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" /></span></p>
+
+<p>参数列表的每个参数都用单独的圆括号括起来，其他部分都和以前一样，把上面那个简单的Swift标准方法改成柯里化之后就像这样：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;sum(a:&nbsp;<span style="color:#703daa">Int</span>)(b:&nbsp;<span style="color:#703daa">Int</span>) -&gt;&nbsp;<span style="color:#703daa">Int</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;a + b</p>
+
+<p>}</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;sumByFirst =&nbsp;<span style="color:#31595d">sum</span>(<span style="color:#272ad8">1</span>)</p>
+
+<p>sumByFirst<span style="color:#000000">(b:&nbsp;</span><span style="color:#272ad8">4</span><span style="color:#000000">)&nbsp;</span><span style="color:#008400">//</span><span style="color:#008400">输出</span><span style="color:#008400">5</span></p>
+
+<p>只需要传入第一个参数，返回的sumByFirst是一个函数，它包含剩余的其他参数，以及刚刚传入进去的那个1，接着以它自己作为方法传入第二个参数b就行了。</p>
+
+<p>如果是三个参数就像这样：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;sum(a:&nbsp;<span style="color:#703daa">Int</span>)(b:&nbsp;<span style="color:#703daa">Int</span>)(c:&nbsp;<span style="color:#703daa">Int</span>) -&gt;&nbsp;<span style="color:#703daa">Int</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;a + b + c</p>
+
+<p>}</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;sumByFirst =&nbsp;<span style="color:#31595d">sum</span>(<span style="color:#272ad8">1</span>)</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;sumBySecond =&nbsp;<span style="color:#4f8187">sumByFirst</span>(b:&nbsp;<span style="color:#272ad8">4</span>)</p>
+
+<p>sumBySecond<span style="color:#000000">(c:&nbsp;</span><span style="color:#272ad8">10</span><span style="color:#000000">)&nbsp;&nbsp;</span><span style="color:#008400">//</span><span style="color:#008400">输出</span><span style="color:#008400">15</span></p>
+
+<p>&nbsp;</p>
+
+<p>除了第一个参数以外，其他的参数都要显式地写上参数标签，并且要按参数排列的顺序调用。</p>
+
+<p>一个括号中放两个参数也可以：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;sum(a:&nbsp;<span style="color:#703daa">Int</span>)(b:&nbsp;<span style="color:#703daa">Int</span>, c:&nbsp;<span style="color:#703daa">Int</span>) -&gt;&nbsp;<span style="color:#703daa">Int</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;a + b + c</p>
+
+<p>}</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;sumByFirst =&nbsp;<span style="color:#31595d">sum</span>(<span style="color:#272ad8">1</span>)</p>
+
+<p><span style="color:#4f8187">sumByFirst</span>(b:&nbsp;<span style="color:#272ad8">4</span>,c:&nbsp;<span style="color:#272ad8">10</span>)&nbsp;&nbsp;<span style="color:#008400">//</span><span style="color:#008400">输出</span><span style="color:#008400">15</span></p>
+
+<p>&nbsp;</p>
+
+<p>在某些情况下，你可能会用某个相同的参数重复调用某个方法，那么利用柯里化会使代码更易于维护：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;sum(a:&nbsp;<span style="color:#703daa">Int</span>)(b:&nbsp;<span style="color:#703daa">Int</span>) -&gt;&nbsp;<span style="color:#703daa">Int</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;a + b</p>
+
+<p>}</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;sumWithFive =&nbsp;<span style="color:#31595d">sum</span>(<span style="color:#272ad8">5</span>)</p>
+
+<p>sumWithFive<span style="color:#000000">(b:&nbsp;</span><span style="color:#272ad8">5</span><span style="color:#000000">)</span></p>
+
+<p>sumWithFive<span style="color:#000000">(b:&nbsp;</span><span style="color:#272ad8">10</span><span style="color:#000000">)</span></p>
+
+<p>sumWithFive<span style="color:#000000">(b:&nbsp;</span><span style="color:#272ad8">15</span><span style="color:#000000">)</span></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

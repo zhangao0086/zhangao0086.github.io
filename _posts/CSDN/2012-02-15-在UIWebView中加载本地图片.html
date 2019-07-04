@@ -1,0 +1,57 @@
+---
+layout: post
+title: "在UIWebView中加载本地图片"
+date: 2012-02-15 18:16:58
+categories: [iOS]
+---
+
+
+<pre class="has" name="code">
+<code class="language-cpp">NSString *imagePath = [[NSBundle mainBundle] resourcePath];
+imagePath = [imagePath stringByReplacingOccurrencesOfString:@"/" withString:@"//"];
+imagePath = [imagePath stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
+NSString * js = [NSString stringWithFormat:@"document.images[0].src='file:/%@//%@'",imagePath,@"test.png"];
+    
+[infoWebView stringByEvaluatingJavaScriptFromString:js];
+NSString *path = [infoWebView stringByEvaluatingJavaScriptFromString:@"document.images[0].src"];</code></pre>
+
+<p>像一般情况下一样用file scheme访问就可以了</p>
+
+<p>如果加载不了的话，多半是因为html页面还未加载完，你可以这样使用：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-objc">- (void)viewDidLoad
+{
+    [super viewDidLoad];
+
+    UIWebView *webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
+    webView.delegate = self;
+    [webView loadHTMLString:@"&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;img class='test' width=100% height=100% src=''&gt;&lt;/body&gt;&lt;/html&gt;" baseURL:nil];
+    [self.view addSubview:webView];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - UIWebViewDelegate methods
+-(void)webViewDidFinishLoad:(UIWebView *)webView{
+    NSString *imagePath = [[NSBundle mainBundle] resourcePath];
+    imagePath = [imagePath stringByReplacingOccurrencesOfString:@"/" withString:@"//"];
+    imagePath = [imagePath stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
+    imagePath = [NSString stringWithFormat:@"file:/%@//%@",imagePath,@"test.png"];
+    NSString * js = [NSString stringWithFormat:@"document.images[0].src='%@'",imagePath];
+    [webView stringByEvaluatingJavaScriptFromString:js];
+    NSString *path = [webView stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML"];
+    NSLog(@"%@",path);
+}
+</code></pre>
+
+<p><br />
+<a href="http://download.csdn.net/download/zhangao0086/7677409">CSDN资源下载页</a></p>
+
+<p>&nbsp;</p>

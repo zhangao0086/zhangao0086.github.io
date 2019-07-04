@@ -1,0 +1,238 @@
+---
+layout: post
+title: "Swift Switch介绍"
+date: 2014-08-18 23:36:31
+categories: [iOS,Swift]
+---
+
+
+<h2>Switch简介</h2>
+
+<p>Switch作为选择结构中必不可少的语句也被加入到了Swift中，只要有过编程经验的人对Switch语句都不会感到陌生，但苹果对Switch进行了大大的增强，使其拥有其他语言中没有的特性。使用Switch语句很简单：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var i = 0
+switch i {
+    case 0:
+        "0" //被输出
+    case 1:
+        "1"
+    default:
+        "2"
+}</code></pre>
+
+<p>在这个最简单的Switch语句中，与其他语言很不同的一点是：不用显式的加上break。Swift的Switch语句会自动在case结尾处加上break，执行完满足条件的case部分后，就自动退出了。但是在某些情况下，我们可能会希望Switch能同时执行两条case，那么可以这样：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var i = 3
+switch i {
+    case 0,3:
+        "0" //被输出
+    case 1:
+        "1"
+    default:
+        "2"
+}</code></pre>
+
+<p>在case后的多个条件中，用逗号隔开即可。</p>
+
+<p>&nbsp;</p>
+
+<p>如果就是想执行完一条case之后，想继续执行下一条case，就要用到一个新的关键字：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var i = 0
+switch i {
+    case 0:
+        "0" //被输出
+        fallthrough
+    case 1:
+        "1" //被输出
+    case 2:
+        "2"
+    default:
+        "default"
+}
+</code></pre>
+
+<p>&nbsp;</p>
+
+<p>使用新的关键字<strong><span style="color:#cc0000">fallthrough</span></strong>能使Switch在执行完一个case之后，紧接着执行下一条case。</p>
+
+<p>Swift的Switch语句一定要<strong>涵盖</strong>所有的情况，这并不是说一定要有default，只要上面的case能满足所有的情况，就可以不用写default。</p>
+
+<p>需要注意的地方有两点：</p>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>Switch当然也支持显式的break，通常只有一种情况下你会这么做，那就是当你也不想在default里做任何事情的时候，这个时候你就可以在default里显式地加上一句break。</li>
+	<li>fallthrough并不是在任何情况下都有效，当你在Switch里使用Value Binding技术的时候，fallthrough就被禁止了。Value Binding在下面会讲到。</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>支持多种数据类型</h2>
+
+<p>在Objective-C里，Switch语句只能支持整形的数据（或者一个字符），但是在Swift里，Switch能支持多种数据类型，包括浮点、布尔、字符串等：</p>
+
+<p>支持浮点：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let float = 1.5
+switch float {
+    case 1.5:
+        "1.5"   //被输出
+    default:
+        "default"
+}</code></pre>
+
+<p>支持布尔：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let isSuccess = true
+switch isSuccess {
+    case true:
+        "true"   //被输出
+    default:
+        "default"
+}</code></pre>
+
+<p>支持字符串：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let name = "Bannings"
+switch name {
+    case "Bannings":
+        "Bannings"   //被输出
+    default:
+        "default"
+}</code></pre>
+
+<p>可以说是史上支持数据类型最多的Switch了。</p>
+
+<p>&nbsp;</p>
+
+<h2>支持区间运算符</h2>
+
+<p>不仅仅是循环结构里可以用区间运算符，在Switch里同样可以用区间运算符：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var i = 15
+switch i {
+    case 0 ... 10:
+        "0~10"
+    case 11 ... 20:
+        "11~20" //被输出
+    default:
+        "default"
+}</code></pre>
+
+<p>对某个数值区间进行批量匹配，这样是不是很酷？浮点数也同样支持区间运算符。</p>
+
+<h2>支持元组</h2>
+
+<p>作为被大大增强的Switch，元组也是被支持的：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let request = (true,"success")
+switch request {
+    case (true, "success"):
+        "success"   //被输出
+    case (false, "failed"):
+        "failed"
+    default:
+        "default"
+}</code></pre>
+
+<p>使用元组和使用其他数据类型一致，不过元组还有一项特点，对于不想关心的值，可以用下划线_跳过，如：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let (name,  _, age) = ("Bannings" ,true, 22)</code></pre>
+
+<p>那么在使用Switch时，同样支持这项特性：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let request = (true,"success")
+switch request {
+    case (_, "success"):
+        "success"   //被输出
+    case (false, _):
+        "failed"
+    default:
+        "default"
+}</code></pre>
+
+<p>对于不关心的值跳过，只要满足另一个值就行了。需要注意一点的是，如果元组中的值也是数字类型，那么也是可以用区间运算符的：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let request = (10,"failed")
+switch request {
+    case (_, "success"):
+        "success"
+    case (1 ... 10, _):
+        "1~10"    //被输出
+    default:
+        "default"
+}</code></pre>
+
+<h3>Value Binding</h3>
+
+<p>针对元组，Switch还支持类似于Optional Binding的Value Binding，就是能把元组中的各个值提取出来，然后直接在下面使用：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let request = (0,"success")
+switch request {
+    case (0, let state):
+        state    //被输出:success
+    case (let errorCode, _):
+        "error code is \(errorCode)"
+}  // 涵盖了所有可能的case，不用写default了</code></pre>
+
+<p>这样也是可以的：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let request = (0,"success")
+switch request {
+    case let (errorCode, state):
+        state    //被输出:success
+    case (let errorCode, _):
+        "error code is \(errorCode)"
+}</code></pre>
+
+<p>把let放在外面和放在里面为每一个元素单独写上let是等价的。</p>
+
+<p>当你在一个case里使用Value Binding的时候，如果你同时也在它的上一个case里使用了fallthrough，这是编译器所不允许的，你可能会收到这样一个编译错误：</p>
+
+<p>&nbsp;<img alt="" class="has" src="https://img-blog.csdn.net/20140821214600593?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>只要把下面的errorCode去掉就行了，当然，考虑好自己的逻辑。</p>
+
+<h2>支持额外的逻辑判断</h2>
+
+<p>在使用Switch语句时，Switch会适当地导向相应的case部分，这其实就相当于做了一次逻辑判断，但Swift的Switch语句还支持额外的逻辑判断：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let request = (0,"success")
+switch request {
+    case (0, let state) where state != "success":
+        state
+    case (let errorCode, _):
+        "error code is \(errorCode)"//被输出:"error code is 0"
+}</code></pre>
+
+<p>这同样很酷，相信在某种情况下会派上大用场。</p>
+
+<p>&nbsp;</p>
+
+<h2>总结</h2>
+
+<p>Swift对Switch进行了大大增强，使Switch的灵活性得到了很大提升，这是激动人心的改变，但是如果掌控不好其中的变化，可能会使你在进行错误排查时增加难度，也会使代码复杂度变高。在适当地时候灵活运用，保持头脑清晰总是有益的。</p>

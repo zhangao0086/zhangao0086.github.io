@@ -1,0 +1,65 @@
+---
+layout: post
+title: "Core Location 简述"
+date: 2011-09-01 17:57:33
+categories: [iOS]
+---
+
+
+<p>Core Location可以利用三种技术来实现：GPS、蜂窝基站三角网定位（cell tower triangulation）和Wi-Fi定位服务（WPS），其中GPS是最精确的。</p>
+
+<p>我们只用告诉Core Location我们想要的精度级别，它将从它可用的技术中决定哪种可以更好地满足你的需求。</p>
+
+<p>为了与Core Location打交道，需要创建一个位置管理器实例，如下所示：</p>
+
+<p>&nbsp;</p>
+
+<p style="margin-left:0.0px; margin-right:0.0px">CLLocationManager&nbsp;<span style="color:#000000">*<span style="color:#6079a8">locationManager<span style="color:#000000"> = [[</span><span style="color:#c05810">CLLocationManager</span>alloc<span style="color:#000000">]</span>init<span style="color:#000000">];</span></span></span></p>
+
+<p>这将创建一个实例，但它并没有马上开始工作。</p>
+
+<p>设置委托和请求指定精度级别：</p>
+
+<p>&nbsp;</p>
+
+<p style="margin-left:0.0px; margin-right:0.0px">locationManager<span style="color:#000000">.</span>desiredAccuracy<span style="color:#000000"> =</span>kCLLocationAccuracyBest<span style="color:#000000">;</span></p>
+
+<p>&nbsp;</p>
+
+<p>这将指定最高精度级别，其他值还有：kCLLocationAccuracyNearestTenMeters、kCLLocationAccuracyHundredMeters、kCLLocationAccuracyKilometer和kCLLocationAccuracyThreeKilometers。</p>
+
+<p>设置距离筛选器：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#6079a8">locationManager.distanceFilter&nbsp;</span> = 1000.0f;</p>
+
+<p>将告知位置管理器直到iPhone已经从以前报告的位置移动至少1000米之后才通知其委托，重置使用kCLDistanceFilterNone。</p>
+
+<p>启动位置管理器：</p>
+
+<p>[<span style="color:#6079a8">locationManager startUpdatingLocation</span>];</p>
+
+<p>停止位置管理器：</p>
+
+<p>[<span style="color:#6079a8">locationManager stopUpdatingLocation</span>];</p>
+
+<p>使用CLLocation获取纬度和经度：</p>
+
+<p><span style="color:#c05810">CLLocationDegrees</span>*latitude = theLocation.coordinate.latitude;</p>
+
+<p><span style="color:#c05810">CLLocationDegrees&nbsp;</span>*longitude = theLocation.coordinate.longitude;</p>
+
+<p>另外，horizontalAccuracy属性描述以coordinate作为其中心的一个圆的半径。此值越大，位置就越不准确。</p>
+
+<p>altitude属性能告诉你你在海平面以上还是以下多少米。</p>
+
+<p>verticalAccuracy表示Core Location在其精确的海拔方面的准确程度。</p>
+
+<p>CLLocation还有一个非常实用的方法，通过大圆计算获得两个CLLocation对象之间的距离：</p>
+
+<p><span style="color:#c05810">CLLocationDistance</span>distance = [fromLocation distanceFromLocation:toLocation];</p>
+
+<p>CLLocationManagerDelegate有两个委托方法，当更新位置的时候，将调用locationManager:didUpdateTolocation:fromLocation:方法。</p>
+
+<p>当遇到错误的时候，调用locationManager:didFailWithError:方法。错误代码有kCLErrorDenied和kCLErrorLocationUnknow两种。前者通常表示访问拒绝（可能是由用户拒绝），并且应用程序之后都将无法访问Core Location。后者的错误一般可能是临时的。</p>

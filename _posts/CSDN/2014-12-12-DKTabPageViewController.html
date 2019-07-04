@@ -1,0 +1,93 @@
+---
+layout: post
+title: "DKTabPageViewController"
+date: 2014-12-12 14:47:31
+categories: [iOS]
+---
+
+
+<p>DKTabPageViewController是一个UIViewController的子类，其基于Child ViewController管理多个页面，支持手动滚动，以及是否显示顶部的Tab等。每一个Tab对应一个UIViewController实例，与其他的Tab相互独立，View支持懒加载及viewWillAppear、viewWillDisappear等方法。</p>
+
+<p>&nbsp;</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20141212144011126" /><img alt="" class="has" src="https://img-blog.csdn.net/20141212144022139" /></p>
+
+<p>简单的接口：</p>
+
+<p>@property<span style="color:#000000"> (</span>nonatomic<span style="color:#000000">, </span>assign<span style="color:#000000">) </span><span style="color:#703daa">NSInteger</span><span style="color:#000000"> selectedIndex;</span></p>
+
+<p><span style="color:#bb2ca2">@property</span> (<span style="color:#bb2ca2">nonatomic</span>, <span style="color:#bb2ca2">readonly</span>) <span style="color:#703daa">UIViewController</span> *selectedViewController;</p>
+
+<p>&nbsp;</p>
+
+<p>/**</p>
+
+<p>&nbsp;*&nbsp; Whether show the Tab Bar. Defaults to YES.</p>
+
+<p>&nbsp;*/</p>
+
+<p>@property<span style="color:#000000"> (</span>nonatomic<span style="color:#000000">, </span>assign<span style="color:#000000">) </span>BOOL<span style="color:#000000"> showTabPageBar;</span></p>
+
+<p>&nbsp;</p>
+
+<p>/**</p>
+
+<p>&nbsp;*&nbsp; Whether allow scroll gestures. Defaults to YES.</p>
+
+<p>&nbsp;*/</p>
+
+<p><span style="color:#bb2ca2">@property</span> (<span style="color:#bb2ca2">nonatomic</span>, <span style="color:#bb2ca2">assign</span>) <span style="color:#bb2ca2">BOOL</span> gestureScrollEnabled;</p>
+
+<p>&nbsp;</p>
+
+<p>/**</p>
+
+<p>&nbsp;*&nbsp; The block to be executed on the page changed.</p>
+
+<p>&nbsp;*/</p>
+
+<p><span style="color:#bb2ca2">@property</span> (<span style="color:#bb2ca2">nonatomic</span>, <span style="color:#bb2ca2">copy</span>) <span style="color:#bb2ca2">void</span> (^pageChangedBlock)(<span style="color:#703daa">NSInteger</span> selectedIndex);&nbsp;</p>
+
+<p>可定制的DKTabPageBar：&nbsp;</p>
+
+<p><span style="color:#bb2ca2">@interface</span> DKTabPageBar : <span style="color:#703daa">UIView</span></p>
+
+<p>&nbsp;</p>
+
+<p>/**</p>
+
+<p>&nbsp;*&nbsp; Height of the tab bar. Defautls to 40.</p>
+
+<p>&nbsp;*/</p>
+
+<p>@property<span style="color:#000000"> (</span>nonatomic<span style="color:#000000">, </span>assign<span style="color:#000000">) </span><span style="color:#703daa">CGFloat</span><span style="color:#000000"> tabBarHeight </span><span style="color:#78492a">UI_APPEARANCE_SELECTOR</span><span style="color:#000000">;</span></p>
+
+<p>&nbsp;</p>
+
+<p>/**</p>
+
+<p>&nbsp;*&nbsp; Font of the tab bar. Defautls to [UIFont systemFontOfSize:14].</p>
+
+<p>&nbsp;*/</p>
+
+<p>@property<span style="color:#000000"> (</span>nonatomic<span style="color:#000000">, </span>strong<span style="color:#000000">) </span><span style="color:#703daa">UIFont</span><span style="color:#000000"> *titleFont </span><span style="color:#78492a">UI_APPEARANCE_SELECTOR</span><span style="color:#000000">;</span></p>
+
+<p>&nbsp;</p>
+
+<p>/**</p>
+
+<p>&nbsp;*&nbsp; The selection indicator is draw on bottom of the tab bar.</p>
+
+<p>&nbsp;*/</p>
+
+<p><span style="color:#bb2ca2">@property</span> (<span style="color:#bb2ca2">nonatomic</span>, <span style="color:#bb2ca2">strong</span>) <span style="color:#703daa">UIView</span> *selectionIndicatorView;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">@property</span>(<span style="color:#bb2ca2">nonatomic</span>, <span style="color:#bb2ca2">copy</span>) <span style="color:#703daa">UIColor</span> *backgroundColor <span style="color:#78492a">UI_APPEARANCE_SELECTOR</span>;</p>
+
+<p>&nbsp;</p>
+
+<p>@end</p>
+
+<h2><a href="https://github.com/zhangao0086/DKTabPageViewController"><span style="color:#cc0000">GitHub地址</span></a></h2>

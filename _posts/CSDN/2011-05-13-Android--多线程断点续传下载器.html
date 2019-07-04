@@ -1,0 +1,29 @@
+---
+layout: post
+title: "Android--多线程断点续传下载器"
+date: 2011-05-13 00:35:00
+categories: [Android]
+---
+
+
+<p>使用的Android版本是2.2。</p>
+
+<p>初始界面：</p>
+
+<p>也就两个按钮，不能同时启用，再加上一个progressBar和TextView,用于显示下载进度百分比。</p>
+
+<p><a href="http://hi.csdn.net/attachment/201105/12/0_1305218136WCC3.gif"><img alt="image" class="has" height="166" src="http://hi.csdn.net/attachment/201105/12/0_1305218136bM6l.gif" width="293" /></a></p>
+
+<p>软件下载界面：</p>
+
+<p><a href="http://hi.csdn.net/attachment/201105/12/0_1305218136gTTT.gif"><img alt="image" class="has" height="212" src="http://hi.csdn.net/attachment/201105/12/0_1305218137ku8S.gif" width="282" /></a></p>
+
+<p>下载完成提示:</p>
+
+<p><a href="http://hi.csdn.net/attachment/201105/12/0_1305218137UX30.gif"><img alt="image" class="has" height="336" src="http://hi.csdn.net/attachment/201105/12/0_1305218137dpoq.gif" width="228" /></a></p>
+
+<p>主要是在下载时，从SQLite中获取上次下载的信息，边下载边更新数据，下载完成后删除对应的SQLite记录。</p>
+
+<p>具体的，源码在<a href="http://download.csdn.net/source/3274366">http://download.csdn.net/source/3274366</a>里放着。</p>
+
+<p>留言必回。</p>

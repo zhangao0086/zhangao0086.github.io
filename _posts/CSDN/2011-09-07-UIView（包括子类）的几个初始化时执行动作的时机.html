@@ -1,0 +1,21 @@
+---
+layout: post
+title: "UIView（包括子类）的几个初始化时执行动作的时机"
+date: 2011-09-07 12:06:51
+categories: [iOS]
+---
+
+
+<p style="margin-left:0px; margin-right:0px">根据你需要执行的动作, 这里有几个方法:</p>
+
+<ul style="margin-left:30px; margin-right:0px">
+	<li style="margin-left:0px"><code style="margin-left:0px">-(id)initWithFrame:(CGRect)frame</code>&nbsp;- UIView的指定初始化方法; 总是发送给UIView去初始化, 除非是从一个nib文件中加载的;</li>
+	<li style="margin-left:0px"><code style="margin-left:0px">-(id)initWithCoder:(NSCoder *)coder</code>&nbsp;- 从nib文件中加载的时候发送此消息给UIView;</li>
+	<li style="margin-left:0px"><code style="margin-left:0px">-(void)awakeFromNib</code>&nbsp;- 在所有的nib中的对象初始化和连接后将发送此消息; 只适用于从nib加载对象; 如要重写，其中还必须调用父类的<code style="margin-left:0px">awakeFromNib</code>;</li>
+	<li style="margin-left:0px"><code style="margin-left:0px">-(void)willMoveToSuperview:(UIView *)newSuperview</code>&nbsp;- 在一个子视图将要被添加到另一个视图的时候发送此消息;</li>
+	<li style="margin-left:0px"><code style="margin-left:0px">-(void)willMoveToWindow:(UIWindow *)newWindow</code>&nbsp;- 在一个视图（或者它的超视图）将要被添加到window的时候发送;</li>
+	<li style="margin-left:0px"><code style="margin-left:0px">-(void)didMoveToSuperview</code>&nbsp;- 把一个视图插入到视图层级之后发送此消息;</li>
+	<li style="margin-left:0px"><code style="margin-left:0px">-(void)didMoveToWindow</code>&nbsp;- 当视图获得它的window属性集的时候发送此消息.</li>
+</ul>
+
+<p style="margin-left:0px; margin-right:0px">基本上, 你能选择: 在你的视图初始化期间执行的动作 (1 &amp; 2), 在从nib文件中加载的时候 (3), 在插入到视图层级之前 (4 &amp; 5) 和 之后 (6 &amp; 7).</p>

@@ -1,0 +1,58 @@
+---
+layout: post
+title: "使用CocoaPods过程中的几个问题"
+date: 2014-10-01 00:16:48
+categories: [iOS,Swift,版本控制]
+---
+
+
+<p>当把CocoaPods生成的workspace移动到上层目录时，需要改下Pods.xcconfig和工程里的一些设置，就通常没什么难度。</p>
+
+<p>当遇到这个问题时：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-plain">Could not automatically select an Xcode project. Specify one in your Podfile like so:
+
+xcodeproj 'path/to/Project.xcodeproj'</code></pre>
+
+<p>&nbsp;</p>
+
+<p>在Podfile文件里指定下工程目录就行了，比如我在Podfile文件添加这行就行了：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-plain">......
+xcodeproj 'Portfolio/Portfolio.xcodeproj' 
+......</code></pre>
+
+<p>主要是让Pod找到子目录中的工程文件。</p>
+
+<p>&nbsp;</p>
+
+<p>当在update或install时遇到这个问题：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-plain">Unable to find a specification for `xxxxx (~&gt; 1.x.x)` depended upon by Podfile.</code></pre>
+
+<p>只需要把当前Pod的目录清理一下就行了。在终端执行以下命令：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-plain">pod repo remove master
+pod setup</code></pre>
+
+<p>setup成功后执行install或update即可。<br />
+&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><br />
+&nbsp;</p>

@@ -1,0 +1,35 @@
+---
+layout: post
+title: "NSAutoreleasePool 随笔"
+date: 2011-08-10 10:06:27
+categories: [iOS]
+---
+
+
+<p><span style="color:#333333">NSAutoreleasePool是一个存放对象的集合，添加到<span style="color:#333333">NSAutoreleasePool的对象能够被自动释放。</span></span></p>
+
+<p><span style="color:#333333">自动释放其实就是在<span style="color:#333333">NSAutoreleasePool被清空或是销毁时向池里所有的对象发送一条release消息。</span></span></p>
+
+<p><span style="color:#333333">对象不会自动入池，只有当对象发送一条<span style="color:#333333">autorelease消息时才会被添加到当前的池中。可以想象池在一个栈中，当前池在栈顶，每创建一个新的池，就压入，使用drain或者release时，就弹出。</span></span></p>
+
+<p><span style="color:#333333">当有对象是Autorelease的对象，而当前没有<span style="color:#333333">NSAutoreleasePool的话，就会提示内存泄漏（Just Leaking）。一般来说，只要不是用new、alloc、copy方法创建一个对象的话，我们就假设该对象的引用计数为1，而且被添加到<span style="color:#333333">NSAutoreleasePool中。</span></span></span></p>
+
+<p><span style="color:#333333">如下面代码就会提示内存泄漏：</span></p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-cpp">NSDate *date = [NSDate date];
+NSLog(@"%@",[date description]);
+return 0;
+/*
+ objc[3466]: Object 0x1001149c0 of class __NSDate autoreleased 
+ with no pool in place 
+ - just leaking - break on objc_autoreleaseNoPool() to debug
+*/</code></pre>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#333333">关于drain和release的问题可以在<a href="http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/NSAutoreleasePool_Class/Reference/Reference.html">此处</a>找到说明。在非GC环境下，两者的作用是相同的。否则你没有理由去使用release，给<span style="color:#333333">NSAutoreleasePool</span>发送drain会提醒GC处理池中的对象。</span></p>
+
+<p>&nbsp;</p>

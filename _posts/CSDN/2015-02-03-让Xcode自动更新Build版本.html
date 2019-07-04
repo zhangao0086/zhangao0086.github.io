@@ -1,0 +1,62 @@
+---
+layout: post
+title: "让Xcode自动更新Build版本"
+date: 2015-02-03 17:36:08
+categories: [iOS,Swift,随笔]
+---
+
+
+<p>我们每天都要打包给测试，每天都要改Build比较麻烦，幸运的是可以通过Shell脚本来省略这个过程。</p>
+
+<p>在Xcode工程里选择对应的Target，在Build Phases里点击&ldquo;New Run Script Phases&rdquo;：</p>
+
+<p><img alt="" class="has" height="212" src="https://img-blog.csdn.net/20150203172215891?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" width="760" /></p>
+
+<p>在下面的窗口中写入类似于如下脚本：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-plain">buildNumber=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "${PROJECT_DIR}/${INFOPLIST_FILE}")
+shortVersion=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PROJECT_DIR}/${INFOPLIST_FILE}")
+
+buildNumber=`date +"%m%d"`
+buildNumber="$shortVersion.$buildNumber"
+
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "${PROJECT_DIR}/${INFOPLIST_FILE}"</code></pre>
+
+<p>前两行是将工程当前的Build、Version读取出来。</p>
+
+<p>&nbsp;</p>
+
+<p>我的情况是基于Version加上日期以形成Build，如下：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20150203172714350?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>关于date的格式化，<a href="http://www.cyberciti.biz/faq/linux-unix-formatting-dates-for-display/">传送门</a>。</p>
+
+<p>如果Build是一个整形，可以这样做递增：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-plain">buildNumber=$(($buildNumber + 1))</code></pre>
+
+<p>&nbsp;</p>
+
+<p>如果要Build是类似于这样的字符串：1.0.0，可以用awf命令取值，参考：<a href="http://stackoverflow.com/questions/9258344/better-way-of-incrementing-build-number">http://stackoverflow.com/questions/9258344/better-way-of-incrementing-build-number</a></p>
+
+<p>如果仅仅只想在Release（如Archive等）的时候更新Build，可以尝试加入判断：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-plain">if [ "${CONFIGURATION}" = "Release" ]; then
+
+fi</code></pre>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

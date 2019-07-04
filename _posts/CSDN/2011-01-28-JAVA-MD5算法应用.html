@@ -1,0 +1,54 @@
+---
+layout: post
+title: "JAVA MD5算法应用"
+date: 2011-01-28 13:33:00
+categories: [Java]
+---
+
+
+<p>&nbsp;</p>
+<p>&nbsp;&nbsp; &nbsp; &nbsp;在一些对安全需求比较高的WEB站点中,除了要保证数据的传输有保障之外,数据库的内容也需要做一些处理,像银行之类的系统,要防止外人取得数据,还不能让管理员看到账号和密码.很多时候都是利用MD5算法来保证数据的完整性和安全性,但是MD5算法并<span>不是</span>一个加密算法,它就像人的&quot;指纹&quot;一样,每个人都有指纹,而且指纹都不一样,MD5算法算出的结果,就像数据的指纹一样,任何数据,不论它占用多少空间,它的指纹都能作为这块数据的唯一标识.,SUN公司的JDK文档就描述了如何通过类<strong>java.security.MessageDigest
+</strong>来完成JAVA的MD5算法实现.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 我们先来看一看它的继承关系:</p>
+<p><span style="white-space:pre"></span><img src="http://hi.csdn.net/attachment/201101/28/0_12961820049Q4C.gif" alt="" width="290" height="72"></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 此类为抽象类,并且其父类也是抽象类, <strong>MessageDigestSpi </strong>是一个Service Provider Interface (服务提供者接口),主要是为其子类提供方法摘要,并由其子类完成.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp; 由于 MessageDigest 是一个抽象类,我们不可以直接实例化它,得用它的静态方法就能得到这个对象的实例:</p>
+<blockquote>
+<pre>public static <a href="http://mk:@MSITStoreE%5CDevelopment%20Doc%5Cjdk1.6??????????????????.CHM::/java/security/MessageDigest.html">MessageDigest</a> <strong>getInstance</strong>(<a href="http://mk:@MSITStoreE%5CDevelopment%20Doc%5Cjdk1.6??????????????????.CHM::/java/lang/String.html">String</a> algorithm)
+                                 throws <a href="http://mk:@MSITStoreE%5CDevelopment%20Doc%5Cjdk1.6??????????????????.CHM::/java/security/NoSuchAlgorithmException.html">NoSuchAlgorithmException</a></pre>
+</blockquote>
+<pre>   它接受一个字符串参数,我们只需传递一个算法的名称即可,就像这样:</pre>
+<pre>   MessageDigest md = MessageDigest.getInstance(&quot;md5&quot;);</pre>
+<pre>   它返回实现了指定摘要算法的MessageDigest对象.</pre>
+<pre>   接下来,我们只用把数据传递给MessageDigest对象的digest方法就行了:</pre>
+<pre>   md.digest(data);</pre>
+<pre>   public byte[] <strong>digest</strong>(byte[] input)</pre>
+<pre>   这个方法接受一个byte[],返回这个经MD5算法算过的byte[].这个byte[]可以是任何字符,如果我把&quot;1296105945865&quot;.getBytes()作为参数传递进去,</pre>
+<pre>看看它的返回&#20540;:</pre>
+<pre>   md.digest(rand.getBytes());</pre>
+<pre>   //~[-53, -89, 11, -29, -127, 98, 90, 45, -119, -24, -80, -49, -38, 96, -35, 2]</pre>
+<pre>这样的数据在HTTP协议中传输,会使浏览器疯掉,因为它也许根本不知道如何处理诸如:&quot;,e123,1;2,;,./;?=2h3jhkjl?;&quot;这样的数据,一般都会把它转为以</pre>
+<pre>16进制(32位)的方式,或者用BASE64转成&quot;明文&quot;再处理.</pre>
+<pre>转成以16进制显示:</pre>
+<blockquote>
+<pre>public String show(byte[] b){
+&nbsp;&nbsp;&nbsp; StringBuilder sb = new StringBuilder();
+&nbsp;&nbsp;&nbsp; for(int i = 0;i&lt;b.length;i&#43;&#43;){
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int high = (b[i] &gt;&gt; 4) &amp; 0xF;    //取出高4位
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int low = b[i] &amp; 0xF;            //取出低4位
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sb.append(String.format(&quot;%x%x&quot;, high,low));
+&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; System.out.println(sb);
+&nbsp;&nbsp;&nbsp; return sb.toString();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+}</pre>
+</blockquote>
+<p>在网上进行下载的时候,经常有网站在资源旁边附上md5验证码,就是让你在下载完成后,用md5算法把你下载的东西算一遍,把结果进行比较,如果一致,就表示你下载的资源确实和原版是一样的.假设某银行出示了相关网银驱动的md5码,你就可以在网上下载好驱动后,进行比较,稍有偏差,都可以认为此驱动被注入了木马之类的,因为相同的数据,会产生相同的&quot;指纹&quot;.为什么很多人认为MD5算法是一个加密算法?因为很多人在数据库存用户密码的时候,不是存的密码,而是存的用MD5算法算过密码之后的数据.这样一来,就算有人知道某数据库里某用户的密码是什么,他也一样登录不进来,他在输入密码之后,输入的密码会进行MD5算法算过之后,再与数据库里存的密码数据进行比较.这样一来,安全性又提高了.</p>
+<p>由于MD5算法算过的结果很多时候不太方便,除了以16进制显示之外,也可以用BASE64算法进行编码.BASE64就是通过其算法对数据处理后,处理得到的结果全部是以&quot;明文&quot;显示,所谓&quot;明文&quot;,就是你能在键盘上看到的字符,而且像&quot;.&quot;这样的特殊符号也没有,所以,用BASE64算法得到MD5算法结果的&quot;明文&quot;也可以.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp; SUN公司也提供了一个类用来完成BASE64的算法:sun.misc.BASE64Encoder.由于官方并没有正式发布这个类,所以它的包名为misc,杂项的意思,在JDK1.6文档里面也找不到这个类的相关信息.但是使用起来很简单,很方便:</p>
+<div><span>BASE64Encoder</span><span>&nbsp;</span><span>encoder</span><span>&nbsp;</span><span>=</span><span>&nbsp;</span><span>new</span><span>&nbsp;</span><span>BASE64Encoder</span><span>(</span><span>)</span><span>;</span></div>
+<div><span><span>encoder.encode</span><span>(</span><span>Bytes</span><span>[</span><span>]</span><span>)</span><span>;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>//</span><span>返回String</span></span></div>
+<p>关于BASE64Encoder的encode()方法,重载了7个,还有encodeBuffer()方法,就不在这里述说了,用法是一样的.另外,数据传输过后,还需要解码,就要用到sun.misc.BASE64Decoder这个类来完成了:</p>
+<div><span>BASE64Decoder</span><span>&nbsp;</span><span>decoder</span><span>&nbsp;</span><span>=</span><span>&nbsp;</span><span>new</span><span>&nbsp;</span><span>BASE64Decoder</span><span>(</span><span>);</span></div>
+<div><span><span>decoder.decodeBuffer</span><span>(String</span><span>);</span></span></div>
+<p>依靠<span>BASE64Decoder的decodeBuffer()方法,就能完成数据的解码.这个方法同样重载了几次,使用是一样的.</span></p>
+<p>&nbsp;</p>

@@ -1,0 +1,98 @@
+---
+layout: post
+title: "iOS 为移动动画中的View添加touch事件"
+date: 2014-08-03 14:22:27
+categories: [iOS,Swift]
+---
+
+
+<p>对Core Animation来说，不管是显式动画还是隐式动画，对其设置frame都是立即设置的，比如说给一个UIView做移动动画，虽然看起来frame在持续改变，但其实它的frame已经是最终值了，这种情况下，哪怕这个UIView是UIButton的实例，其触发touch事件的范围还是最终frame的地方。比如一个Button的frame是(0,0,100,100)，要把它从0，0移动到200，200，在这种情况下：</p>
+
+<ol>
+	<li>如果你使用的是显式动画（CAKeyframeAnimation和CABasicAnimation），是通过指定path或values来进行动画的，它的frame并没有改变，touch范围还是(0,0,100,100)这个范围内</li>
+	<li>如果你使用的是隐式动画（UIView的animate方法），是通过设置frame来进行动画的，那么它的touch范围就是(200,200,100,100)这个范围内</li>
+</ol>
+
+<table border="1" cellpadding="10" cellspacing="1">
+	<tbody>
+		<tr>
+			<td><strong><span style="color:#cc0000">这个区别很重要，你只用记住，如果是用UIView做动画，设置的frame是有效的；<br />
+			如果CALaye做动画设置的frame是无效的，你应该在动画结束后显式地指定position的值</span></strong></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p>如果我们要为移动动画中的View添加touch事件，就需要在后面用到hitTest。我们先创建一个动画Layer：</p>
+
+<pre class="has" name="code">
+<code class="language-objc">CGSize layerSize = CGSizeMake(100, 100);
+CALayer *movingLayer = [CALayer layer];
+movingLayer.bounds = CGRectMake(0, 0, layerSize.width, layerSize.height);
+[movingLayer setBackgroundColor:[UIColor orangeColor].CGColor];
+movingLayer.anchorPoint = CGPointMake(0, 0);
+[self.view.layer addSublayer:movingLayer];
+self.movingLayer = movingLayer;</code></pre>
+
+<p>这里面只有anchorPoint重要一些，因为anchorPoint能影响position的取值，对Layer来说，frame是抽象的，只有bounds和position是真实存在的，并且设置frame和设置anchorPoint的顺序不同，开始看到的结果也不同：</p>
+
+<p><img alt="" class="has" height="257" src="https://img-blog.csdn.net/20140803131928192?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" width="323" /><img alt="" class="has" height="257" src="https://img-blog.csdn.net/20140803131718109?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" width="323" /></p>
+
+<p>左边是先设置的anchorPoint再设置frame，右边是相反，可以看到如果是先设置anchorPoint的话，在刚开始就能得到正确的结果，即position为0，0。但如果是设置bounds的话就不用这么麻烦了，顺序无所谓。我在这里之所以要设置anchorPoint，是因为在后面的CAKeyframeAnimation将用position来做动画，如果anchorPoint为默认值（即0.5,0.5）的话，在动画中将会出现一个x、y轴一半的偏移，就像这样：</p>
+
+<p><img alt="" class="has" height="179" src="https://img-blog.csdn.net/20140803221749453?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" width="319" /></p>
+
+<p>下面用一张图解释anchorPoint的取值：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140803132501861?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>position是以anchorPoint为原点的，默认这个原点在中心位置，自然就会出现上图x、y轴的偏移，其实只要我在动画中将position做个偏移就不用设置anchorPoint，但是我觉得动画从0到终点更直观一些，所以这才是我设置anchorPoint的原因，并不是说非设不可。最后用一个weak属性引用动画Layer并把这个Layer添加到self.view.layer中。</p>
+
+<p>接下来是动画部分：</p>
+
+<pre class="has" name="code">
+<code class="language-objc">CAKeyframeAnimation *moveLayerAnimation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+//moveLayerAnimation.fromValue = [NSValue valueWithCGPoint:CGPointMake(0, 0)];
+//moveLayerAnimation.toValue = [NSValue valueWithCGPoint:CGPointMake(320 - self.movingLayer.bounds.size.width, 0)];
+moveLayerAnimation.values = @[[NSValue valueWithCGPoint:CGPointMake(0, 0)],
+                              [NSValue valueWithCGPoint:CGPointMake(320 - self.movingLayer.bounds.size.width, 0)]];
+moveLayerAnimation.duration = 2.0;
+moveLayerAnimation.autoreverses = YES;
+moveLayerAnimation.repeatCount = INFINITY;
+moveLayerAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+[self.movingLayer addAnimation:moveLayerAnimation forKey:@"move"];</code></pre>
+
+<p>如果是用CABasicAnimation做动画，则用fromValue及toValue替换setValues，timingFunction直接用线性，不用做其他变换，关于这个属性的预置值，我在<a href="http://blog.csdn.net/zhangao0086/article/details/38170359">另一篇博文</a>中有提到。<br />
+接下来为self.view添加手势识别：</p>
+
+<pre class="has" name="code">
+<code class="language-objc">........
+    self.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(click:)];
+    [self.view addGestureRecognizer:self.tapGesture];
+}
+
+-(void)click:(UITapGestureRecognizer *)tapGesture {
+    CGPoint touchPoint = [tapGesture locationInView:self.view];
+    if ([self.movingLayer.presentationLayer hitTest:touchPoint]) {
+        NSLog(@"presentationLayer");
+    }
+}</code></pre>
+
+<p>我在最开始的时候有提到，动画的过程只是看起来是动态变换的，其内部的值已经是固定的了。</p>
+
+<p>简单说下Core Animation，Core Animation用三个Tree来完成动画：</p>
+
+<ul>
+	<li>Layer Tree</li>
+	<li>Presentation Tree</li>
+	<li>Render Tree</li>
+</ul>
+
+<p><span style="color:#cc0000">Layer Tree</span>用来存储Layer最终的值，即不考虑动画的发生，你只要对一个Layer进行了一些诸如backgroundColor、position、alpha之类的赋值，其Layer Tree中存储的值立刻改变；<span style="color:#cc0000">Presentation Tree</span>用来存储所有的要在动画过程中显示的值，与Layer Tree相反；<span style="color:#cc0000">Render Tree</span>专门用来渲染Presentation Tree中的值，也是与Core Animation交互的唯一纽带，这一过程被系统隐藏了，我们不用管也没办法管。</p>
+
+<p>这就是说Layer Tree与Presentation Tree其实都相当于是<strong><span style="color:#cc0000">模型对象</span></strong>，只存储Layer的状态，当我们要读取动画进行中的状态的时候，调用layer的presentationLayer属性就可以了，这个属性从Presentation Tree中返回代表当前动画状态的Layer，接下来调用Layer的hitTest方法就能判断是不是一次有效点击了。</p>
+
+<p>&nbsp;</p>
+
+<p><a href="http://download.csdn.net/detail/zhangao0086/7709537">Demo下载</a></p>

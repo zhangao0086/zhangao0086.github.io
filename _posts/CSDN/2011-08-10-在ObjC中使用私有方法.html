@@ -1,0 +1,173 @@
+---
+layout: post
+title: "在ObjC中使用私有方法"
+date: 2011-08-10 13:27:42
+categories: [iOS]
+---
+
+
+<p>面向对象的设计中，有一个特性<strong>封装性</strong>，就是将某些东西包装和隐藏起来，让外界无法直接使用，只能通过某些特定的方式才能访问。</p>
+
+<p>在Objective－C中也可以做到这一点。</p>
+
+<p>比如下面这个类：</p>
+
+<p>先是接口：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-cpp">// ===========================
+// = File: SomeClass.h
+// = Interface for SomeClass
+// ===========================
+
+@interface SomeClass : NSObject
+
+-(void) msg;
++(void) classMsg; 
+
+@end</code></pre>
+
+<p><br />
+很简单的接口，再是它的实现和类别：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-cpp">// ===========================
+// = File: SomeClass.m
+// ===========================
+#import "SomeClass.h"
+
+// =================================
+// = Interface for hidden methods
+// =================================
+@interface SomeClass (hidden)
+
++(void) hiddenClassMethod;
+-(void) hiddenInstanceMethod; 
+
+@end
+
+// =====================================
+// = Implementation of hidden methods
+// =====================================
+@implementation SomeClass (hidden)
+
++(void) hiddenClassMethod
+{
+	printf( "Hidden class method.\n" );
+}
+
+-(void) hiddenInstanceMethod
+{
+	printf( "Hidden instance method\n" );
+}
+
+@end
+
+// ================================
+// = Implementation for SomeClass
+// ================================
+@implementation SomeClass
+
+-(void) msg
+{
+	printf("Inside msg()...\n");
+	
+	[self hiddenInstanceMethod];
+	[SomeClass hiddenClassMethod];
+}
+
++(void) classMsg
+{
+	printf("Inside classMsg()...\n");
+}
+
+@end</code></pre>
+
+<p>&nbsp;</p>
+
+<p>有一个hidden的类别，在SomeClass的实现中调用了hidden的两个方法。</p>
+
+<p>&nbsp;</p>
+
+<p>只包含SomeClass.h文件的main：</p>
+
+<p>&nbsp;</p>
+
+<pre class="has" name="code">
+<code class="language-cpp">//
+//  main.m
+//  Private Method
+//
+//  Created by mac on 11-8-10.
+//  Copyright 2011年 __MyCompanyName__. All rights reserved.
+//
+
+#import &lt;Foundation/Foundation.h&gt;
+#import "SomeClass.h"
+
+int main (int argc, const char * argv[])
+{
+	SomeClass *ptr = [[SomeClass alloc] init];
+	
+	// Display message (including messages from hidden methods)
+	[ptr msg];
+	
+	// Call a class method
+	[SomeClass classMsg];
+	
+	// Compile warning (can't access hidden instance method)
+	//  [ptr hiddenInstanceMethod];
+	
+	// Compile warning (can't access hidden class method)
+	//  [SomeClass hiddenClassMethod];  
+	[ptr release];
+
+	return 0;
+}</code></pre>
+
+<p><br />
+运行成功后应该可看到如下的显示：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><strong>Inside msg()...</strong></p>
+
+<p><strong>Hidden instance method</strong></p>
+
+<p><strong>Hidden class method.</strong></p>
+
+<p><strong>Inside classMsg()...</strong></p>
+
+<p>&nbsp;</p>
+
+<p>内部调用hidden的两个方法是没问题的。在main的return之前有四行注释，把其中两行发送消息的注释取消，再编译后可能会遇到两种情况：</p>
+
+<p>1.有警告，但是编译成功，直接运行后可以得到如下结果：</p>
+
+<p>&nbsp;</p>
+
+<p><strong>Inside msg()...</strong></p>
+
+<p><strong>Hidden instance method</strong></p>
+
+<p><strong>Hidden class method.</strong></p>
+
+<p><strong>Inside classMsg()...</strong></p>
+
+<p><strong>Hidden instance method</strong></p>
+
+<p><strong>Hidden class method.</strong></p>
+
+<p>方法确实隐藏的（从警告中可以得知），但是可以连接到。</p>
+
+<p>2.编译失败，Xcode4.2版本的编译器好像默认是Apple LLVM compiler 3.0，需要切换成LLVM GCC 4.2才能编译成功，编译成功后运行可以得到上述结果。</p>
+
+<p>&nbsp;</p>

@@ -1,0 +1,9 @@
+---
+layout: post
+title: "Jboss启动报错——DailyRollingFileAppender无法转换异常"
+date: 2011-04-22 22:37:00
+categories: [Java]
+---
+
+
+<p><span></span></p><p>问题：Jboss在启动时，报错java.lang.ClassCastException: org.jboss.logging.appender.DailyRollingFileAppender。</p><p>解决办法：<span lang="EN-US">D:/<span class="hilite5">jboss</span>-4.0.5.GA/server/default/deploy/jbossweb-tomcat55.sar/META-INF/<span class="hilite5">jboss</span>-service.xml</span><span><span>文件</span></span><span lang="EN-US">,</span><span><span>修改</span></span><span lang="EN-US">Java2ClassLoadingCompliance</span><span><span>和</span></span><span lang="EN-US">UseJBossWebLoader</span><span><span>为</span></span><span lang="EN-US">true,</span><span><span>即</span></span><span lang="EN-US">:</span></p><p><span lang="EN-US">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; true<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; true</span></p><p><span><span>重启服务器即可</span></span><span lang="EN-US">.&nbsp;</span></p><p>说明：<strong>Java2ClassLoadingCompliance</strong>：该配置项主要是告诉Jboss在进行classload时是否采取parent first的加载策略；</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 若设置为true，则表示优先让父级classloader加载相关class，如果无法加载再利用当前classloader加载；<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 若设置为false，即采取child first的加载策略，表示优先让当前classloader加载相关class，如果无法加载再委托给父级classloader加载；</p><p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UseJBossWebLoader</strong>：该配置表明是否使用Jboss自身的classloader来加载webApp相关的资源；因为Jboss是通过集成Tomcat来实现Web Container的，而两者都有自己独立的classloader；<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 若设置为true，则表示Web应用加载时都将使用Jboss统一的classloader，即此时采用共享的扁平的UnifiedClassLoader；<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 若设置为false，则表示Web应用采用自己独立的WebAppClassLoader进行加载，此时Web应用和Jboss之间是完全隔离的，这也是该配置项的默认值；</p>

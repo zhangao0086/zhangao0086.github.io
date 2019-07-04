@@ -1,0 +1,1330 @@
+---
+layout: post
+title: "iOS8 Core Image In Swift：视频实时滤镜"
+date: 2014-09-28 17:10:36
+categories: [iOS,Swift]
+---
+
+
+<p><a href="http://blog.csdn.net/zhangao0086/article/details/39012231">iOS8 Core Image In Swift：自动改善图像以及内置滤镜的使用</a></p>
+
+<p><a href="http://blog.csdn.net/zhangao0086/article/details/39120331">iOS8 Core Image In Swift：更复杂的滤镜</a></p>
+
+<p><a href="http://blog.csdn.net/zhangao0086/article/details/39253707">iOS8 Core Image In Swift：人脸检测以及马赛克</a></p>
+
+<p>iOS8 Core Image In Swift：视频实时滤镜</p>
+
+<p>&nbsp;</p>
+
+<p>在Core Image之前，我们虽然也能在视频录制或照片拍摄中对图像进行实时处理，但远没有Core Image使用起来方便，我们稍后会通过一个Demo回顾一下以前的做法，在此之前的例子都可以在模拟器和真机中测试，而这个例子因为会用到摄像头，所以只能在真机上测试。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>视频采集</h2>
+
+<p>我们要进行实时滤镜的前提，就是对摄像头以及UI操作的完全控制，那么我们将不能使用系统提供的Controller，需要自己去绘制一切。</p>
+
+<p>先建立一个Single View Application工程（我命名名RealTimeFilter），还是在Storyboard里关掉Auto Layout和Size Classes，然后放一个Button进去，Button的事件连到VC的<strong><span style="color:#cc0000">openCamera</span></strong>方法上，然后我们给VC加两个属性：</p>
+
+<p><span style="color:#bb2ca2">class</span><span style="color:#000000">&nbsp;ViewController:&nbsp;</span>UIViewController<span style="color:#000000">&nbsp;,&nbsp;</span>AVCaptureVideoDataOutputSampleBufferDelegate<span style="color:#000000">&nbsp;{</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;captureSession:&nbsp;<span style="color:#703daa">AVCaptureSession</span>!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;previewLayer:&nbsp;<span style="color:#703daa">CALayer</span>!</p>
+
+<p>......</p>
+
+<p>一个previewLayer用来做预览窗口，还有一个<strong><span style="color:#cc0000">AVCaptureSession</span></strong>则是重点。</p>
+
+<table border="1" cellpadding="10" cellspacing="1" style="width:0px">
+	<tbody>
+		<tr>
+			<td>除此之外，我还对VC实现了AVCaptureVideoDataOutputSampleBufferDelegate协议，这个会在后面说。<br />
+			要使用AV框架，必须先引入库：<strong><span style="color:#cc0000">import AVFoundation</span></strong></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>在viewDidLoad里实现如下：</p>
+
+<p><span style="color:#bb2ca2">override</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;viewDidLoad() {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">super</span><span style="color:#000000">.</span>viewDidLoad<span style="color:#000000">()</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>previewLayer<span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#703daa">CALayer</span><span style="color:#000000">()</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">previewLayer</span><span style="color:#000000">.</span>bounds<span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#3d1d81">CGRectMake</span><span style="color:#000000">(</span><span style="color:#272ad8">0</span><span style="color:#000000">,&nbsp;</span><span style="color:#272ad8">0</span><span style="color:#000000">,&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>view<span style="color:#000000">.</span>frame<span style="color:#000000">.</span>size<span style="color:#000000">.</span>height<span style="color:#000000">,&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>view<span style="color:#000000">.</span>frame<span style="color:#000000">.</span>size<span style="color:#000000">.</span>width<span style="color:#000000">);</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">previewLayer</span><span style="color:#000000">.</span>position<span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#3d1d81">CGPointMake</span><span style="color:#000000">(</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>view<span style="color:#000000">.</span>frame<span style="color:#000000">.</span>size<span style="color:#000000">.</span>width<span style="color:#000000">&nbsp;</span><span style="color:#3d1d81">/</span><span style="color:#000000">&nbsp;</span><span style="color:#272ad8">2.0</span><span style="color:#000000">,&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>view<span style="color:#000000">.</span>frame<span style="color:#000000">.</span>size<span style="color:#000000">.</span>height<span style="color:#000000">&nbsp;</span><span style="color:#3d1d81">/</span><span style="color:#000000">&nbsp;</span><span style="color:#272ad8">2.0</span><span style="color:#000000">);</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">previewLayer</span><span style="color:#000000">.</span>setAffineTransform<span style="color:#000000">(</span>CGAffineTransformMakeRotation<span style="color:#000000">(</span><span style="color:#703daa">CGFloat</span><span style="color:#000000">(</span><span style="color:#703daa">M_PI</span><span style="color:#000000">&nbsp;/&nbsp;</span><span style="color:#272ad8">2.0</span><span style="color:#000000">)));</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#703daa">view</span>.<span style="color:#703daa">layer</span>.<span style="color:#3d1d81">insertSublayer</span>(<span style="color:#4f8187">previewLayer</span>, atIndex:&nbsp;<span style="color:#272ad8">0</span>)</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>setupCaptureSession<span style="color:#000000">()</span></p>
+
+<p>}</p>
+
+<p>这里先对previewLayer进行初始化，注意bounds的宽、高和设置的旋转，这是因为AVFoundation产出的图像是旋转了90度的，所以这里预先调整过来，然后把layer插到最下面，全屏显示，最后调用初始化captureSession的方法：</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;setupCaptureSession() {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">captureSession</span><span style="color:#000000">&nbsp;=&nbsp;</span>AVCaptureSession<span style="color:#000000">()</span></p>
+
+<p><span style="color:#000000"><span style="color:#4f8187">&nbsp; &nbsp; captureSession</span>.<span style="color:#3d1d81">beginConfiguration</span>()</span></p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">captureSession</span><span style="color:#000000">.</span>sessionPreset<span style="color:#000000">&nbsp;=&nbsp;</span>AVCaptureSessionPresetLow</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;captureDevice =&nbsp;</span>AVCaptureDevice<span style="color:#000000">.</span><span style="color:#3d1d81">defaultDeviceWithMediaType</span><span style="color:#000000">(</span>AVMediaTypeVideo<span style="color:#000000">)</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;deviceInput =&nbsp;<span style="color:#703daa">AVCaptureDeviceInput</span>.<span style="color:#3d1d81">deviceInputWithDevice</span>(captureDevice, error:&nbsp;<span style="color:#bb2ca2">nil</span>)&nbsp;<span style="color:#bb2ca2">as</span>&nbsp;<span style="color:#703daa">AVCaptureDeviceInput</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#4f8187">captureSession</span>.<span style="color:#3d1d81">canAddInput</span>(deviceInput) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">captureSession</span>.<span style="color:#3d1d81">addInput</span>(deviceInput)</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;dataOutput =&nbsp;</span>AVCaptureVideoDataOutput<span style="color:#000000">()</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; dataOutput.</span>videoSettings<span style="color:#000000">&nbsp;= [</span>kCVPixelBufferPixelFormatTypeKey<span style="color:#000000">&nbsp;:&nbsp;</span>kCVPixelFormatType_420YpCbCr8BiPlanarFullRange<span style="color:#000000">]</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; dataOutput.</span>alwaysDiscardsLateVideoFrames<span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#bb2ca2">true</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#4f8187">captureSession</span>.<span style="color:#3d1d81">canAddOutput</span>(dataOutput) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">captureSession</span>.<span style="color:#3d1d81">addOutput</span>(dataOutput)</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;queue =&nbsp;</span>dispatch_queue_create<span style="color:#000000">(</span><span style="color:#d12f1b">&quot;VideoQueue&quot;</span><span style="color:#000000">,&nbsp;</span><span style="color:#703daa">DISPATCH_QUEUE_SERIAL</span><span style="color:#000000">)</span></p>
+
+<p>&nbsp; &nbsp; dataOutput.<span style="color:#3d1d81">setSampleBufferDelegate</span>(<span style="color:#bb2ca2">self</span>, queue: queue)</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#4f8187">&nbsp; &nbsp; captureSession</span>.<span style="color:#3d1d81">commitConfiguration</span>()</p>
+
+<p>}</p>
+
+<p>从这个方法开始，就算正式开始了。</p>
+
+<p>&nbsp;</p>
+
+<ol>
+	<li>首先实例化一个AVCaptureSession对象，AVFoundation基于会话的概念，会话（session）被用于控制输入到输出的过程</li>
+	<li>beginConfiguration与commitConfiguration总是成对调用，当后者调用的时候，会批量配置session，且是线程安全的，更重要的是，可以在session运行中执行，总是使用这对方法是一个好的习惯</li>
+	<li>然后设置它的采集质量，除了AVCaptureSessionPresetLow以外还有很多其他选项，感兴趣可以自己看看。</li>
+	<li>获取采集设备，默认的摄像设备是后置摄像头。</li>
+	<li>把上一步获取到的设备作为输入设备添加到当前session中，先用canAddInput方法判断一下是个好习惯。</li>
+	<li>添加完输入设备后再添加输出设备到session中，我在这里添加的是<strong><span style="color:#cc0000">AVCaptureVideoDataOutput</span></strong>，表示视频里的每一帧，除此之外，还有AVCaptureMovieFileOutput（完整的视频）、AVCaptureAudioDataOutput（音频）、AVCaptureStillImageOutput（静态图）等。关于videoSettings属性设置，可以先看看文档说明：<br />
+	<img alt="" class="has" src="https://img-blog.csdn.net/20140920213841204?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br />
+	后面有写到虽然videoSettings是指定一个字典，但是目前只支持<strong><span style="color:#cc0000">kCVPixelBufferPixelFormatTypeKey</span></strong>，我们用它指定像素的输出格式，这个参数直接影响到生成图像的成功与否，由于我打算先做一个实时灰度的效果，所以这里使用<strong><span style="color:#cc0000">kCVPixelFormatType_420YpCbCr8BiPlanarFullRange</span></strong>的输出格式，关于这个格式的详细说明，可以看最后面的参数资料3（YUV的维基）。</li>
+	<li>后面设置了<strong><span style="color:#cc0000">alwaysDiscardsLateVideoFrames</span></strong>参数，表示丢弃延迟的帧；同样用canAddInput方法判断并添加到session中。</li>
+	<li>最后设置delegate回调（AVCaptureVideoDataOutputSampleBufferDelegate协议）和回调时所处的GCD队列，并提交修改的配置。</li>
+</ol>
+
+<p>&nbsp;</p>
+
+<p>我们现在完成一个session的建立过程，但这个session还没有开始工作，就像我们访问数据库的时候，要先打开数据库---然后建立连接---访问数据---关闭连接---关闭数据库一样，我们在<strong><span style="color:#cc0000">openCamera</span></strong>方法里启动session：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;openCamera(sender:&nbsp;<span style="color:#703daa">UIButton</span>) {</p>
+
+<p>&nbsp; &nbsp; sender.<span style="color:#703daa">enabled</span>&nbsp;=&nbsp;<span style="color:#bb2ca2">false</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>captureSession<span style="color:#000000">.</span><span style="color:#3d1d81">startRunning</span><span style="color:#000000">()</span></p>
+
+<p>}</p>
+
+<p>session启动之后，不出意外的话，回调就开始了，并且是实时回调（这也是为什么要把delegate回调放在一个GCD队列中的原因），我们处理</p>
+
+<p>&nbsp;</p>
+
+<p><strong><span style="color:#cc0000">optional func captureOutput(captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, fromConnection connection: AVCaptureConnection!)</span></strong></p>
+
+<p>这个回调就可以了：</p>
+
+<p>&nbsp;</p>
+
+<h3>Core Image之前的方式</h3>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;captureOutput(captureOutput:&nbsp;<span style="color:#703daa">AVCaptureOutput</span>!,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; didOutputSampleBuffer sampleBuffer:&nbsp;<span style="color:#703daa">CMSampleBuffer</span>!,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fromConnection connection:&nbsp;<span style="color:#703daa">AVCaptureConnection</span>!) {</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>CVPixelBufferLockBaseAddress<span style="color:#000000">(imageBuffer,&nbsp;</span><span style="color:#272ad8">0</span><span style="color:#000000">)</span></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;width =&nbsp;<span style="color:#3d1d81">CVPixelBufferGetWidthOfPlane</span>(imageBuffer,&nbsp;<span style="color:#272ad8">0</span>)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;height =&nbsp;<span style="color:#3d1d81">CVPixelBufferGetHeightOfPlane</span>(imageBuffer,&nbsp;<span style="color:#272ad8">0</span>)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;bytesPerRow =&nbsp;<span style="color:#3d1d81">CVPixelBufferGetBytesPerRowOfPlane</span>(imageBuffer,&nbsp;<span style="color:#272ad8">0</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;lumaBuffer =&nbsp;</span>CVPixelBufferGetBaseAddressOfPlane<span style="color:#000000">(imageBuffer,&nbsp;</span><span style="color:#272ad8">0</span><span style="color:#000000">)</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;grayColorSpace =&nbsp;</span>CGColorSpaceCreateDeviceGray<span style="color:#000000">()</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;context =&nbsp;<span style="color:#3d1d81">CGBitmapContextCreate</span>(lumaBuffer, width, height,&nbsp;<span style="color:#272ad8">8</span>, bytesPerRow, grayColorSpace,&nbsp;<span style="color:#703daa">CGBitmapInfo</span>.allZeros)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;cgImage =&nbsp;</span>CGBitmapContextCreateImage<span style="color:#000000">(context)</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>dispatch_sync<span style="color:#000000">(</span>dispatch_get_main_queue<span style="color:#000000">(), {</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">self</span>.previewLayer.contents = cgImage</p>
+
+<p>&nbsp; &nbsp; })</p>
+
+<p>}</p>
+
+<p>当数据缓冲区的内容更新的时候，AVFoundation就会马上调这个回调，所以我们可以在这里收集视频的每一帧，经过处理之后再渲染到layer上展示给用户。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<ol>
+	<li>首先这个回调给我们了一个<strong><span style="color:#cc0000">CMSampleBufferRef</span></strong>类型的sampleBuffer，这是Core Media对象，我们可以通过CMSampleBufferGetImageBuffer方法把它转成Core Video对象。</li>
+	<li>然后我们把缓冲区的base地址给锁住了，锁住base地址是为了使缓冲区的内存地址变得可访问，否则在后面就取不到必需的数据，显示在layer上就只有黑屏，更详细的原因可以看这里：<br />
+	<a href="http://stackoverflow.com/questions/6468535/cvpixelbufferlockbaseaddress-why-capture-still-image-using-avfoundation">http://stackoverflow.com/questions/6468535/cvpixelbufferlockbaseaddress-why-capture-still-image-using-avfoundation</a></li>
+	<li>接下来从缓冲区取图像的信息，包括宽、高、每行的字节数等</li>
+	<li>因为视频的缓冲区是YUV格式的，我们要把它的luma部分提取出来</li>
+	<li>我们为了把缓冲区的图像渲染到layer上，需要用Core Graphics创建一个颜色空间和图形上下文，然后通过创建的颜色空间把缓冲区的图像渲染到上下文中</li>
+	<li>cgImage就是从缓冲区创建的Core Graphics图像了（CGImage），最后我们在主线程把它赋值给layer的contents予以显示</li>
+</ol>
+
+<p>现在在真机上编译、运行，应该能看到如下的实时灰度效果：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140921011213756?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>（这张图是通过手机截屏获取的，容易手抖，所以不是很清晰）</p>
+
+<p>&nbsp;</p>
+
+<h3>用Core Image处理</h3>
+
+<p>通过以上几步可以看到，代码不是很多，没有Core Image也能处理，但是比较费劲，难以理解、不好维护，如果想多增加一些效果（这仅仅是一个灰度效果），代码会变得非常臃肿，所以拓展性也不好。</p>
+
+<p>事实上，我们想通过Core Image改造上面的代码也很简单，先从添加CIFilter和CIContext开始，这是Core Image的核心内容。</p>
+
+<p>在VC上新增两个属性：</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;filter:&nbsp;<span style="color:#703daa">CIFilter</span>!</p>
+
+<p><span style="color:#bb2ca2">lazy</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;context:&nbsp;<span style="color:#703daa">CIContext</span>&nbsp;= {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;eaglContext =&nbsp;<span style="color:#703daa">EAGLContext</span>(API:&nbsp;<span style="color:#703daa">EAGLRenderingAPI</span>.<span style="color:#3d1d81">OpenGLES2</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;options = [</span>kCIContextWorkingColorSpace<span style="color:#000000">&nbsp;:&nbsp;</span>NSNull<span style="color:#000000">()]</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;<span style="color:#703daa">CIContext</span>(EAGLContext: eaglContext, options: options)</p>
+
+<p>}()</p>
+
+<p>申明一个CIFilter对象，不用实例化；懒加载一个CIContext，这个CIContext的实例通过<strong><span style="color:#cc0000">contextWithEAGLContext:</span></strong>方法构造，和我们之前所使用的不一样，虽然通过<strong><span style="color:#cc0000">contextWithOptions:</span></strong>方法也能构造一个GPU的CIContext，但前者的优势在于：渲染图像的过程始终在GPU上进行，并且永远不会复制回CPU存储器上，这就保证了更快的渲染速度和更好的性能。</p>
+
+<table border="1" cellpadding="10" cellspacing="1" style="width:0px">
+	<tbody>
+		<tr>
+			<td>实际上，通过contextWithOptions:创建的GPU的context，虽然渲染是在GPU上执行，但是其输出的image是不能显示的，<br />
+			只有当其被复制回CPU存储器上时，才会被转成一个可被显示的image类型，比如UIImage。</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>我们先创建了一个EAGLContext，再通过EAGLContext创建一个CIContext，并且通过把working color space设为nil来关闭颜色管理功能，颜色管理功能会降低性能，而且只有当对颜色保真度要求很高的时候才需要颜色管理功能，在其他情况下，特别是实时处理中，颜色保真都不是特别重要（性能第一，视频帧延迟很高的app大家都不会喜欢的）。</p>
+
+<p>然后我们把session的配置过程稍微修改一下，只修改一处代码即可：</p>
+
+<p>kCVPixelFormatType_420YpCbCr8BiPlanarFullRange</p>
+
+<p>替换为</p>
+
+<p>kCVPixelFormatType_32BGRA</p>
+
+<p>我们把上面那个难以理解的格式替换为BGRA像素格式，大多数情况下用此格式即可。</p>
+
+<p>再把session的回调进行一些修改，变成我们熟悉的方式，就像这样：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;captureOutput(captureOutput:&nbsp;<span style="color:#703daa">AVCaptureOutput</span>!,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; didOutputSampleBuffer sampleBuffer:&nbsp;<span style="color:#703daa">CMSampleBuffer</span>!,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fromConnection connection:&nbsp;<span style="color:#703daa">AVCaptureConnection</span>!) {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;imageBuffer =&nbsp;<span style="color:#3d1d81">CMSampleBufferGetImageBuffer</span>(sampleBuffer)</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// CVPixelBufferLockBaseAddress(imageBuffer, 0)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// let width = CVPixelBufferGetWidthOfPlane(imageBuffer, 0)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// let height = CVPixelBufferGetHeightOfPlane(imageBuffer, 0)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// let bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(imageBuffer, 0)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// let lumaBuffer = CVPixelBufferGetBaseAddressOfPlane(imageBuffer, 0)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#008400">//</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// let grayColorSpace = CGColorSpaceCreateDeviceGray()</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// let context = CGBitmapContextCreate(lumaBuffer, width, height, 8, bytesPerRow, grayColorSpace, CGBitmapInfo.allZeros)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// let cgImage = CGBitmapContextCreateImage(context)</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;outputImage =&nbsp;<span style="color:#703daa">CIImage</span>(CVPixelBuffer: imageBuffer)</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#4f8187">filter</span>&nbsp;!=&nbsp;<span style="color:#bb2ca2">nil</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">filter</span>.<span style="color:#3d1d81">setValue</span>(outputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; outputImage =&nbsp;<span style="color:#4f8187">filter</span>.<span style="color:#703daa">outputImage</span></p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;cgImage =&nbsp;<span style="color:#4f8187">context</span>.<span style="color:#3d1d81">createCGImage</span>(outputImage, fromRect: outputImage.<span style="color:#3d1d81">extent</span>())</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>dispatch_sync<span style="color:#000000">(</span>dispatch_get_main_queue<span style="color:#000000">(), {</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">previewLayer</span>.<span style="color:#703daa">contents</span>&nbsp;= cgImage</p>
+
+<p>&nbsp; &nbsp; })</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p>这是一段拓展性、维护性都比较好的代码了：</p>
+
+<ol>
+	<li>先拿到缓冲区，看从缓冲区直接取到一张CIImage</li>
+	<li>如果指定了滤镜，就应用到图像上；反之则显示原图</li>
+	<li>通过context创建CGImage的实例</li>
+	<li>在主队列中显示到layer上</li>
+</ol>
+
+<p>在此基础上，我们只用添加一些滤镜就可以了。</p>
+
+<p>先在Storyboard上添加一个UIView，再以这个UIView作容器，往里面加四个button，从0到3设置button的tag，并把button们的事件全部连接到VC的<strong><span style="color:#cc0000">applyFilter</span></strong>方法上，UI看起来像这样：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140921015406000?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>把这个UIView（buttons的容器）连接到VC的<strong><span style="color:#cc0000">filterButtonsContainer</span></strong>上，再添加一个字符串数组，存储一些滤镜的名字，最终VC的所有属性如下：</p>
+
+<p><span style="color:#bb2ca2">class</span><span style="color:#000000">&nbsp;ViewController:&nbsp;</span>UIViewController<span style="color:#000000">&nbsp;,&nbsp;</span>AVCaptureVideoDataOutputSampleBufferDelegate<span style="color:#000000">&nbsp;{</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">@IBOutlet</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;filterButtonsContainer:&nbsp;<span style="color:#703daa">UIView</span>!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;captureSession:&nbsp;<span style="color:#703daa">AVCaptureSession</span>!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;previewLayer:&nbsp;<span style="color:#703daa">CALayer</span>!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;filter:&nbsp;<span style="color:#703daa">CIFilter</span>!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">lazy</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;context:&nbsp;<span style="color:#703daa">CIContext</span>&nbsp;= {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;eaglContext =&nbsp;<span style="color:#703daa">EAGLContext</span>(API:&nbsp;<span style="color:#703daa">EAGLRenderingAPI</span>.<span style="color:#3d1d81">OpenGLES2</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;options = [</span>kCIContextWorkingColorSpace<span style="color:#000000">&nbsp;:&nbsp;</span>NSNull<span style="color:#000000">()]</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;<span style="color:#703daa">CIContext</span>(EAGLContext: eaglContext, options: options)</p>
+
+<p>&nbsp; &nbsp; }()</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">lazy</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;filterNames: [<span style="color:#703daa">String</span>] = {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">return</span><span style="color:#000000">&nbsp;[</span>&quot;CIColorInvert&quot;<span style="color:#000000">,</span>&quot;CIPhotoEffectMono&quot;<span style="color:#000000">,</span>&quot;CIPhotoEffectInstant&quot;<span style="color:#000000">,</span>&quot;CIPhotoEffectTransfer&quot;<span style="color:#000000">]</span></p>
+
+<p>&nbsp; &nbsp; }()</p>
+
+<p>......</p>
+
+<p>在viewDidLoad方法中先隐藏滤镜按钮们的容器：</p>
+
+<p>......</p>
+
+<p>filterButtonsContainer<span style="color:#000000">.</span><span style="color:#703daa">hidden</span><span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#bb2ca2">true</span></p>
+
+<p>​......</p>
+
+<p>修改<strong><span style="color:#cc0000">openCamera</span></strong>方法，最终实现如下：</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;openCamera(sender:&nbsp;<span style="color:#703daa">UIButton</span>) {</p>
+
+<p>&nbsp; &nbsp; sender.<span style="color:#703daa">enabled</span>&nbsp;=&nbsp;<span style="color:#bb2ca2">false</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>captureSession<span style="color:#000000">.</span><span style="color:#3d1d81">startRunning</span><span style="color:#000000">()</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>filterButtonsContainer<span style="color:#000000">.</span><span style="color:#703daa">hidden</span><span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#bb2ca2">false</span></p>
+
+<p>}</p>
+
+<p>最后<strong><span style="color:#cc0000">applyFilter</span></strong>方法的实现：</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;applyFilter(sender:&nbsp;<span style="color:#703daa">UIButton</span>) {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;filterName =&nbsp;<span style="color:#4f8187">filterNames</span>[sender.<span style="color:#703daa">tag</span>]</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">filter</span>&nbsp;=&nbsp;<span style="color:#703daa">CIFilter</span>(name: filterName)</p>
+
+<p>}</p>
+
+<p>至此，我们就大功告成了，赶紧在真机上编译、运行看看吧：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140921150009313?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>保存到图库</h2>
+
+<p>接下来我们添加拍照功能。</p>
+
+<p>首先我们在VC上添加一个名为&ldquo;拍照&rdquo;的button，连接到VC的<strong><span style="color:#cc0000">takePicture</span></strong>方法上，在实现方法之前，有几步改造工作要先做完。</p>
+
+<p>首先就是图像元数据的问题，一张图像可能包含定位信息、图像格式、方向等元数据，而方向是我们最关心的部分，在上面的viewDidLoad方法中，我是通过将previewLayer进行旋转使我们看到正确的图像，但是如果直接将图像保存在图库或文件中，我们会得到一个方向不正确的图像，为了最终获取方向正确的图像，我把previewLayer的旋转去掉：</p>
+
+<p>&nbsp;</p>
+
+<p>......</p>
+
+<p>previewLayer<span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#703daa">CALayer</span><span style="color:#000000">()</span></p>
+
+<p>// previewLayer.bounds = CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width);</p>
+
+<p>// previewLayer.position = CGPointMake(self.view.frame.size.width / 2.0, self.view.frame.size.height / 2.0);</p>
+
+<p>// previewLayer.setAffineTransform(CGAffineTransformMakeRotation(CGFloat(M_PI / 2.0)));</p>
+
+<p><span style="color:#4f8187">previewLayer</span><span style="color:#000000">.</span>anchorPoint<span style="color:#000000">&nbsp;=&nbsp;</span>CGPointZero</p>
+
+<p><span style="color:#4f8187">previewLayer</span><span style="color:#000000">.</span>bounds<span style="color:#000000">&nbsp;=&nbsp;</span>view<span style="color:#000000">.</span>bounds</p>
+
+<p>......</p>
+
+<p>设置layer的anchorPoint是为了把bounds的顶点从中心变为左上角，这正是UIView的顶点。</p>
+
+<p>&nbsp;</p>
+
+<p>现在你运行的话看到的将是方向不正确的图像。</p>
+
+<p>然后我们把方向统一放到captureSession的回调中处理，修改之前写的实现：</p>
+
+<p>&nbsp;</p>
+
+<p>......</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;outputImage =&nbsp;<span style="color:#703daa">CIImage</span>(CVPixelBuffer: imageBuffer)</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p><span style="color:#bb2ca2">let</span>&nbsp;orientation =&nbsp;<span style="color:#703daa">UIDevice</span>.<span style="color:#3d1d81">currentDevice</span>().<span style="color:#703daa">orientation</span></p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;t:&nbsp;</span>CGAffineTransform<span style="color:#000000">!</span></p>
+
+<p><span style="color:#bb2ca2">if</span><span style="color:#000000">&nbsp;orientation&nbsp;</span><span style="color:#3d1d81">==</span><span style="color:#000000">&nbsp;</span>UIDeviceOrientation<span style="color:#000000">.</span><span style="color:#3d1d81">Portrait</span><span style="color:#000000">&nbsp;{</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; t =&nbsp;</span>CGAffineTransformMakeRotation<span style="color:#000000">(</span><span style="color:#703daa">CGFloat</span><span style="color:#000000">(-</span><span style="color:#703daa">M_PI</span><span style="color:#000000">&nbsp;/&nbsp;</span><span style="color:#272ad8">2.0</span><span style="color:#000000">))</span></p>
+
+<p>}&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;orientation&nbsp;<span style="color:#3d1d81">==</span>&nbsp;<span style="color:#703daa">UIDeviceOrientation</span>.<span style="color:#3d1d81">PortraitUpsideDown</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; t =&nbsp;</span>CGAffineTransformMakeRotation<span style="color:#000000">(</span><span style="color:#703daa">CGFloat</span><span style="color:#000000">(</span><span style="color:#703daa">M_PI</span><span style="color:#000000">&nbsp;/&nbsp;</span><span style="color:#272ad8">2.0</span><span style="color:#000000">))</span></p>
+
+<p>}&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;(orientation&nbsp;<span style="color:#3d1d81">==</span>&nbsp;<span style="color:#703daa">UIDeviceOrientation</span>.<span style="color:#3d1d81">LandscapeRight</span>) {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; t =&nbsp;</span>CGAffineTransformMakeRotation<span style="color:#000000">(</span><span style="color:#703daa">CGFloat</span><span style="color:#000000">(</span><span style="color:#703daa">M_PI</span><span style="color:#000000">))</span></p>
+
+<p>}&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; t =&nbsp;</span>CGAffineTransformMakeRotation<span style="color:#000000">(</span><span style="color:#272ad8">0</span><span style="color:#000000">)</span></p>
+
+<p>}</p>
+
+<p>outputImage = outputImage.<span style="color:#3d1d81">imageByApplyingTransform</span>(t)</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#4f8187">filter</span>&nbsp;!=&nbsp;<span style="color:#bb2ca2">nil</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">filter</span>.<span style="color:#3d1d81">setValue</span>(outputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; outputImage =&nbsp;<span style="color:#4f8187">filter</span>.<span style="color:#703daa">outputImage</span></p>
+
+<p>}</p>
+
+<p>......</p>
+
+<p>在获取outputImage之后并在使用滤镜之前调整outputImage的方向，这样一下，四个方向都处理了。</p>
+
+<p>&nbsp;</p>
+
+<p>运行之后看到的效果和之前就一样了。</p>
+
+<p>方向处理完后我们还要用一个实例变量保存这个outputImage，因为这里面含有图像的元数据，我们不会丢弃它：</p>
+
+<p>给VC添加一个CIImage的属性：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;ciImage:&nbsp;<span style="color:#703daa">CIImage</span>!</p>
+
+<p>在captureSession的回调里保存CIImage：</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>......</p>
+
+<p><span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#4f8187">filter</span>&nbsp;!=&nbsp;<span style="color:#bb2ca2">nil</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">filter</span>.<span style="color:#3d1d81">setValue</span>(outputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; outputImage =&nbsp;<span style="color:#4f8187">filter</span>.<span style="color:#703daa">outputImage</span></p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">let</span>&nbsp;cgImage =&nbsp;<span style="color:#4f8187">context</span>.<span style="color:#3d1d81">createCGImage</span>(outputImage, fromRect: outputImage.<span style="color:#3d1d81">extent</span>())</p>
+
+<p><span style="color:#4f8187">ciImage</span>&nbsp;= outputImage</p>
+
+<p>......</p>
+
+<p>滤镜处理完后，就将这个CIImage存起来，它可能被应用过滤镜，也可能是干干净净的原图。</p>
+
+<p>&nbsp;</p>
+
+<p>最后是<strong><span style="color:#cc0000">takePicture</span></strong>的方法实现：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;takePicture(sender:&nbsp;<span style="color:#703daa">UIButton</span>) {</p>
+
+<p>&nbsp; &nbsp; sender.<span style="color:#703daa">enabled</span>&nbsp;=&nbsp;<span style="color:#bb2ca2">false</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>captureSession<span style="color:#000000">.</span><span style="color:#3d1d81">stopRunning</span><span style="color:#000000">()</span></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;cgImage =&nbsp;<span style="color:#4f8187">context</span>.<span style="color:#3d1d81">createCGImage</span>(<span style="color:#4f8187">ciImage</span>, fromRect:&nbsp;<span style="color:#4f8187">ciImage</span>.<span style="color:#3d1d81">extent</span>())</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#703daa">ALAssetsLibrary</span><span style="color:#000000">().</span>writeImageToSavedPhotosAlbum<span style="color:#000000">(cgImage, metadata:&nbsp;</span><span style="color:#4f8187">ciImage</span><span style="color:#000000">.</span>properties<span style="color:#000000">())</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; { (url:&nbsp;<span style="color:#703daa">NSURL</span>!, error :<span style="color:#703daa">NSError</span>!) -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;error ==&nbsp;<span style="color:#bb2ca2">nil</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(<span style="color:#d12f1b">&quot;</span><span style="color:#d12f1b">保存成功</span><span style="color:#d12f1b">&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(url)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;alert =&nbsp;<span style="color:#703daa">UIAlertView</span>(title:&nbsp;<span style="color:#d12f1b">&quot;</span><span style="color:#d12f1b">错误</span><span style="color:#d12f1b">&quot;</span>,&nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp;&nbsp;message: error.<span style="color:#703daa">localizedDescription</span>,&nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp;delegate:&nbsp;<span style="color:#bb2ca2">nil</span>,&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;cancelButtonTitle:&nbsp;<span style="color:#d12f1b">&quot;</span><span style="color:#d12f1b">确定</span><span style="color:#d12f1b">&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; alert.<span style="color:#3d1d81">show</span>()</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">captureSession</span>.<span style="color:#3d1d81">startRunning</span>()</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sender.<span style="color:#703daa">enabled</span>&nbsp;=&nbsp;<span style="color:#bb2ca2">true</span></p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}&nbsp;</p>
+
+<p>先将按钮禁用，session停止运行，再用实例变量ciImage绘制一张CGImage，最后连同元数据一同存进图库中。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<table border="1" cellpadding="10" cellspacing="1">
+	<tbody>
+		<tr>
+			<td>这里需要导入AssetsLibrary库：<span style="color:#cc0000">import AssetsLibrary</span>。writeImageToSavedPhotosAlbum方法的回调<br />
+			block用到了<span style="color:#cc0000"><strong>尾随闭包</strong></span>语法。</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>在真机上编译、运行看看吧。</p>
+
+<p>注：由于我是用layer来做预览容器的，它没有autoresizingMask这样的属性，你会发现横屏的时候就显示不正常了，在iOS 8gh，你可以通过重写VC的以下方法来兼容横屏：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">override</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;viewWillTransitionToSize(size:&nbsp;<span style="color:#703daa">CGSize</span>, withTransitionCoordinator&nbsp;</p>
+
+<p>coordinator:&nbsp;<span style="color:#703daa">UIViewControllerTransitionCoordinator</span>) {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">previewLayer</span>.<span style="color:#703daa">bounds</span>.<span style="color:#703daa">size</span>&nbsp;= size</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>录制视频</h2>
+
+<p>&nbsp;</p>
+
+<h3>前期配置</h3>
+
+<p>这篇文章并不会详解AVFoundation框架，但为了完成Core Image的功能，我们多多少少会说一些。</p>
+
+<p>我们在VC上添加一个名为&ldquo;开始录制&rdquo;的按钮，把按钮本身连接到VC的<strong><span style="color:#cc0000">recordsButton属性</span></strong>上，并把它的事件连接到<strong><span style="color:#cc0000">record方法</span></strong>上，UI看起来像这样：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140921233027300?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>为了愉快地进行下去，我先把为VC新增的所有属性列出来：</p>
+
+<p>......</p>
+
+<p>// Video Records</p>
+
+<p><span style="color:#bb2ca2">@IBOutlet</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;recordsButton:&nbsp;<span style="color:#703daa">UIButton</span>!</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;assetWriter:&nbsp;<span style="color:#703daa">AVAssetWriter</span>?</p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;assetWriterPixelBufferInput:&nbsp;</span>AVAssetWriterInputPixelBufferAdaptor<span style="color:#000000">?</span></p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;isWriting =&nbsp;<span style="color:#bb2ca2">false</span></p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;currentSampleTime:&nbsp;<span style="color:#703daa">CMTime</span>?</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;currentVideoDimensions:&nbsp;<span style="color:#703daa">CMVideoDimensions</span>?</p>
+
+<p>......</p>
+
+<p>这些就是为了实现视频录制会用到的所有属性，我们简单说一下：</p>
+
+<ul>
+	<li>recordsButton，为了方便的获取录制按钮的实例而增加的属性</li>
+	<li>assetWriter，这是一个<strong><span style="color:#cc0000">AVAssetWriter</span></strong>对象的实例，这个类的工作方式很像<strong><span style="color:#cc0000">AVCaptureSession</span></strong>，也是为了控制输入输出的流程而存在的</li>
+	<li>assetWriterPixelBufferInput，一个<strong><span style="color:#cc0000">AVAssetWriterInputPixelBufferAdaptor</span></strong>对象，这个属性的作用如同它的名字，它允许我们不断地增加像素缓冲区到assetWriter对象里</li>
+	<li>isWriting，如果我们当前正在录制视频，则会用这个实例变量记录下来</li>
+	<li>currentSampleTime，这是一个时间戳，在AVFoundation框架里，每一块添加的数据（视频或音频等）除了data部分外，还需要一个当前的时间，每一帧的时间都不同，这就形成了每一帧的持续时间（时间间隔）</li>
+	<li>currentVideoDimensions，这个属性描述了视频尺寸，虽然这个属性并不重要，但是我更加懒得把尺寸写死，它的单位是像素</li>
+</ul>
+
+<p>接下来我们先完成两个工具方法：<strong><span style="color:#cc0000">movieURL</span></strong>和<strong><span style="color:#cc0000">checkForAndDeleteFile</span></strong>。</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;movieURL() -&gt;&nbsp;<span style="color:#703daa">NSURL</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;tempDir =&nbsp;</span>NSTemporaryDirectory<span style="color:#000000">()</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;urlString = tempDir.</span>stringByAppendingPathComponent<span style="color:#000000">(</span><span style="color:#d12f1b">&quot;tmpMov.mov&quot;</span><span style="color:#000000">)</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;<span style="color:#703daa">NSURL</span>(fileURLWithPath: urlString)</p>
+
+<p>}</p>
+
+<p>这个方法做的事情很简单，只是构建一个临时目录里的文件URL。</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;checkForAndDeleteFile() {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;fm =&nbsp;</span><span style="color:#703daa">NSFileManager</span><span style="color:#000000">.</span>defaultManager<span style="color:#000000">()</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;url =&nbsp;<span style="color:#31595d">movieURL</span>()</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;exist = fm.<span style="color:#3d1d81">fileExistsAtPath</span>(<span style="color:#31595d">movieURL</span>().<span style="color:#703daa">path</span>!)</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;error:&nbsp;<span style="color:#703daa">NSError</span>?</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;exist {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; fm.<span style="color:#3d1d81">removeItemAtURL</span>(<span style="color:#31595d">movieURL</span>(), error: &amp;error)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color:#3d1d81">println</span><span style="color:#000000">(</span>&quot;删除之前的临时文件&quot;<span style="color:#000000">)</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;errorDescription = error?.<span style="color:#703daa">localizedDescription</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(errorDescription)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p>这个方法检查了文件是否已存在，如果已存在就删除旧文件，之所以要增加这个方法是因为AVAssetWriter不能在已有的文件URL上写文件，如果文件已存在就会报错。还有一点需要注意：<span style="color:#cc0000">我在iOS 7上判断文件是否存在时用的是URL的absoluteString方法，结果导致AVAssetWriter没报错，但是后面的缓冲区出错了，排查了很久，把absoluteString换成path就好了</span>。。</p>
+
+<p>二个工具方法完成后，我们就开始写最主要的方法，即<strong><span style="color:#cc0000">createWriter</span></strong>方法：</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;createWriter() {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>checkForAndDeleteFile<span style="color:#000000">()</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;error:&nbsp;<span style="color:#703daa">NSError</span>?</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">assetWriter</span>&nbsp;=&nbsp;<span style="color:#703daa">AVAssetWriter</span>(URL:&nbsp;<span style="color:#31595d">movieURL</span>(), fileType:&nbsp;<span style="color:#703daa">AVFileTypeQuickTimeMovie</span>, error: &amp;error)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;errorDescription = error?.<span style="color:#703daa">localizedDescription</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color:#3d1d81">println</span><span style="color:#000000">(</span>&quot;创建writer失败&quot;<span style="color:#000000">)</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(errorDescription)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span></p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;outputSettings = [</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>AVVideoCodecKey<span style="color:#000000">&nbsp;:&nbsp;</span>AVVideoCodecH264<span style="color:#000000">,</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>AVVideoWidthKey<span style="color:#000000">&nbsp;:&nbsp;</span>Int<span style="color:#000000">(</span><span style="color:#4f8187">currentVideoDimensions</span><span style="color:#000000">!.</span>width<span style="color:#000000">),</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>AVVideoHeightKey<span style="color:#000000">&nbsp;:&nbsp;</span>Int<span style="color:#000000">(</span><span style="color:#4f8187">currentVideoDimensions</span><span style="color:#000000">!.</span>height<span style="color:#000000">)</span></p>
+
+<p>&nbsp; &nbsp; ]</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;assetWriterVideoInput =&nbsp;<span style="color:#703daa">AVAssetWriterInput</span>(mediaType:&nbsp;<span style="color:#703daa">AVMediaTypeVideo</span>, outputSettings: outputSettings)</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp; assetWriterVideoInput.<span style="color:#703daa">expectsMediaDataInRealTime</span>&nbsp;=&nbsp;<span style="color:#bb2ca2">true</span></p>
+
+<p>&nbsp; &nbsp; assetWriterVideoInput.<span style="color:#703daa">transform</span>&nbsp;=&nbsp;<span style="color:#3d1d81">CGAffineTransformMakeRotation</span>(<span style="color:#703daa">CGFloat</span>(<span style="color:#703daa">M_PI</span>&nbsp;/&nbsp;<span style="color:#272ad8">2.0</span>))</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;sourcePixelBufferAttributesDictionary = [</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>kCVPixelBufferPixelFormatTypeKey<span style="color:#000000">&nbsp;:&nbsp;</span>kCVPixelFormatType_32BGRA<span style="color:#000000">,</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>kCVPixelBufferWidthKey<span style="color:#000000">&nbsp;:&nbsp;</span>Int<span style="color:#000000">(</span><span style="color:#4f8187">currentVideoDimensions</span><span style="color:#000000">!.</span>width<span style="color:#000000">),</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>kCVPixelBufferHeightKey<span style="color:#000000">&nbsp;:&nbsp;</span>Int<span style="color:#000000">(</span><span style="color:#4f8187">currentVideoDimensions</span><span style="color:#000000">!.</span>height<span style="color:#000000">),</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>kCVPixelFormatOpenGLESCompatibility<span style="color:#000000">&nbsp;:&nbsp;</span>kCFBooleanTrue</p>
+
+<p>&nbsp; &nbsp; ]</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">assetWriterPixelBufferInput</span>&nbsp;=&nbsp;<span style="color:#703daa">AVAssetWriterInputPixelBufferAdaptor</span>(assetWriterInput: assetWriterVideoInput,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sourcePixelBufferAttributes: sourcePixelBufferAttributesDictionary)</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#4f8187">assetWriter</span>!.<span style="color:#3d1d81">canAddInput</span>(assetWriterVideoInput) {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">assetWriter</span>!.<span style="color:#3d1d81">addInput</span>(assetWriterVideoInput)</p>
+
+<p>&nbsp; &nbsp; }&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(<span style="color:#d12f1b">&quot;</span><span style="color:#d12f1b">不能添加视频</span><span style="color:#d12f1b">writer</span><span style="color:#d12f1b">的</span><span style="color:#d12f1b">input&nbsp;</span>\(assetWriterVideoInput)<span style="color:#d12f1b">&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}&nbsp;</p>
+
+<p>这个方法主要是配置项很多。</p>
+
+<ul>
+	<li>首先检查了文件是否存在，如果存在的话就删除旧的临时文件，不然AVAssetWriter会因无法写入文件而报错</li>
+	<li>实例化一个AVAssetWriter对象，把需要写的文件URL和文件类型传递给它，再给它一个存储错误信息的指针，方便在出错的时候排查</li>
+	<li>创建一个outputSettings的字典应用到<strong><span style="color:#cc0000">AVAssetWriterInput</span></strong>对象上，这个对象之前没有提到，但也是相当重要的一个对象，它表示了一个输入设备，比如视频、音频的输入等，不同的设备拥有不同的参数和配置，并不复杂，我们这里就不考虑音频输入了。在这个视频的配置里，我们配置了视频的编码，以及用获取到的当前视频设备尺寸（单位像素）初始化了宽、高</li>
+	<li>设置<strong><span style="color:#cc0000">expectsMediaDataInRealTime</span></strong>为true，这是从摄像头捕获的源中进行实时编码的必要参数</li>
+	<li>设置了视频的transform，主要也是为了解决方向问题</li>
+	<li>创建另外一个属性字典去实例化一个<strong><span style="color:#cc0000">AVAssetWriterInputPixelBufferAdaptor</span></strong>对象，我们在视频采集的过程中，会不断地通过这个缓冲区往AVAssetWriter对象里添加内容，实例化的参数中还有AVAssetWriterInput对象，属性字典标识了缓冲区的大小与格式。</li>
+	<li>最后判断一下能否添加这个输入设备，虽然大多数情况下判断一定为真，而且为假的情况我们也没办法考虑了，但预先判断还是一个好的编码习惯</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>处理每一帧</h3>
+
+<p>上面这些基本性的配置工作完成后，在正式开始录制视频之前，我们还有最后一步要处理，那就是处理视频的每一帧。其实在之前我们就已经尝试过处理每一帧了，因为我们做过拍照的实时滤镜功能，现在我们只需要修改AVCaptureSession的回调就行了。由于之前在captureOutput:didOutputSampleBuffer:这个回调方法中，我们是先对图像的方向进行处理，然后再对其应用滤镜，而录制视频的时候我们不需要对方向进行处理，因为在配置AVAssetWriterInput对象的时候我们已经处理过了，所以我们先将应用滤镜和方向调整的代码互换一下，变成先应用滤镜，再处理方向，然后在他们中间插入处理录制视频的代码：</p>
+
+<p>......</p>
+
+<p>if<span style="color:#000000">&nbsp;</span>self<span style="color:#000000">.</span><span style="color:#4f8187">filter</span><span style="color:#000000">&nbsp;!=&nbsp;</span>nil<span style="color:#000000">&nbsp;{</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">filter</span>.<span style="color:#3d1d81">setValue</span>(outputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; outputImage =&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">filter</span>.<span style="color:#703daa">outputImage</span></p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p>//&nbsp;处理录制视频</p>
+
+<p><span style="color:#bb2ca2">let</span>&nbsp;formatDescription =&nbsp;<span style="color:#3d1d81">CMSampleBufferGetFormatDescription</span>(sampleBuffer)</p>
+
+<p><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span><span style="color:#4f8187">currentVideoDimensions</span><span style="color:#000000">&nbsp;=&nbsp;</span>CMVideoFormatDescriptionGetDimensions<span style="color:#000000">(formatDescription)</span></p>
+
+<p><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span><span style="color:#4f8187">currentSampleTime</span><span style="color:#000000">&nbsp;=&nbsp;</span>CMSampleBufferGetOutputPresentationTimeStamp<span style="color:#000000">(sampleBuffer)</span></p>
+
+<p><span style="color:#bb2ca2">if</span><span style="color:#000000">&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>isWriting<span style="color:#000000">&nbsp;{</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">if</span><span style="color:#000000">&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span><span style="color:#4f8187">assetWriterPixelBufferInput</span><span style="color:#000000">?.</span>assetWriterInput<span style="color:#000000">.</span>readyForMoreMediaData<span style="color:#000000">&nbsp;==&nbsp;</span><span style="color:#bb2ca2">true</span><span style="color:#000000">&nbsp;{</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;newPixelBuffer:&nbsp;<span style="color:#703daa">Unmanaged</span>&lt;<span style="color:#703daa">CVPixelBuffer</span>&gt;? =&nbsp;<span style="color:#bb2ca2">nil</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>CVPixelBufferPoolCreatePixelBuffer<span style="color:#000000">(</span><span style="color:#bb2ca2">nil</span><span style="color:#000000">,&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span><span style="color:#4f8187">assetWriterPixelBufferInput</span><span style="color:#000000">?.</span><span style="color:#703daa">pixelBufferPool</span><span style="color:#000000">, &amp;newPixelBuffer)</span></p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">context</span>.<span style="color:#3d1d81">render</span>(outputImage,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; toCVPixelBuffer: newPixelBuffer?.<span style="color:#3d1d81">takeUnretainedValue</span>(),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bounds: outputImage.<span style="color:#3d1d81">extent</span>(),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; colorSpace:&nbsp;<span style="color:#bb2ca2">nil</span>)</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;success =&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">assetWriterPixelBufferInput</span>?.<span style="color:#3d1d81">appendPixelBuffer</span>(newPixelBuffer?.<span style="color:#3d1d81">takeUnretainedValue</span>(),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; withPresentationTime:&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">currentSampleTime</span>!)</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; newPixelBuffer?.<span style="color:#3d1d81">autorelease</span>()</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;success ==&nbsp;<span style="color:#bb2ca2">false</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color:#3d1d81">println</span><span style="color:#000000">(</span>&quot;Pixel Buffer没有append成功&quot;<span style="color:#000000">)</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">let</span>&nbsp;orientation =&nbsp;<span style="color:#703daa">UIDevice</span>.<span style="color:#3d1d81">currentDevice</span>().<span style="color:#703daa">orientation</span></p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;t:&nbsp;</span>CGAffineTransform<span style="color:#000000">!</span></p>
+
+<p>......</p>
+
+<p>在对图像应用完滤镜之后，我们做了这些事情：</p>
+
+<ol>
+	<li>获取尺寸和时间，这两个值在后面会用到。强调一下，时间这个参数是很重要的，当你有一系列的帧的时候，assetWriter必须知道何时显示他们，我们除了通过CMSampleBufferGetOutputPresentationTimeStamp函数获取之外，也可以手动创建一个时间，比如把每个缓冲区的时间设置为比上一个缓冲区时间多1/30秒，这就相当于创建一个每秒30帧的视频，但是这不能保证视频时序的真实情况，因为某些滤镜（或者其他操作）可能会耗时过长</li>
+	<li>当前是否需要录制视频，录制视频其实就是写文件的一个过程</li>
+	<li>判断assetWriter是否已经准备好输入数据了</li>
+	<li>一切都准备好后，我们就先配置一个缓冲区。用<strong><span style="color:#cc0000">CVPixelBufferPoolCreatePixelBuffer</span></strong>函数能创建基于池的缓冲区，它的好处是在创建缓冲区的时候会把之前对assetWriterPixelBufferInput对象的配置项应用到新的缓冲区上，这样就避免了你重新对新的缓冲区进行配置。有一点需要注意，如果我们的assetWriter还未开始工作，那么当我们调用assetWriterPixelBufferInput的pixelBufferPool时候会得到一个空指针，缓冲区当然也就创建不了了</li>
+	<li>我们把缓冲区准备好后，就利用context把图像渲染到里面</li>
+	<li>把缓冲区写入到临时文件中，同时得到是否写入成功的返回值</li>
+	<li>由于在Swift里CVPixelBufferPoolCreatePixelBuffer函数需要的是一个<strong><span style="color:#cc0000">手动管理引用计数的对象（Unmanaged对象）</span></strong>，所以需要自己把它处理一下</li>
+	<li>如果第6步失败的话就输出一下</li>
+</ol>
+
+<p>之前的代码还是保留，因为我们还是需要将每一帧绘制到屏幕上。</p>
+
+<p>由于这个方法用到了很多对象，而且比较占用内存，所以我在进入这个方法的时候还手动增加了自动释放池：</p>
+
+<p>autoreleasepool<span style="color:#000000">&nbsp;{</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// ....</p>
+
+<p>}&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h3>保存视频到图库</h3>
+
+<p>我们之前就加入了recordsButton，并把它连接到了record方法上，现在来实现它：</p>
+
+<p>@IBAction<span style="color:#000000">&nbsp;</span>func<span style="color:#000000">&nbsp;record() {</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">if</span><span style="color:#000000">&nbsp;</span>isWriting<span style="color:#000000">&nbsp;{</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">isWriting</span>&nbsp;=&nbsp;<span style="color:#bb2ca2">false</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>assetWriterPixelBufferInput<span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#bb2ca2">nil</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>recordsButton<span style="color:#000000">.</span><span style="color:#703daa">enabled</span><span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#bb2ca2">false</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">assetWriter</span>?.<span style="color:#3d1d81">finishWritingWithCompletionHandler</span>({[unowned&nbsp;<span style="color:#bb2ca2">self</span>] () -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(<span style="color:#d12f1b">&quot;</span><span style="color:#d12f1b">录制完成</span><span style="color:#d12f1b">&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">recordsButton</span>.<span style="color:#3d1d81">setTitle</span>(<span style="color:#d12f1b">&quot;</span><span style="color:#d12f1b">处理中</span><span style="color:#d12f1b">...&quot;</span>, forState:&nbsp;<span style="color:#703daa">UIControlState</span>.Normal)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>saveMovieToCameraRoll<span style="color:#000000">()</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; })</p>
+
+<p>&nbsp; &nbsp; }&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>createWriter<span style="color:#000000">()</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">recordsButton</span>.<span style="color:#3d1d81">setTitle</span>(<span style="color:#d12f1b">&quot;</span><span style="color:#d12f1b">停止录制</span><span style="color:#d12f1b">...&quot;</span>, forState:&nbsp;<span style="color:#703daa">UIControlState</span>.Normal)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">assetWriter</span>?.<span style="color:#3d1d81">startWriting</span>()</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>assetWriter<span style="color:#000000">?.</span><span style="color:#3d1d81">startSessionAtSourceTime</span><span style="color:#000000">(</span>currentSampleTime<span style="color:#000000">!)</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">isWriting</span>&nbsp;=&nbsp;<span style="color:#bb2ca2">true</span></p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p>首先是不是在录制，如果是的话就停止录制、保存视频，并清理资源。</p>
+
+<p>如果还没有开始录制，就创建AVAssetWriter并配置好，然后调用startWriting方法使<strong><span style="color:#cc0000">assetWriter</span></strong>开始工作，不然在回调里取pixelBufferPool的时候取不到，除此之外，还要调用<strong><span style="color:#cc0000">startSessionAtSourceTime</span></strong>方法，调用后者是为了在回调中拿到最新的时间，即currentSampleTime。如果不调用这两个方法，在appendPixelBuffer的时候就会有问题，就算最后能保存，也只能得到一个空的视频文件。</p>
+
+<p>当视频录制的过程开始后，就只有调用<strong><span style="color:#cc0000">finishWriting</span></strong>方法才能停止，我们通过<strong><span style="color:#cc0000">saveMovieToCameraRoll</span></strong>方法把视频写入到图库中，不然这视频也就没机会展示了：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;saveMovieToCameraRoll() {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#703daa">ALAssetsLibrary</span>().<span style="color:#3d1d81">writeVideoAtPathToSavedPhotosAlbum</span>(<span style="color:#31595d">movieURL</span>(), completionBlock: { (url:&nbsp;<span style="color:#703daa">NSURL</span>!, error:&nbsp;<span style="color:#703daa">NSError</span>?) -&gt; Void&nbsp;<span style="color:#bb2ca2">in</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;errorDescription = error?.<span style="color:#703daa">localizedDescription</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(<span style="color:#d12f1b">&quot;</span><span style="color:#d12f1b">写入视频错误：</span>\(errorDescription)<span style="color:#d12f1b">&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>checkForAndDeleteFile<span style="color:#000000">()</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(<span style="color:#d12f1b">&quot;</span><span style="color:#d12f1b">写入视频成功</span><span style="color:#d12f1b">&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">recordsButton</span>.<span style="color:#703daa">enabled</span>&nbsp;=&nbsp;<span style="color:#bb2ca2">true</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">recordsButton</span>.<span style="color:#3d1d81">setTitle</span>(<span style="color:#d12f1b">&quot;</span><span style="color:#d12f1b">开始录制</span><span style="color:#d12f1b">&quot;</span>, forState:&nbsp;<span style="color:#703daa">UIControlState</span>.Normal)</p>
+
+<p>&nbsp; &nbsp; })</p>
+
+<p>}&nbsp;</p>
+
+<p>之前在拍照并保存的时候，我们使用了<strong><span style="color:#cc0000">尾随闭包</span></strong>语法，这里使用的是完整语法的闭包。</p>
+
+<p>&nbsp;</p>
+
+<p>保存成功后就可以删除临时文件了。</p>
+
+<p>编译、运行吧：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140923225515842?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>局部滤镜</h2>
+
+<p>上面的滤镜都是对整张图像应用滤镜，我们也可以只对部分区域应用滤镜，例如把滤镜应用到视频中的面部上。不同于<a href="http://blog.csdn.net/zhangao0086/article/details/39253707">上一篇</a>，AVFoundation框架内置了检测人脸的功能，所以我们不需要使用CIDetector。</p>
+
+<p>&nbsp;</p>
+
+<h3>标记人脸</h3>
+
+<p>我们先简单的用一个Layer把人脸的区域标记出来，给VC增加一个属性：</p>
+
+<p>//&nbsp;标记人脸</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;faceLayer:&nbsp;<span style="color:#703daa">CALayer</span>?</p>
+
+<p>修改<strong><span style="color:#cc0000">setupCaptureSession</span></strong>方法，在captureSession调用<strong><span style="color:#cc0000">commitConfiguration方法之前</span></strong>加入以下代码：</p>
+
+<p>......</p>
+
+<p>//&nbsp;为了检测人脸</p>
+
+<p><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;metadataOutput =&nbsp;</span>AVCaptureMetadataOutput<span style="color:#000000">()</span></p>
+
+<p><span style="color:#000000">metadataOutput.</span>setMetadataObjectsDelegate<span style="color:#000000">(</span><span style="color:#bb2ca2">self</span><span style="color:#000000">, queue:&nbsp;</span>dispatch_get_main_queue<span style="color:#000000">())</span></p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#4f8187">captureSession</span>.<span style="color:#3d1d81">canAddOutput</span>(metadataOutput) {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">captureSession</span>.<span style="color:#3d1d81">addOutput</span>(metadataOutput)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#3d1d81">println</span><span style="color:#000000">(metadataOutput.</span>availableMetadataObjectTypes<span style="color:#000000">)</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; metadataOutput.</span>metadataObjectTypes<span style="color:#000000">&nbsp;= [</span>AVMetadataObjectTypeFace<span style="color:#000000">]</span></p>
+
+<p>}</p>
+
+<p>......</p>
+
+<p>这里加入了一个元数据的output对象，添加到captureSession后我们就能在回调中得到图像的元数据，包括检测到的人脸。给metadataObjectTypes属性赋值是为了申明要检测的类型，这句要在增加到captureSession之后调用。因为我们要在回调中直接操作Layer的显示，所以我把回调放在主队列中。</p>
+
+<p>实现AVCaptureMetadataOutput的回调方法：</p>
+
+<p>// MARK: - AVCaptureMetadataOutputObjectsDelegate</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;captureOutput(captureOutput:&nbsp;<span style="color:#703daa">AVCaptureOutput</span>!, didOutputMetadataObjects metadataObjects: [<span style="color:#703daa">AnyObject</span>]!, fromConnection connection:&nbsp;<span style="color:#703daa">AVCaptureConnection</span>!) {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// println(metadataObjects)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;metadataObjects.<span style="color:#703daa">count</span>&nbsp;&gt;&nbsp;<span style="color:#272ad8">0</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>//识别到的第一张脸</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;faceObject = metadataObjects.<span style="color:#703daa">first</span>&nbsp;<span style="color:#bb2ca2">as</span>&nbsp;<span style="color:#703daa">AVMetadataFaceObject</span></p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#4f8187">faceLayer</span>&nbsp;==&nbsp;<span style="color:#bb2ca2">nil</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">faceLayer</span>&nbsp;=&nbsp;<span style="color:#703daa">CALayer</span>()</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">faceLayer</span><span style="color:#000000">?.</span>borderColor<span style="color:#000000">&nbsp;=&nbsp;</span>UIColor<span style="color:#000000">.</span><span style="color:#3d1d81">redColor</span><span style="color:#000000">().</span>CGColor</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">faceLayer</span>?.<span style="color:#703daa">borderWidth</span>&nbsp;=&nbsp;<span style="color:#272ad8">1</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#703daa">view</span>.<span style="color:#703daa">layer</span>.<span style="color:#3d1d81">addSublayer</span>(<span style="color:#4f8187">faceLayer</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;faceBounds = faceObject.<span style="color:#703daa">bounds</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;viewSize =&nbsp;<span style="color:#703daa">view</span>.<span style="color:#703daa">bounds</span>.<span style="color:#703daa">size</span></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">faceLayer</span>?.<span style="color:#703daa">position</span>&nbsp;=&nbsp;<span style="color:#703daa">CGPoint</span>(x: viewSize.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">*</span>&nbsp;(<span style="color:#272ad8">1 -&nbsp;</span>faceBounds.<span style="color:#703daa">origin</span>.<span style="color:#703daa">y</span>&nbsp;<span style="color:#3d1d81">-</span>&nbsp;faceBounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>&nbsp;<span style="color:#3d1d81">/</span>&nbsp;<span style="color:#272ad8">2</span>),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; y: viewSize.<span style="color:#703daa">height</span>&nbsp;<span style="color:#3d1d81">*</span>&nbsp;(faceBounds.<span style="color:#703daa">origin</span>.<span style="color:#703daa">x</span>&nbsp;<span style="color:#3d1d81">+</span>&nbsp;faceBounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">/</span>&nbsp;<span style="color:#272ad8">2</span>))</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">faceLayer</span>?.<span style="color:#703daa">bounds</span>.<span style="color:#703daa">size</span>&nbsp;=&nbsp;<span style="color:#703daa">CGSize</span>(width: faceBounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">*</span>&nbsp;viewSize.<span style="color:#703daa">height</span>,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; height: faceBounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>&nbsp;<span style="color:#3d1d81">*</span>&nbsp;viewSize.<span style="color:#703daa">width</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">print</span>(faceBounds.<span style="color:#703daa">origin</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">print</span>(<span style="color:#d12f1b">&quot;###&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">print</span>(<span style="color:#4f8187">faceLayer</span>!.<span style="color:#703daa">position</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">print</span>(<span style="color:#d12f1b">&quot;###&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">print</span>(<span style="color:#4f8187">faceLayer</span>!.<span style="color:#703daa">bounds</span>)</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}&nbsp;</p>
+
+<p>简单说明下上述代码的作用：</p>
+
+<ol>
+	<li>参数中的metadataObjects数组就是AVFoundation框架给我们的关于图像的所有元数据，由于我只设置了需要人脸检测，所以简单判断是否为空后，取出其中的数据即可。在这里我只对第一张脸进行了处理</li>
+	<li>接下来初始化Layer，并设置边框</li>
+	<li>取到的faceObject对象虽然包含了bounds属性，但并不能直接使用，因为从AVFoundation视频中取到的bounds，是一个0～1之间的数，是相对于图像的百分比，所以我们在设置position时，做了两步：把x、y颠倒，修正方向等问题，我只是简单地适配了Portrait方向，此处能达到目的即可。再和view的宽、高相乘，其实是和Layer的父Layer的宽、高相乘。</li>
+	<li>设置size也如上</li>
+</ol>
+
+<p>做的事情比较简单，只是单纯地初始化一个Layer，然后不停地修改它的postion和size就行了。</p>
+
+<p>编译、运行后应该能看到如下效果：</p>
+
+<p>&nbsp;</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140928150014451?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h3>使用滤镜</h3>
+
+<p>上面用Layer只是简单的先显示一下人脸的区域，我们没有调整图像输出时的CIImage，所以并不能被录制到视频或被保存图片到图库中。</p>
+
+<p>接下来我们就修改之前的代码，使其能同时支持整体滤镜和部分滤镜。</p>
+
+<p>首先把VC中记录的属性改一下：&nbsp;</p>
+
+<p>......</p>
+
+<p>//&nbsp;标记人脸</p>
+
+<p>// var faceLayer: CALayer?</p>
+
+<p><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;faceObject:&nbsp;</span>AVMetadataFaceObject<span style="color:#000000">?</span></p>
+
+<p><span style="color:#000000">......</span></p>
+
+<p>我们就不用Layer作人脸范围的标记了，而是直接把滤镜应用到输出的CIImage上，为此，我们需要在AVCaptureMetadataOutput对象的delegate回调方法中记录识别到的脸部元数据：</p>
+
+<p>// MARK: - AVCaptureMetadataOutputObjectsDelegate</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;captureOutput(captureOutput:&nbsp;<span style="color:#703daa">AVCaptureOutput</span>!, didOutputMetadataObjects metadataObjects: [<span style="color:#703daa">AnyObject</span>]!, fromConnection connection:&nbsp;<span style="color:#703daa">AVCaptureConnection</span>!) {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// println(metadataObjects)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;metadataObjects.<span style="color:#703daa">count</span>&nbsp;&gt;&nbsp;<span style="color:#272ad8">0</span>&nbsp;{</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>//识别到的第一张脸</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">faceObject</span>&nbsp;= metadataObjects.<span style="color:#703daa">first</span>&nbsp;<span style="color:#bb2ca2">as</span>?&nbsp;<span style="color:#703daa">AVMetadataFaceObject</span></p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#008400">/*</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; if faceLayer == nil {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; faceLayer = CALayer()</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; faceLayer?.borderColor = UIColor.redColor().CGColor</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; faceLayer?.borderWidth = 1</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; view.layer.addSublayer(faceLayer)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; let faceBounds = faceObject.bounds</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; let viewSize = view.bounds.size</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceLayer?.position = CGPoint(x: viewSize.width * (1 - faceBounds.origin.y - faceBounds.size.height / 2),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; y: viewSize.height * (faceBounds.origin.x + faceBounds.size.width / 2))</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceLayer?.bounds.size = CGSize(width: faceBounds.size.height * viewSize.width,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; height: faceBounds.size.width * viewSize.height)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; print(faceBounds.origin)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; print(&quot;###&quot;)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; print(faceLayer!.position)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; print(&quot;###&quot;)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; print(faceLayer!.bounds)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; */</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}&nbsp;</p>
+
+<p>之前的Layer相关代码都注释掉，只简单地把识别到的第一张脸记录在VC的属性中。</p>
+
+<p>然后修改AVCaptureSession的delegate回调，在录制视频的代码之前，全局滤镜的代码之后，添加脸部处理代码：</p>
+
+<p>......</p>
+
+<p>if<span style="color:#000000">&nbsp;</span>self<span style="color:#000000">.</span><span style="color:#4f8187">filter</span><span style="color:#000000">&nbsp;!=&nbsp;</span>nil<span style="color:#000000">&nbsp;{ &nbsp; &nbsp;<span style="color:#008400">// 之前做的全局滤镜&nbsp;</span></span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">filter</span>.<span style="color:#3d1d81">setValue</span>(outputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; outputImage =&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">filter</span>.<span style="color:#703daa">outputImage</span></p>
+
+<p>}</p>
+
+<p><span style="color:#bb2ca2">if</span><span style="color:#000000">&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>faceObject<span style="color:#000000">&nbsp;!=&nbsp;</span><span style="color:#bb2ca2">nil</span><span style="color:#000000">&nbsp;{ &nbsp; &nbsp;<span style="color:#008400">// 脸部处理</span></span></p>
+
+<p>&nbsp; &nbsp; outputImage =&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#31595d">makeFaceWithCIImage</span>(outputImage, faceObject:&nbsp;<span style="color:#bb2ca2">self</span>.<span style="color:#4f8187">faceObject</span>!)</p>
+
+<p>}</p>
+
+<p>......&nbsp;</p>
+
+<p>我们写了个makeFaceWithImage的方法来专门为脸部应用滤镜，应用的效果是<a href="http://blog.csdn.net/zhangao0086/article/details/39253707">上一篇</a>中提到的马赛克效果。</p>
+
+<p>makeFaceWithCIImage的方法实现：</p>
+
+<p><span style="color:#bb2ca2">func</span>&nbsp;makeFaceWithCIImage(inputImage:&nbsp;<span style="color:#703daa">CIImage</span>, faceObject:&nbsp;<span style="color:#703daa">AVMetadataFaceObject</span>) -&gt;&nbsp;<span style="color:#703daa">CIImage</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;filter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIPixellate&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; filter.<span style="color:#3d1d81">setValue</span>(inputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 1.</p>
+
+<p>&nbsp; &nbsp; filter.<span style="color:#3d1d81">setValue</span>(<span style="color:#3d1d81">max</span>(inputImage.<span style="color:#3d1d81">extent</span>().<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>, inputImage.<span style="color:#3d1d81">extent</span>().<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>)&nbsp;<span style="color:#3d1d81">/</span>&nbsp;<span style="color:#272ad8">60</span>, forKey:&nbsp;<span style="color:#703daa">kCIInputScaleKey</span>)</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;fullPixellatedImage = filter.<span style="color:#703daa">outputImage</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;maskImage:&nbsp;<span style="color:#703daa">CIImage</span>!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;faceBounds = faceObject.<span style="color:#703daa">bounds</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 2.</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;centerX = inputImage.<span style="color:#3d1d81">extent</span>().<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">*</span>&nbsp;(faceBounds.<span style="color:#703daa">origin</span>.<span style="color:#703daa">x</span>&nbsp;<span style="color:#3d1d81">+</span>&nbsp;faceBounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">/</span>&nbsp;<span style="color:#272ad8">2</span>)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;centerY = inputImage.<span style="color:#3d1d81">extent</span>().<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>&nbsp;<span style="color:#3d1d81">*</span>&nbsp;(<span style="color:#272ad8">1</span>&nbsp;<span style="color:#3d1d81">-</span>&nbsp;faceBounds.<span style="color:#703daa">origin</span>.<span style="color:#703daa">y</span>&nbsp;<span style="color:#3d1d81">-</span>&nbsp;faceBounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>&nbsp;<span style="color:#3d1d81">/</span>&nbsp;<span style="color:#272ad8">2</span>)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;radius = faceBounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">*</span>&nbsp;inputImage.<span style="color:#3d1d81">extent</span>().<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">/</span>&nbsp;<span style="color:#272ad8">2</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;radialGradient =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIRadialGradient&quot;</span>,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; withInputParameters: [</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputRadius0&quot;</span>&nbsp;: radius,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputRadius1&quot;</span>&nbsp;: radius&nbsp;<span style="color:#3d1d81">+</span>&nbsp;<span style="color:#272ad8">1</span>,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputColor0&quot;</span>&nbsp;:&nbsp;<span style="color:#703daa">CIColor</span>(red:&nbsp;<span style="color:#272ad8">0</span>, green:&nbsp;<span style="color:#272ad8">1</span>, blue:&nbsp;<span style="color:#272ad8">0</span>, alpha:&nbsp;<span style="color:#272ad8">1</span>),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputColor1&quot;</span>&nbsp;:&nbsp;<span style="color:#703daa">CIColor</span>(red:&nbsp;<span style="color:#272ad8">0</span>, green:&nbsp;<span style="color:#272ad8">0</span>, blue:&nbsp;<span style="color:#272ad8">0</span>, alpha:&nbsp;<span style="color:#272ad8">0</span>),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#703daa">kCIInputCenterKey</span>&nbsp;:&nbsp;<span style="color:#703daa">CIVector</span>(x: centerX, y: centerY)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; ])</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;radialGradientOutputImage = radialGradient.<span style="color:#703daa">outputImage</span>.<span style="color:#3d1d81">imageByCroppingToRect</span>(inputImage.<span style="color:#3d1d81">extent</span>())</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;maskImage ==&nbsp;<span style="color:#bb2ca2">nil</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; maskImage = radialGradientOutputImage</p>
+
+<p>&nbsp; &nbsp; }&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(radialGradientOutputImage)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; maskImage =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CISourceOverCompositing&quot;</span>,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; withInputParameters: [</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#703daa">kCIInputImageKey</span>&nbsp;: radialGradientOutputImage,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#703daa">kCIInputBackgroundImageKey</span>&nbsp;: maskImage</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ]).<span style="color:#703daa">outputImage</span></p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;blendFilter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIBlendWithMask&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; blendFilter.<span style="color:#3d1d81">setValue</span>(fullPixellatedImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; blendFilter.<span style="color:#3d1d81">setValue</span>(inputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputBackgroundImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; blendFilter.<span style="color:#3d1d81">setValue</span>(maskImage, forKey:&nbsp;<span style="color:#703daa">kCIInputMaskImageKey</span>)</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;blendFilter.<span style="color:#703daa">outputImage</span></p>
+
+<p>}&nbsp;</p>
+
+<p>这上面的代码基本是复制<a href="http://blog.csdn.net/zhangao0086/article/details/39253707">上一篇</a>里的代码，改的地方只有两处：</p>
+
+<ol>
+	<li>把马赛克的效果变大，kCIInputScaleKey默认值为0.5，你可以把这行代码注释掉后看效果</li>
+	<li>计算脸部的中心点和半径，计算方法和之前didOutputMetadataObjects这个delegate回调中的计算方法一样，复制过来就行了</li>
+</ol>
+
+<p>如果你看到我的上一篇《<a href="http://blog.csdn.net/zhangao0086/article/details/39253707">iOS8 Core Image In Swift：人脸检测以及马赛克</a>》的话，这里面的实现方式应该就很清楚了。</p>
+
+<p>到此，对脸部的滤镜也处理好了，编译、运行，可以得到这样的结果：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140928150029645?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color:#cc0000"><a href="https://github.com/zhangao0086/iOS-CoreImage-Swift">GitHub下载地址</a></span></h2>
+
+<p>我在GitHub上会保持更新。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>参考资料：</p>
+
+<p>1.&nbsp;<a href="http://weblog.invasivecode.com/post/18445861158/a-very-cool-custom-video-camera-with">http://weblog.invasivecode.com/post/18445861158/a-very-cool-custom-video-camera-with</a></p>
+
+<p>2.&nbsp;<a href="https://developer.apple.com/library/mac/documentation/graphicsimaging/conceptual/CoreImaging/ci_intro/ci_intro.html">https://developer.apple.com/library/mac/documentation/graphicsimaging/conceptual/CoreImaging/ci_intro/ci_intro.html</a></p>
+
+<p>3.&nbsp;<a href="http://en.wikipedia.org/wiki/YUV">http://en.wikipedia.org/wiki/YUV</a></p>
+
+<p>&nbsp;</p>

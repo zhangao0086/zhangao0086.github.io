@@ -1,0 +1,608 @@
+---
+layout: post
+title: "iOS8 Core Image In Swift：人脸检测以及马赛克"
+date: 2014-09-20 09:43:49
+categories: [iOS,Swift]
+---
+
+
+<p><a href="http://blog.csdn.net/zhangao0086/article/details/39012231">iOS8 Core Image In Swift：自动改善图像以及内置滤镜的使用</a></p>
+
+<p><a href="http://blog.csdn.net/zhangao0086/article/details/39120331">iOS8 Core Image In Swift：更复杂的滤镜</a></p>
+
+<p>iOS8 Core Image In Swift：人脸检测以及马赛克</p>
+
+<p><a href="http://blog.csdn.net/zhangao0086/article/details/39433519">iOS8 Core Image In Swift：视频实时滤镜</a></p>
+
+<p>&nbsp;</p>
+
+<p>Core Image不仅内置了诸多滤镜，还能检测图像中的人脸，不过Core Image只是<strong><span style="color:#cc0000">检测</span></strong>，并非<strong><span style="color:#cc0000">识别</span></strong>，检测人脸是指在图像中寻找符合人脸特征（只要是个人脸）的区域，识别是指在图像中寻找指定的人脸（比如某某某的脸）。Core Image在找到符合人脸特征的区域后，会返回该特征的信息，比如人脸的范围、眼睛和嘴巴的位置等。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>人脸检测并标记检测到的区域</h2>
+
+<p>先做好以下几步：</p>
+
+<ol>
+	<li>新建一个Single View Application工程</li>
+	<li>然后在Storyboard里放入UIImageView，ContentMode设置为<strong><span style="color:#cc0000">Aspect Fit</span></strong></li>
+	<li>将UIImageView连接到VC里</li>
+	<li>放入一个名为&ldquo;人脸检测&rdquo;的UIButton，然后连接到VC的<strong><span style="color:#cc0000">faceDetecting</span></strong>方法上</li>
+	<li>关闭Auto Layout以及Size Classes</li>
+</ol>
+
+<p>UIImageView的frame以及VC的UI如下：</p>
+
+<p>&nbsp;</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140914234547072" /></p>
+
+<p>&nbsp;</p>
+
+<p>以下是工程中会用到的图，齐刷刷一排脸，点击图片显示原图：</p>
+
+<p>&nbsp;</p>
+
+<p><a href="https://img-blog.csdn.net/20140914234012093"><img alt="" class="has" src="https://img-blog.csdn.net/20140914234012093" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>然后在VC上添加基本的属性：懒加载的originalImage、context（Core Image框架绕不开的对象）。</p>
+
+<p><span style="color:#bb2ca2">class</span>&nbsp;ViewController:&nbsp;<span style="color:#703daa">UIViewController</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">@IBOutlet</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;imageView:&nbsp;<span style="color:#703daa">UIImageView</span>!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">lazy</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;originalImage:&nbsp;<span style="color:#703daa">UIImage</span>&nbsp;= {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;<span style="color:#703daa">UIImage</span>(named:&nbsp;<span style="color:#d12f1b">&quot;Image&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; }()</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">lazy</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;context:&nbsp;<span style="color:#703daa">CIContext</span>&nbsp;= {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;<span style="color:#703daa">CIContext</span>(options:&nbsp;<span style="color:#bb2ca2">nil</span>)</p>
+
+<p>&nbsp; &nbsp; }()</p>
+
+<p>......&nbsp;</p>
+
+<p>在viewDidLoad方法里显示originalImage：</p>
+
+<p><span style="color:#bb2ca2">override</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;viewDidLoad() {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">super</span><span style="color:#000000">.</span>viewDidLoad<span style="color:#000000">()</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// Do any additional setup after loading the view, typically from a nib.</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>imageView<span style="color:#000000">.</span><span style="color:#703daa">image</span><span style="color:#000000">&nbsp;=&nbsp;</span>originalImage</p>
+
+<p>}&nbsp;</p>
+
+<p>然后就可以准备实现faceDetecting方法了。</p>
+
+<p>在Core Image框架中，<strong><span style="color:#cc0000">CIDetector</span></strong>对象提供了对图像检测的功能，只需要通过几个APIs就能完成CIDetector的初始化并得到检测结果：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;faceDetecing() {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;inputImage =&nbsp;<span style="color:#703daa">CIImage</span>(image:&nbsp;<span style="color:#4f8187">originalImage</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;detector =&nbsp;</span>CIDetector<span style="color:#000000">(ofType:&nbsp;</span>CIDetectorTypeFace<span style="color:#000000">,</span></p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; context:&nbsp;<span style="color:#4f8187">context</span>,</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; options: [<span style="color:#703daa">CIDetectorAccuracy</span>:&nbsp;<span style="color:#703daa">CIDetectorAccuracyHigh</span>])</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;faceFeatures: [<span style="color:#703daa">CIFaceFeature</span>]!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;orientation:&nbsp;<span style="color:#703daa">AnyObject</span>&nbsp;= inputImage.<span style="color:#3d1d81">properties</span>()?[<span style="color:#703daa">kCGImagePropertyOrientation</span>] {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceFeatures = detector.<span style="color:#3d1d81">featuresInImage</span>(inputImage,&nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; options: [<span style="color:#703daa">CIDetectorImageOrientation</span>: orientation]</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;)&nbsp;<span style="color:#bb2ca2">as</span>&nbsp;[<span style="color:#703daa">CIFaceFeature</span>]</p>
+
+<p>&nbsp; &nbsp; }&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceFeatures = detector.<span style="color:#3d1d81">featuresInImage</span>(inputImage)&nbsp;<span style="color:#bb2ca2">as</span>&nbsp;[<span style="color:#703daa">CIFaceFeature</span>]</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(faceFeatures)</p>
+
+<p>......</p>
+
+<table border="1" cellpadding="10" cellspacing="1">
+	<tbody>
+		<tr>
+			<td>使用kCGImagePropertyOrientation的时候，可能需要导入<strong><span style="color:#cc0000">ImageIO</span></strong>框架</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>originalImage和context通过懒加载都得到了，在创建CIDetector对象的时候，必须告诉它要检测的内容，这里当然是传<strong><span style="color:#cc0000">CIDetectorTypeFace</span></strong>了，除了CIDetectorTypeFace外，CIDetector还能检测二维码；然后传递一个context，多个CIDetector可以共用一个context对象；第三个参数是一个字典，我们能够指定检测的精度，除了CIDetectorAccuracyHigh以外，还有CIDetectorAccuracyLow，精度高会识别度更高，但识别速度就更慢。</p>
+
+<p>创建完CIDetector之后，把要识别的CIImage传递给它，在这里，我判断了CIImage是否带有方向的元数据，如果带的话调用就<strong><span style="color:#cc0000">featuresInImage:options</span></strong>这个方法，因为方向对CIDetector来说至关重要，直接导致识别的成功与否；而有的图片没有方向这些元数据，就调用<strong><span style="color:#cc0000">featuresInImage</span></strong>方法，由于这张《生活大爆炸》的图是不带方向元数据的，所以是执行的featuresInImage方法，但是大多数情况下应该会用到前者。</p>
+
+<p>featuresInImage方法的返回值是一个<strong><span style="color:#cc0000">CIFaceFeature</span></strong>数组，CIFaceFeature包含了面部的范围、左右眼、嘴巴的位置等，我们通过使用bounds就能标记出面部的范围。</p>
+
+<p>我们很容易写出这样的代码：</p>
+
+<ol>
+	<li>获取所有的面部特征</li>
+	<li>用bounds实例化一个UIView</li>
+	<li>把View显示出来</li>
+</ol>
+
+<p>实现出来就像这样：</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;faceDetecing() {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;inputImage =&nbsp;<span style="color:#703daa">CIImage</span>(image:&nbsp;<span style="color:#4f8187">originalImage</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;detector =&nbsp;</span>CIDetector<span style="color:#000000">(ofType:&nbsp;</span>CIDetectorTypeFace<span style="color:#000000">,</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; context:&nbsp;<span style="color:#4f8187">context</span>,</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; options: [</span>CIDetectorAccuracy<span style="color:#000000">:&nbsp;</span>CIDetectorAccuracyHigh<span style="color:#000000">])</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;faceFeatures: [<span style="color:#703daa">CIFaceFeature</span>]!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;orientation:&nbsp;<span style="color:#703daa">AnyObject</span>&nbsp;= inputImage.<span style="color:#3d1d81">properties</span>()?[<span style="color:#703daa">kCGImagePropertyOrientation</span>] {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceFeatures = detector.<span style="color:#3d1d81">featuresInImage</span>(inputImage, options: [<span style="color:#703daa">CIDetectorImageOrientation</span>: orientation])&nbsp;<span style="color:#bb2ca2">as</span>&nbsp;[<span style="color:#703daa">CIFaceFeature</span>]</p>
+
+<p>&nbsp; &nbsp; }&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceFeatures = detector.<span style="color:#3d1d81">featuresInImage</span>(inputImage)&nbsp;<span style="color:#bb2ca2">as</span>&nbsp;[<span style="color:#703daa">CIFaceFeature</span>]</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(faceFeatures)</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">for</span>&nbsp;faceFeature&nbsp;<span style="color:#bb2ca2">in</span>&nbsp;faceFeatures {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;faceView =&nbsp;<span style="color:#703daa">UIView</span>(frame: faceFeature.<span style="color:#703daa">bounds</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; faceView.</span>layer<span style="color:#000000">.</span>borderColor<span style="color:#000000">&nbsp;=&nbsp;</span>UIColor<span style="color:#000000">.</span><span style="color:#3d1d81">orangeColor</span><span style="color:#000000">().</span>CGColor</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceView.<span style="color:#703daa">layer</span>.<span style="color:#703daa">borderWidth</span>&nbsp;=&nbsp;<span style="color:#272ad8">2</span></p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#3d1d81">addSubview</span>(faceView)</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p>这样写是否可以呢？如果你运行起来会得到这样的效果：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140915223328895?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>这是因为我们的<strong><span style="color:#cc0000">inputImage</span></strong>，其实是用<strong><span style="color:#cc0000">originalImage</span></strong>初始化的，而我这张originalImage的真实大小比实际看到的大得多：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140915223422968?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>它的宽实有600像素，我把它以@2x命名，实际显示有300像素，且在imageView里以<strong><span style="color:#cc0000">Aspect Fit</span></strong>模式展示（imageViwe宽为300像素），在显示的时候被缩放了，但是在内存中它是完整的，除此之外，CIImage的坐标系统和UIView的坐标系统也不一样，CIImage的坐标系统就像数学坐标系统，原点在下，在UIView看来，就是倒置的，这是因Core Image、Core Graphics这些框架都来源于Mac OS X，在Mac OS X上这种坐标系统已存在多年，iOS直接引入了这些框架，这解决了Cocoa App和iOS App底层兼容性的问题，但是在上层就只能自己解决了。所以实际上它是这样的：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140915225211286?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>我们需要做两步工作：</p>
+
+<ul>
+	<li>调整transform，让它正过来</li>
+	<li>缩放bounds，让它适配imageView</li>
+</ul>
+
+<p>然后再次很容易的写下了这样的代码：</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;faceDetecing() {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;inputImage =&nbsp;<span style="color:#703daa">CIImage</span>(image:&nbsp;<span style="color:#4f8187">originalImage</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;detector =&nbsp;</span>CIDetector<span style="color:#000000">(ofType:&nbsp;</span>CIDetectorTypeFace<span style="color:#000000">,</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; context:&nbsp;<span style="color:#4f8187">context</span>,</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; options: [</span>CIDetectorAccuracy<span style="color:#000000">:&nbsp;</span>CIDetectorAccuracyHigh<span style="color:#000000">])</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;faceFeatures: [<span style="color:#703daa">CIFaceFeature</span>]!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;orientation:&nbsp;<span style="color:#703daa">AnyObject</span>&nbsp;= inputImage.<span style="color:#3d1d81">properties</span>()?[<span style="color:#703daa">kCGImagePropertyOrientation</span>] {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceFeatures = detector.<span style="color:#3d1d81">featuresInImage</span>(inputImage, options: [<span style="color:#703daa">CIDetectorImageOrientation</span>: orientation])&nbsp;<span style="color:#bb2ca2">as</span>&nbsp;[<span style="color:#703daa">CIFaceFeature</span>]</p>
+
+<p>&nbsp; &nbsp; }&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceFeatures = detector.<span style="color:#3d1d81">featuresInImage</span>(inputImage)&nbsp;<span style="color:#bb2ca2">as</span>&nbsp;[<span style="color:#703daa">CIFaceFeature</span>]</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(faceFeatures)</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 1.</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;inputImageSize = inputImage.<span style="color:#3d1d81">extent</span>().<span style="color:#703daa">size</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;transform =&nbsp;</span>CGAffineTransformIdentity</p>
+
+<p>&nbsp; &nbsp; transform =&nbsp;<span style="color:#3d1d81">CGAffineTransformScale</span>(transform,&nbsp;<span style="color:#272ad8">1</span>, -<span style="color:#272ad8">1</span>)</p>
+
+<p>&nbsp; &nbsp; transform =&nbsp;<span style="color:#3d1d81">CGAffineTransformTranslate</span>(transform,&nbsp;<span style="color:#272ad8">0</span>,&nbsp;<span style="color:#3d1d81">-</span>inputImageSize.<span style="color:#703daa">height</span>)</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">for</span>&nbsp;faceFeature&nbsp;<span style="color:#bb2ca2">in</span>&nbsp;faceFeatures {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;faceViewBounds =&nbsp;<span style="color:#3d1d81">CGRectApplyAffineTransform</span>(faceFeature.<span style="color:#703daa">bounds</span>, transform)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#008400">// 2.</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;scaleTransform =&nbsp;<span style="color:#3d1d81">CGAffineTransformMakeScale</span>(<span style="color:#272ad8">0.5</span>,&nbsp;<span style="color:#272ad8">0.5</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceViewBounds =&nbsp;<span style="color:#3d1d81">CGRectApplyAffineTransform</span>(faceViewBounds, scaleTransform)</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;faceView =&nbsp;<span style="color:#703daa">UIView</span>(frame: faceViewBounds)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; faceView.</span>layer<span style="color:#000000">.</span>borderColor<span style="color:#000000">&nbsp;=&nbsp;</span>UIColor<span style="color:#000000">.</span><span style="color:#3d1d81">orangeColor</span><span style="color:#000000">().</span>CGColor</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceView.<span style="color:#703daa">layer</span>.<span style="color:#703daa">borderWidth</span>&nbsp;=&nbsp;<span style="color:#272ad8">2</span></p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#3d1d81">addSubview</span>(faceView)</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}&nbsp;</p>
+
+<p>现在看起来就没有问题了，在第一步里我们放置了一个调整坐标系统的tranform，在第二步对bounds进行了缩放（等同于把x、y、width、height全部乘以0.5），由于我们知道实际scale是0.5（原图600像素，imageView宽为300像素），就直接写死了0.5，但运行后出现了一点点偏移：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140915230915677?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>这其实是因为我把imageView的<strong><span style="color:#cc0000">ContentMode设为Aspect Fit</span></strong>的结果 ：</p>
+
+<p>&nbsp;</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140915231021337?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>一般来讲，我们不会拉伸照片，通常会按宽、高进行适配，所以我们还需要对Aspect Fit进行处理，上面代码修改后如下：</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;faceDetecing() {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;inputImage =&nbsp;<span style="color:#703daa">CIImage</span>(image:&nbsp;<span style="color:#4f8187">originalImage</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;detector =&nbsp;</span>CIDetector<span style="color:#000000">(ofType:&nbsp;</span>CIDetectorTypeFace<span style="color:#000000">,</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; context:&nbsp;<span style="color:#4f8187">context</span>,</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; options: [</span>CIDetectorAccuracy<span style="color:#000000">:&nbsp;</span>CIDetectorAccuracyHigh<span style="color:#000000">])</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;faceFeatures: [<span style="color:#703daa">CIFaceFeature</span>]!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;orientation:&nbsp;<span style="color:#703daa">AnyObject</span>&nbsp;= inputImage.<span style="color:#3d1d81">properties</span>()?[<span style="color:#703daa">kCGImagePropertyOrientation</span>] {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceFeatures = detector.<span style="color:#3d1d81">featuresInImage</span>(inputImage, options: [<span style="color:#703daa">CIDetectorImageOrientation</span>: orientation])&nbsp;<span style="color:#bb2ca2">as</span>&nbsp;[<span style="color:#703daa">CIFaceFeature</span>]</p>
+
+<p>&nbsp; &nbsp; }&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceFeatures = detector.<span style="color:#3d1d81">featuresInImage</span>(inputImage)&nbsp;<span style="color:#bb2ca2">as</span>&nbsp;[<span style="color:#703daa">CIFaceFeature</span>]</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(faceFeatures)</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 1.</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;inputImageSize = inputImage.<span style="color:#3d1d81">extent</span>().<span style="color:#703daa">size</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">var</span><span style="color:#000000">&nbsp;transform =&nbsp;</span>CGAffineTransformIdentity</p>
+
+<p>&nbsp; &nbsp; transform =&nbsp;<span style="color:#3d1d81">CGAffineTransformScale</span>(transform,&nbsp;<span style="color:#272ad8">1</span>, -<span style="color:#272ad8">1</span>)</p>
+
+<p>&nbsp; &nbsp; transform =&nbsp;<span style="color:#3d1d81">CGAffineTransformTranslate</span>(transform,&nbsp;<span style="color:#272ad8">0</span>,&nbsp;<span style="color:#3d1d81">-</span>inputImageSize.<span style="color:#703daa">height</span>)</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">for</span>&nbsp;faceFeature&nbsp;<span style="color:#bb2ca2">in</span>&nbsp;faceFeatures {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;faceViewBounds =&nbsp;<span style="color:#3d1d81">CGRectApplyAffineTransform</span>(faceFeature.<span style="color:#703daa">bounds</span>, transform)</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#008400">// 2.</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;scale =&nbsp;<span style="color:#3d1d81">min</span>(<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">bounds</span>.<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">/</span>&nbsp;inputImageSize.<span style="color:#703daa">width</span>,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">bounds</span>.<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>&nbsp;<span style="color:#3d1d81">/</span>&nbsp;inputImageSize.<span style="color:#703daa">height</span>)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;offsetX = (<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">bounds</span>.<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">-</span>&nbsp;inputImageSize.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">*</span>&nbsp;scale)&nbsp;<span style="color:#3d1d81">/</span>&nbsp;<span style="color:#272ad8">2</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;offsetY = (<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">bounds</span>.<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>&nbsp;<span style="color:#3d1d81">-</span>&nbsp;inputImageSize.<span style="color:#703daa">height</span>&nbsp;<span style="color:#3d1d81">*</span>&nbsp;scale)&nbsp;<span style="color:#3d1d81">/</span>&nbsp;<span style="color:#272ad8">2</span></p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceViewBounds =&nbsp;<span style="color:#3d1d81">CGRectApplyAffineTransform</span>(faceViewBounds,&nbsp;<span style="color:#3d1d81">CGAffineTransformMakeScale</span>(scale, scale))</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceViewBounds.<span style="color:#703daa">origin</span>.<span style="color:#703daa">x</span>&nbsp;<span style="color:#3d1d81">+=</span>&nbsp;offsetX</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceViewBounds.<span style="color:#703daa">origin</span>.<span style="color:#703daa">y</span>&nbsp;<span style="color:#3d1d81">+=</span>&nbsp;offsetY</p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;faceView =&nbsp;<span style="color:#703daa">UIView</span>(frame: faceViewBounds)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; faceView.</span>layer<span style="color:#000000">.</span>borderColor<span style="color:#000000">&nbsp;=&nbsp;</span>UIColor<span style="color:#000000">.</span><span style="color:#3d1d81">orangeColor</span><span style="color:#000000">().</span>CGColor</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; faceView.<span style="color:#703daa">layer</span>.<span style="color:#703daa">borderWidth</span>&nbsp;=&nbsp;<span style="color:#272ad8">2</span></p>
+
+<p>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#3d1d81">addSubview</span>(faceView)</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p>在第二步里，除了通过宽、高比计算scale外，还计算了x、y轴的偏移，以确保在宽或高缩放的情况下都能正常工作（最后除以2是因为缩放时是居中显示，上下或左右都各有一半）。</p>
+
+<p>编译、运行，在不同的高度下的效果图：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140915232616215?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><img alt="" class="has" src="https://img-blog.csdn.net/20140915232422078?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<h2>面部马赛克</h2>
+
+<p>检测到面部以后，我们还能做一些有趣的操作，比如打上马赛克：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140917221626490" /></p>
+
+<p>这是苹果官方例子上的一张图，展示了把一张照片中所有的面部打上马赛克的方法：</p>
+
+<ol>
+	<li>基于原图，创建一个将所有部分都马赛克的图片</li>
+	<li>为检测到的人脸创建一张蒙版图</li>
+	<li>用蒙版图，将完全马赛克的图和原图混合起来</li>
+</ol>
+
+<p>我们在VC上添加一个名为&ldquo;马赛克&rdquo;的按钮，将其事件连接到VC的<strong><span style="color:#cc0000">pixellated</span></strong>方法上，然后开始实现马赛克的效果。</p>
+
+<p>具体步骤如下：</p>
+
+<p>&nbsp;</p>
+
+<h3>创建完全马赛克的图</h3>
+
+<p>&nbsp;</p>
+
+<p>使用<strong><span style="color:#cc0000">CIPixellate</span></strong>滤镜，其参数设置：</p>
+
+<ul>
+	<li>设置inputImage为原图</li>
+	<li>可以根据自己的需要，选择设置inputScale参数，inputScale取值为1到100，取值越大，马赛克就越大</li>
+</ul>
+
+<p>这一步的效果图：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140917224602179?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<h3>为检测到的人脸创建蒙版图</h3>
+
+<p>和之前一样，使用CIDetector检测人脸，然后为每一张脸：</p>
+
+<ul>
+	<li>使用<strong><span style="color:#cc0000">CIRadialGradient</span></strong>滤镜创建一个把脸包围起来的圆</li>
+	<li>使用<strong><span style="color:#cc0000">CISourceOverCompositing</span></strong>滤镜把各个蒙版（有几张脸其实就有几个蒙版）组合起来</li>
+</ul>
+
+<p>这一步的效果图：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140917225357500?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<h3>混合马赛克图、蒙版图以及原图</h3>
+
+<p>用<strong><span style="color:#cc0000">CIBlendWithMask</span></strong>滤镜来混合三者，其参数设置如下：</p>
+
+<ul>
+	<li>设置inputImage为马赛克图</li>
+	<li>设置inputBackground为原图</li>
+	<li>设置inputMaskImage为蒙版图</li>
+</ul>
+
+<p>完整实现代码如下：</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;pixellated() {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 1.</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;filter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIPixellate&quot;</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>println<span style="color:#000000">(filter.</span>attributes<span style="color:#000000">())</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;inputImage =&nbsp;<span style="color:#703daa">CIImage</span>(image:&nbsp;<span style="color:#4f8187">originalImage</span>)</p>
+
+<p>&nbsp; &nbsp; filter.<span style="color:#3d1d81">setValue</span>(inputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// filter.setValue(max(inputImage.extent().size.width, inputImage.extent().size.height) / 60, forKey: kCIInputScaleKey)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;fullPixellatedImage = filter.<span style="color:#703daa">outputImage</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// let cgImage = context.createCGImage(fullPixellatedImage, fromRect: fullPixellatedImage.extent())</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// imageView.image = UIImage(CGImage: cgImage)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 2.</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">let</span><span style="color:#000000">&nbsp;detector =&nbsp;</span>CIDetector<span style="color:#000000">(ofType:&nbsp;</span>CIDetectorTypeFace<span style="color:#000000">,</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; context:&nbsp;<span style="color:#4f8187">context</span>,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; options:&nbsp;<span style="color:#bb2ca2">nil</span>)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;faceFeatures = detector.<span style="color:#3d1d81">featuresInImage</span>(inputImage)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 3.</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;maskImage:&nbsp;<span style="color:#703daa">CIImage</span>!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">for</span>&nbsp;faceFeature&nbsp;<span style="color:#bb2ca2">in</span>&nbsp;faceFeatures {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(faceFeature.bounds)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#008400">// 4.</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;centerX = faceFeature.bounds.<span style="color:#703daa">origin</span>.<span style="color:#703daa">x</span>&nbsp;<span style="color:#3d1d81">+</span>&nbsp;faceFeature.bounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">/</span>&nbsp;<span style="color:#272ad8">2</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;centerY = faceFeature.bounds.<span style="color:#703daa">origin</span>.<span style="color:#703daa">y</span>&nbsp;<span style="color:#3d1d81">+</span>&nbsp;faceFeature.bounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>&nbsp;<span style="color:#3d1d81">/</span>&nbsp;<span style="color:#272ad8">2</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;radius =&nbsp;<span style="color:#3d1d81">min</span>(faceFeature.bounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>, faceFeature.bounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>)&nbsp;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;radialGradient =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIRadialGradient&quot;</span>,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; withInputParameters: [</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputRadius0&quot;</span>&nbsp;: radius,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputRadius1&quot;</span>&nbsp;: radius&nbsp;<span style="color:#3d1d81">+</span>&nbsp;<span style="color:#272ad8">1</span>,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputColor0&quot;</span>&nbsp;:&nbsp;<span style="color:#703daa">CIColor</span>(red:&nbsp;<span style="color:#272ad8">0</span>, green:&nbsp;<span style="color:#272ad8">1</span>, blue:&nbsp;<span style="color:#272ad8">0</span>, alpha:&nbsp;<span style="color:#272ad8">1</span>),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputColor1&quot;</span>&nbsp;:&nbsp;<span style="color:#703daa">CIColor</span>(red:&nbsp;<span style="color:#272ad8">0</span>, green:&nbsp;<span style="color:#272ad8">0</span>, blue:&nbsp;<span style="color:#272ad8">0</span>, alpha:&nbsp;<span style="color:#272ad8">0</span>),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#703daa">kCIInputCenterKey</span>&nbsp;:&nbsp;<span style="color:#703daa">CIVector</span>(x: centerX, y: centerY)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ])</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(radialGradient.<span style="color:#3d1d81">attributes</span>())</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#008400">// 5.</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;radialGradientOutputImage = radialGradient.<span style="color:#703daa">outputImage.<span style="color:#3d1d81">imageByCroppingToRect</span>(inputImage.<span style="color:#3d1d81">extent</span>())</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>&nbsp;maskImage ==&nbsp;<span style="color:#bb2ca2">nil</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; maskImage = radialGradientOutputImage</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#3d1d81">println</span>(radialGradientOutputImage)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; maskImage =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CISourceOverCompositing&quot;</span>,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; withInputParameters: [</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#703daa">kCIInputImageKey</span>&nbsp;: radialGradientOutputImage,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#703daa">kCIInputBackgroundImageKey</span>&nbsp;: maskImage</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ]).<span style="color:#703daa">outputImage</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 6.</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;blendFilter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIBlendWithMask&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; blendFilter.<span style="color:#3d1d81">setValue</span>(fullPixellatedImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; blendFilter.<span style="color:#3d1d81">setValue</span>(inputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputBackgroundImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; blendFilter.<span style="color:#3d1d81">setValue</span>(maskImage, forKey:&nbsp;<span style="color:#703daa">kCIInputMaskImageKey</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 7.</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;blendOutputImage = blendFilter.<span style="color:#703daa">outputImage</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;blendCGImage =&nbsp;<span style="color:#4f8187">context</span>.<span style="color:#3d1d81">createCGImage</span>(blendOutputImage, fromRect: blendOutputImage.<span style="color:#3d1d81">extent</span>())</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">image</span>&nbsp;=&nbsp;<span style="color:#703daa">UIImage</span>(CGImage: blendCGImage)</p>
+
+<p>}&nbsp;</p>
+
+<p>我详细的分为了7个部分：</p>
+
+<ol>
+	<li>用CIPixellate滤镜对原图先做个完全马赛克</li>
+	<li>检测人脸，并保存在faceFeatures中</li>
+	<li>初始化蒙版图，并开始遍历检测到的所有人脸</li>
+	<li>由于我们要基于人脸的位置，为每一张脸都单独创建一个蒙版，所以要先计算出脸的中心点，对应为x、y轴坐标，再基于脸的宽度或高度给一个半径，最后用这些计算结果初始化一个CIRadialGradient滤镜（我将<span style="color:#cc0000">inputColor1</span>的alpha赋值为0，表示将这些颜色值设为透明，因为我不关心除了蒙版以外的颜色，这点和苹果官网中的例子有太一样，苹果将其赋值为了1）</li>
+	<li>由于CIRadialGradient滤镜创建的是一张无限大小的图，所以在使用之前先对它进行裁剪（苹果官网例子中没有对其裁剪。。），然后把每一张脸的蒙版图合在一起</li>
+	<li>用<strong><span style="color:#cc0000">CIBlendWithMask</span></strong>滤镜把马赛克图、原图、蒙版图混合起来</li>
+	<li>输出，在界面上显示</li>
+</ol>
+
+<p>运行效果：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140917232224373?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>一个简单的对照片进行马赛克处理的例子就完成了。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color:#cc0000"><a href="https://github.com/zhangao0086/iOS-CoreImage-Swift">GitHub下载地址</a></span></h2>
+
+<p>我在GitHub上会保持更新。</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color:#cc0000">UPDATED:</span></h2>
+
+<p>细心的朋友会发现马赛克的面积比检测到的面积要大：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140920211509152?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>这是因为计算马赛克radius时没有考虑缩放的因素，只要先计算出scale，再把scale和现在的radius相乘就能得到精确的范围。</p>
+
+<p>计算scale：</p>
+
+<p><span style="color:#bb2ca2">var</span>&nbsp;scale =&nbsp;<span style="color:#3d1d81">min</span>(<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">bounds</span>.<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>&nbsp;<span style="color:#3d1d81">/</span>&nbsp;inputImage.<span style="color:#3d1d81">extent</span>().<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">bounds</span>.<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>&nbsp;<span style="color:#3d1d81">/</span>&nbsp;inputImage.<span style="color:#3d1d81">extent</span>().<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>)</p>
+
+<p>修正radius：</p>
+
+<p><span style="color:#bb2ca2">let</span>&nbsp;radius =&nbsp;<span style="color:#3d1d81">min</span>(faceFeature.bounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">width</span>, faceFeature.bounds.<span style="color:#703daa">size</span>.<span style="color:#703daa">height</span>)&nbsp;<span style="color:#3d1d81">*</span>&nbsp;scale</p>
+
+<p>修正后的马赛克效果与人脸检测效果：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140920211513114?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>参考资料：</p>
+
+<p><a href="https://developer.apple.com/library/mac/documentation/graphicsimaging/conceptual/CoreImaging/ci_intro/ci_intro.html">https://developer.apple.com/library/mac/documentation/graphicsimaging/conceptual/CoreImaging/ci_intro/ci_intro.html</a></p>

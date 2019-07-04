@@ -1,0 +1,9 @@
+---
+layout: post
+title: "struts2国际化开发"
+date: 2011-03-19 18:08:00
+categories: [Java]
+---
+
+
+<h1></h1><h1>首先针对不同的语言类别定义不同的资源文件</h1><p style="padding-left: 30px;">资源文件的命名:基名_语言代码_国家代码.properties</p><p style="padding-left: 30px;">比如:</p><p style="padding-left: 30px;">resource_zh_CN.properties</p><p style="padding-left: 30px;">resource_en_US.properties</p><p style="padding-left: 30px;">resource.properties(当找不到相关的资源文件时,读取默认的资源文件)</p><p style="padding-left: 30px;">资源文件的内容:</p><p style="padding-left: 30px;">key=value</p><p style="padding-left: 30px;">比如:</p><p style="padding-left: 30px;">username=用户名</p><p style="padding-left: 30px;">username=username</p><p style="padding-left: 30px;">value中可以有占位符,占位符的索引从0开始:</p><p style="padding-left: 30px;">welcome={0} welcome to {1}</p><h1>在struts.xml文件中加载资源文件</h1><p style="padding-left: 30px;">加载自定义的资源文件,如果有多个资源文件,用逗号隔开,如果文件不在类路径下,要带完整包名<br />&lt;constant name=&quot;struts.custom.i18n.resources&quot; value=&quot;资源文件名&quot;/&gt;</p><h1>在jsp如何获取资源文件的内容</h1><p>&nbsp;</p><p style="padding-left: 30px;">引入struts2的标签库:</p><p style="padding-left: 30px;">&lt;%@ taglib uri=&quot;/struts-tags&quot; prefix=&quot;s&quot; %&gt;</p><p style="padding-left: 30px;">使用&lt;s:text name=&quot;&quot; /&gt;获取资源文件的内容,例如:</p><p style="padding-left: 30px;">&lt;s:text name=&quot;username&quot; /&gt;</p><p style="padding-left: 30px;">资源文件中有占位符时,比如welcome={0} welcome to {1},用text标签需要给定参数:</p><p style="padding-left: 30px;">&lt;s:text name=&quot;welcome&quot;&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;s:param&gt;用户xx&lt;/s:param&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;s:param&gt;Blog&lt;/s:param&gt;<br />&lt;/s:text&gt;</p>

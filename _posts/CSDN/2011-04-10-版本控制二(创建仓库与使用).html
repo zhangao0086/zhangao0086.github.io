@@ -1,0 +1,279 @@
+---
+layout: post
+title: "版本控制二(创建仓库与使用)"
+date: 2011-04-10 22:25:00
+categories: [版本控制]
+---
+
+
+<p>安装Subversion,官方下载地址为:<a href="http://subversion.tigris.org">http://subversion.tigris.org</a>,我在这里使用1.6.5的版本.</p>
+<p>安装完后,Subversion会自动在环境变量path里面加入bin目录的地址.可以在命令行里面操作.</p>
+<p>Subversion的组件大致可以分为两种:客户端组件和服务器组件,因为访问数据仓库也需要通过服务器组件.服务器组件又有三种,是供管理员使用的:</p>
+<ul>
+<li>svnadmin:用来调整和修正svn档案库的工具  </li>
+<li>mod_dav_svn:给Apache-2.X网页服务器使用的外G模块;可以用来将你的档案库透过网络对外开放,以供他人进行存取.  </li>
+<li>svnserve:一个独立地服务器程序(内置),可以作为服务器程序执行,或是被SSH启动;另一个让你的档案库在网络上可供其他人存取的方法.</li>
+</ul>
+<p>客户端组件只有一个,供用户使用:svn,命令行客户端程序,这是用来管理数据的主要工具.</p>
+<p>我要这个目录下面创建一个仓库:F:/RevisionControl/Repository/svn,默认安装完只有仓储行的组件,那么现在就用这个组件来创建一个仓库,又可以称之为档案库,这是管理员的操作,要用到svnadmin:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">C:/Users/ZhangAo&gt;cd F:/RevisionControl/Repository/svn</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">C:/Users/ZhangAo&gt;f:</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/RevisionControl/Repository/svn&gt;svnadmin create firstsvn</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/RevisionControl/Repository/svn&gt;</pre>
+<!--CRLF--></div>
+</div>
+<p>这样就在F:/RevisionControl/Repository/svn目录下创建了一个名为firstsvn的仓库,创建仓库的语法:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">svnadmin create 仓库名称</pre>
+<!--CRLF--></div>
+</div>
+<p>可以看到仓库创建完后生成了一堆文件和目录,这些目录的含义是:</p>
+<blockquote>
+<p>db目录:就是所有版本控制的数据存放文件</p>
+<p>hooks目录:放置hook脚本文件的目录</p>
+<p>locks目录:用来放置Subversion文件库锁定数据的目录，用来追踪存取文件库的客户端</p>
+<p>format文件是一个文本文件，里面只放了一个整数，表示当前文件库配置的版本号</p>
+<p>conf目录:是这个仓库的配置文件（仓库的用户访问帐号、权限等）</p>
+</blockquote>
+<p>你把你的文件更新或者加入到仓库以后,不要试着找到这些文件,它们虽然在db目录下,但是以它自己的方式保存着,常规方法看不了.可以说conf目录是最重要的目录.</p>
+<p>仓库创建之后还不能马上使用,需要启动.有两种启动方式:svn服务器启动和Windows服务启动方式.</p>
+<p>先使用svn服务器启动的方式,在cmd命令行输入语法为:</p>
+<p>svnserve -d &ndash;r 文档仓库路径</p>
+<p>其中d代表后台执行,r是指定仓库的根目录.命令执行后,如果不知道是否启动,因为命令行没有任何反应,有的只是没有反应.可以通过在另一个cmd命令行中输入netstat -an的命令查看当前端面的监听情况来辨别是否启动.它的<strong><span style="color: #ff0000;">监听端口号为:3690</span></strong>:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/10/0_13024452657G5x.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/10/0_1302445266ZqV1.gif" border="0" alt="image" width="644" height="81" /></a></p>
+<p>图为已启动.但是这种启动方式不好,因为只要你关闭了输入启动命令的命令行,你的Subversion也就停止了.所以建议使用第二种方式:以服务方式启动.</p>
+<p>还是在命令行输入:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">C:/Users/ZhangAo&gt;sc create SVN-Service binpath= <span style="color: #006080">"F:/RevisionControl/Subversion/bin/svnserve.exe --service -r F:/RevisionControl/Repository/svn"</span> </pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">displayname= <span style="color: #006080">"SVN-Service"</span> start= auto depend= Tcpip</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">[SC] CreateService SUCCESS</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">C:/Users/ZhangAo&gt;</pre>
+<!--CRLF--></div>
+</div>
+<p>表示创建一个名为"SVN-Service"的服务,要指定binpath,设置自动启动.需要注意一点,这种方式为<strong><span style="color: #ff0000;">多仓库</span></strong>,如果指定到svn目录下的firstsvn,就是<strong><span style="color: #ff0000;">单仓库</span></strong>.多仓库可以对目录下多个工程进行版本控制.下方出现"[SC] CreateService SUCCESS"表示创建成功.这个时候可以在服务里面找到它:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/10/0_1302445266T422.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/10/0_1302445269mOf8.gif" border="0" alt="image" width="533" height="344" /></a></p>
+<p>可以看出创建完它是没有启动的,启动后就可以使用了.删除的语法为: </p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">sc delete 服务名</pre>
+<!--CRLF--></div>
+</div>
+<p>可以使用了.当一个新人加入项目组的时候,第一次要checkout工程,修改完以后要commit,团队的人可以通过update来获取最新的版本.</p>
+<p>我在F:/Develop/workroom/目录下建立一个用户,就叫user1,用他来做checkout:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">C:/Users/ZhangAo&gt;cd F:/Develop/workroom/user1</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">C:/Users/ZhangAo&gt;f:</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1&gt;svn checkout svn:<span style="color: #008000">//localhost/firstsvn</span></pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">取出版本 0。</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1&gt;</pre>
+<!--CRLF--></div>
+</div>
+<p>子命令checkout后面可以跟两个参数,第一个参数为指定的url,由于我是多仓库,所以需要指定具体的仓库.第二个参数(上面没写)指定checkout的目的地.默认就是当前执行命令的路径,我用cd命令切过来了,所以不指定也行.</p>
+<p>命令执行后可以看到user1的目录下多了个目录:firstsvn.里面有一个隐藏目录:.svn.这个目录里面包含了你的版本库的信息,可以让你commit或者update的时候不用再输入url.</p>
+<p>由于目前版本库里面没有任何东西,也没有对它操作过,所以是<strong><span style="color: #ff0000;">取出版本0</span></strong>.现在我就在里面增加一个文件,就叫hello.txt,里面只有一句话:hello world:</p>
+<p><a href="http://hi.csdn.net/attachment/201104/10/0_1302445269JrqV.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/10/0_1302445269LOsi.gif" border="0" alt="image" width="153" height="116" /></a></p>
+<p>然后commit,commit之前输入先要add,相当于给它一个标记.输入命令:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;svn add hello.txt</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">A         hello.txt</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;</pre>
+<!--CRLF--></div>
+</div>
+<p>下面出现了"A",相当于给了它标记,接着commit,彻底保存在版本库中:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;svn commit</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">svn: 提交失败(细节如下):</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">svn: 无法使用外部编辑器获得日志信息；考虑设置环境变量 $SVN_EDITOR，或者使用 --me</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">ssage (-m) 或 --file (-F) 选项</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">svn: 没有设置 SVN_EDITOR，VISUAL 或 EDITOR 环境变量，运行时的配置参数中也没有 &ldquo;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">editor-cmd&rdquo; 选项</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;</pre>
+<!--CRLF--></div>
+</div>
+<p>可以看到命令执行后出现了这么一些话,就是说你的东西提交上去了,要说明一下,就像写程序的时候加注释一样,总不能无缘无故地就出现吧?</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;svn commit -m"test"</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">svn: 提交失败(细节如下):</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">svn: 认证失败</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;</pre>
+<!--CRLF--></div>
+</div>
+<p>用-m命令,加了还是报错,也很正常!不能随便什么人就往版本库里面加东西吧?看上面的一些操作,没有对来访都进行核查,肯定不行的,这就要用到版本库的conf目录.把这个目录打开,总共有三个文件:</p>
+<blockquote>
+<p>svnserve.conf 定义所有认证和授权政策
+</p>
+<p>passwd 存放项目成员帐户信息
+</p>
+<p>authz 主要是做复杂的群组权限控制</p>
+</blockquote>
+<p>把svnserve.conf文件打开,也很多东西,注释更多,其他的不用管,可以看到这么一行:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;"># anon-access = read</pre>
+<!--CRLF--></div>
+</div>
+<p>这是对匿名用户的权限,默认为read,可以先把前面的注释去掉,不要留下空格,然后把read改为write,不用重启,再试试之前的命令:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;svn commit -m<span style="color: #006080">"test"</span></pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">增加           hello.txt</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">传输文件数据.</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">提交后的版本为 1。</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;</pre>
+<!--CRLF--></div>
+</div>
+<p>完成了,这个时候你把文件删掉都不怕了,因为版本库中已经有了.那么你要修改这个文件呢?修改完后还是commit就行了.</p>
+<p>如果其他成员更新了这个文件,只需要update就可以了:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;svn update</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">版本 1。</pre>
+<!--CRLF--></div>
+</div>
+<p>如果删除:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;svn delete hello.txt</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">D         hello.txt</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;</pre>
+<!--CRLF--></div>
+</div>
+<p>跟add类似,只是加入了一个标记,相当于在你本地删除了,因为你现在在本地看不到这个文件,但是版本库中还有,其他成员可以获取到.你可以通过commit来使删除生效,或者revert来取消这次操作:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;svn revert hello.txt</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">已恢复&ldquo;hello.txt&rdquo;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">&nbsp;</pre>
+<!--CRLF-->
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">F:/Develop/workroom/user1/firstsvn&gt;</pre>
+<!--CRLF--></div>
+</div>
+<p>那么现在可以总结一下常用命令:</p>
+<blockquote>
+<p>svn checkout -从版本库取出一个工作拷贝 
+</p>
+<p>svn commit -将改动的文件提交到版本库
+</p>
+<p>svn update -更新你的工作拷贝 
+</p>
+<p>svn add-向版本库中添加新文件
+</p>
+<p>svn delete-从版本库中删除文件
+</p>
+<p>svn revert-取消所有的本地编辑 </p>
+</blockquote>
+<p>还有svn的常用命令:</p>
+<blockquote>
+<p>svn info-显示本地或远程条目的信息 
+</p>
+<p>svn list-列出版本库目录的条目 
+</p>
+<p>svn status-查看当前工作区状态
+</p>
+<p>svn help-获取帮助信息</p>
+</blockquote>
+<p>还有对于每一个更新的项目之后都会有标记,就像add之后会出现"A",delete之后会出现"D"一样:</p>
+<blockquote>
+<p>A添加
+</p>
+<p>D删除
+</p>
+<p>U更新
+</p>
+<p>C冲突
+</p>
+<p>G合并</p>
+</blockquote>
+<p>Subversion还有目录规范,创建三个顶级目录:
+</p>
+<blockquote>
+<p>/trunk 存放开发的&ldquo;主线&rdquo;
+</p>
+<p>/branches 存放支线副本
+</p>
+<p>/tags 存放标签副本</p>
+</blockquote>
+<p>Subversion 提供了主线、分支管理技术，使得在软件开发中可以更方便、灵活的对项目的进度、版本的发布、版本的维护、软件功能的拓展与定制进行管理。 
+</p>
+<p>主线(trunk)：一个项目建立时就存在，并伴随着项目的成长而不断的成长，直到项目完全结束。 
+</p>
+<p>分支(branch)：一般是指功能分支，例如：我们的某个项目要添加一个模块，但这个模块又比较复杂，实现难度比较大。为了不影响主线的稳定，我们就可以创建一个功能分支来专门开发这个模块，当这个模块开发完成以后，并通过测试部门的各项测试，再合并到主线中去。再比如，我们的交警 GPS 项目已经开发完成了，但是这个项目是给泉州交警做的，现在我们又接到了一个交警项目，不过是要给厦门交警大队的。现在厦门交警大队要求我们给他们定制一些功能。我们又不想再主线上进行修改，这个时候，我们也可以创建一个分支，并在这个分支上开发，这时是不会对主线造成影响的。等给厦门开发完成了以后，我们发现，他们要求的有些功能其实很好，以后别的地方可能也需要同样的功能。这个时候我们就可以根据我们的需要，将有用的模块有选择的合并到主线中来。 
+</p>
+<p>标签(tag)：标签和分支一样，也是一个目录，不过这个目录中一般存放的是发布的信息(当然我们也可以只用分支，但是用标签更清楚明了一些)。还是拿我们的交警项目来举个例子：我们的交警项目开发完成了以后，要拿给泉州交警大队用了，也就是要发布(release)，假设这个版本叫做1.0.2。这个时候，我们就要创建一个标签，当泉州交警大队用了三个月，发现了一个 BUG，我们只需要签出这个标签中的代码(它和我们刚提供给泉州交警大队时候的是一模一样的)，进行调试，并修正这个 BUG。然后再发布一个版本，假设叫做1.1.0，这个时候我们就在创建一个 1.1.0的标签&hellip;&hellip; 
+</p>
+<p>要注意，标签目录里面的代码，要进行严格的控制，除了修正 BUG 外，不能做任何其他的事情。</p>
+<p>&nbsp;</p>
+<p>
+<hr />
+</p>
+<p><span><br />如果本文有任何问题,请及时指出,以免对后来者产生不必要的困扰,不胜感激!</span></p>

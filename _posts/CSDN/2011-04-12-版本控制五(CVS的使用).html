@@ -1,0 +1,73 @@
+---
+layout: post
+title: "版本控制五(CVS的使用)"
+date: 2011-04-12 13:42:00
+categories: [版本控制]
+---
+
+
+<p>CVS - Concurrent Versions System(并发版本管理系统)是一个版本控制管理系统，它是SVN出现之前最为广泛使用的一个版本控制系统。<br />CVS的优点就不多说了，总之没有它，早期的软件工程就基本无法实现，就无法凝聚广大程序员的力量。它在软件工程中的作用实在是无可比拟的。一直到现今的版本控制的主流SVN出现之后，它才慢慢的逐步淡出我们的视线。 
+</p>
+<p>这里使用cvsnt服务器的2.5.04.3510版本. 
+</p>
+<p>安装完后界面如下: 
+</p>
+<p><a href="$image3.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_13025865500kPZ.gif" alt="image" width="537" height="353" /></a> 
+</p>
+<p>win7下可能是这种界面: 
+</p>
+<p><a href="$image8.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_1302586600dZ92.gif" alt="image" width="547" height="377" /></a> 
+</p>
+<p>界面说明: 
+</p>
+<blockquote>
+<p>Server Information，用于查看服务器信息及一些简单的统计信息 
+</p>
+<p>Respository configuration，配置CVS仓库，包括添加、删除等 
+</p>
+<p>Server Setting，配置服务器运行的一些参数，诸如端口、加密、压缩等选项 
+</p>
+<p>Capatiblity Options，有关兼容性的选项，在这里主要配置一个兼容非cvsnt客户端的版本响应为cvs 1.11.2 
+</p>
+<p>Plugins，插件配置，安装完成可以不用管的 
+</p>
+<p>Advanced，安装完成后也不用管了 
+</p>
+<p>About，在这里可以管理cvsnt服务的状态，停止或启动cvsnt和cvsnt lock服务</p>
+</blockquote>
+<p>先创建一个仓库:Respository configuration-&gt;Add.location为仓库文件夹存放路径。选择一个预先存在的目录路径。Name会自动改为&ldquo;/目录文件夹&rdquo;! 这个名子也可以修改(仓库访问别名)。点击OK按钮，它会提示你&ldquo;这个文件夹不是cvs仓库，是否初始化？&rdquo;的英文提示。一路"YES"。创建仓库完毕: 
+</p>
+<p><a href="$image14.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_1302586651zRz5.gif" alt="image" width="696" height="480" /></a> 
+</p>
+<p>可以在创建仓库的目录下找到很多生成的文件和目录,CVS以它自己的结构组织版本库的文件.创建成功要启动服务: 
+</p>
+<p><a href="$image19.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_130258668189pp.gif" alt="image" width="527" height="364" /></a> 
+</p>
+<p>好了,接下来整合到Eclipse里面,Eclipse直接内置了CVS的管理工具:</p>
+<p><a href="$image23.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_1302586719m2OQ.gif" alt="image" width="495" height="286" /></a></p>
+<p>打开这个视图后,在右上方有个"Add CVS Repository".点击后弹出新建对话框,Host处填上主机IP,Repository path处填上之前创建仓库时写的Name,认证处可以直接写Windows账号,然后Finish:</p>
+<p><a href="$image28.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_1302586744za7Y.gif" alt="image" width="468" height="509" /></a></p>
+<p>添加成功后即可看到:</p>
+<p><a href="$image32.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_1302586781QF2e.gif" alt="image" width="570" height="126" /></a></p>
+<p>然后回到工程视图,如果你的版本库中有完整的工程,则导入,如果没有,则新建一个工程,在Team里面选择Share project即可.添加一个文件后,会显示问号:</p>
+<p><a href="$image45.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_13025868050F01.gif" alt="image" width="491" height="143" /></a></p>
+<p>右键选择Team&mdash;&gt;"Add to Version Control"后,可以看到问号没有了,但是文件上面还有"&gt;"这样的符号,表示没有commit,在Team里面commit之后,就没有了:</p>
+<p><a href="$image46.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_1302586836S8fO.gif" alt="image" width="367" height="111" /></a></p>
+<p>但是用系统账号登录不太好,如果项目组有50个成员,难道要分别为他们建立50个账户?显然不合适.可以通过将登录信息映射到同一个系统账号中解决此问题:</p>
+<div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
+<div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
+<pre style="text-align: left; line-height: 12pt; background-color: white; margin: 0em; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">set cvsroot=:pserver:主机名@主机地址:仓库映射地址</pre>
+<!--CRLF--></div>
+</div>
+<p>比如我要映射两个用户:user1和user2,我的主机名是zhangao:</p>
+<p><a href="$image5.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_13025868603YMS.gif" alt="image" width="678" height="359" /></a></p>
+<p>映射完了以后,在Eclipse里面添加仓库时就可以使用映射出的账户了,故意输入一个没有的,或者错误的密码:</p>
+<p><a href="$image9.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_130258689066Kl.gif" alt="image" width="443" height="487" /></a></p>
+<p>会让你不停的验证.再输入一个正确的:用户名user1密码user1:</p>
+<p><a href="$image13.png"><img style="background-image: none; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px; border: 0px initial initial;" title="image" src="http://hi.csdn.net/attachment/201104/12/0_1302586920fngZ.gif" alt="image" width="601" height="98" /></a></p>
+<p>直接通过.就是这样了.把创建用户的相关命令贴上来:</p>
+<blockquote>
+<p>set cvsroot=:pserver:主机名@主机地址:仓库映射地址<br />使用系统用户绑定到当前的CVS项目上</p>
+<p>cvs login <br />登录并输入系统用户密码<br /><br />cvs passwd -a -r 主机名 user1<br />cvs passwd -a -r 主机名 user2<br />为项目CVS建立一个用户itcast，此用户将映射到系统用户ltw</p>
+</blockquote>
+<p>另外Eclipse对CVS也提供完整的文件比较,替换等功能.就不再细说了.</p>

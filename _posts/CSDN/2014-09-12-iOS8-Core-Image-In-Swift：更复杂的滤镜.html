@@ -1,0 +1,791 @@
+---
+layout: post
+title: "iOS8 Core Image In Swift：更复杂的滤镜"
+date: 2014-09-12 00:52:19
+categories: [iOS,Swift]
+---
+
+
+<p>&nbsp;</p>
+
+<p><a href="http://blog.csdn.net/zhangao0086/article/details/39012231">iOS8 Core Image In Swift：自动改善图像以及内置滤镜的使用</a></p>
+
+<p>iOS8 Core Image In Swift：更复杂的滤镜</p>
+
+<p><a href="http://blog.csdn.net/zhangao0086/article/details/39253707">iOS8 Core Image In Swift：人脸检测以及马赛克</a></p>
+
+<p><a href="http://blog.csdn.net/zhangao0086/article/details/39433519">iOS8 Core Image In Swift：视频实时滤镜</a></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>上面那篇文章主要是Core Image的基础，只是为了说明CIImage、CIFilter、CIContext，以及基础滤镜的简单使用。在上一篇中几乎没有对滤镜进行更复杂的操作，都是直接把inputImage扔给CIFilter而已，而Core Image实际上还能对滤镜进行更加细粒度的控制，我们在新的工程中对其进行探索。为此，我重新建立了一个空的workspace，并把之前所使用的工程添加到这个workspace中，编译、运行，没问题的话我们就开始创建新的工程。</p>
+
+<p>通过workspace左下角的Add Files to添加已有的工程文件（xx.xcodeproj）：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140907161329328?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<table border="1" cellpadding="10" cellspacing="1" style="width:0px">
+	<tbody>
+		<tr>
+			<td>当添加工程到workspace的时候，记得要把被添加的工程关掉，不然workspacce不能识别。<br />
+			另外，在流程上这篇也会与上一篇不同，上一篇一开始我就给出了代码，然后先看效果再步步为营，这篇不会在一开始给出代码。</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>动态改变滤镜参数的值</h2>
+
+<p>用Single View Application的工程模板建立一个新的工程，在View上放一个UIImageView，还是同样的frame，同样的ContentMode设置为<strong><span style="color:#cc0000">Aspect Fit</span></strong>，同样的关闭Auto Layout以及Size Classes，最后把<a href="https://img-blog.csdn.net/20140902225109455">上个工程中使用的图片</a>复制过来，在这个工程中同样使用这张图。</p>
+
+<p>做完上面这些基础工作后，我们回到VC中，把<span style="color:#cc0000"><strong>showFiltersInConsole</strong></span>方法从上个工程中复制过来，然后在viewDidLoad里调用，在运行之前我们先看看Core Image有哪些类别，毕竟全部的滤镜有127种，不可能一一用到的。</p>
+
+<p>类别有很多，而且我们从上一篇中知道了滤镜可以同时属于不同的类别，除此之外，类别还分为两大类：</p>
+
+<h3>按效果分类：</h3>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>kCICategoryDistortionEffect 扭曲效果，比如bump、旋转、hole</li>
+	<li>kCICategoryGeometryAdjustment 几何开着调整，比如仿射变换、平切、透视转换</li>
+	<li>kCICategoryCompositeOperation 合并，比如源覆盖（source over）、最小化、源在顶（source atop）、色彩混合模式</li>
+	<li>kCICategoryHalftoneEffect Halftone效果，比如screen、line screen、hatched</li>
+	<li>kCICategoryColorAdjustment 色彩调整，比如伽马调整、白点调整、曝光</li>
+	<li>kCICategoryColorEffect 色彩效果，比如色调调整、posterize</li>
+	<li>kCICategoryTransition 图像间转换，比如dissolve、disintegrate with mask、swipe</li>
+	<li>kCICategoryTileEffect 瓦片效果，比如parallelogram、triangle</li>
+	<li>kCICategoryGenerator 图像生成器，比如stripes、constant color、checkerboard</li>
+	<li>kCICategoryGradient 渐变，比如轴向渐变、仿射渐变、高斯渐变</li>
+	<li>kCICategoryStylize 风格化，比如像素化、水晶化</li>
+	<li>kCICategorySharpen 锐化、发光</li>
+	<li>kCICategoryBlur 模糊，比如高斯模糊、焦点模糊、运动模糊</li>
+</ul>
+
+<h3>按使用场景分类：</h3>
+
+<ul>
+	<li>kCICategoryStillImage 能用于静态图像</li>
+	<li>kCICategoryVideo 能用于视频</li>
+	<li>kCICategoryInterlaced 能用于交错图像</li>
+	<li>kCICategoryNonSquarePixels 能用于非矩形像素</li>
+	<li>kCICategoryHighDynamicRange 能用于HDR</li>
+</ul>
+
+<table border="1" cellpadding="10" cellspacing="1">
+	<tbody>
+		<tr>
+			<td><strong><span style="color:#cc0000">这些专业词太难翻译了，有不准确的地方还望告知</span></strong></td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p>此外还有我们之前用到的<strong><span style="color:#cc0000">kCICategoryBuiltIn</span></strong>。</p>
+
+<p>我们把<span style="color:#cc0000">kCICategoryColorAdjustment</span>这个类别下的滤镜打印出来看看：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140907192158655?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<p>有11个滤镜，其中有一个<strong><span style="color:#cc0000">CIHueAdjust</span></strong>，这个看名字应该是修改图像色调的，效果应该会比较明显，看看它有哪些参数：</p>
+
+<p>&nbsp;</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140907192203647?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>它的详细信息里除了我们之前了解的inputImage和所属分类信息以外，多了个<strong><span style="color:#cc0000">inputAngle</span></strong>，显然这是一个输入参数，而且这个参数也打印的非常清晰，其中包括了：</p>
+
+<ul>
+	<li>参数类型：NSNumber</li>
+	<li>默认值：0</li>
+	<li>kCIAttributeIdentity：虽然这个值大部分情况下与默认值是一样的，但是它们的含义不一样，kCIAttributeIdentity表示的含义是这个值被应用到参数上的时候，就表示被应用的参数不会对inputImage造成任何影响</li>
+	<li>最大值：Ԉ</li>
+	<li>最小值：-Ԉ</li>
+	<li>属性类型：角度</li>
+</ul>
+
+<p>上面的这些参数以及取值对不同的CIFilter来说都不一样，要具体情况具体分析。</p>
+
+<p>了解了以上情况后，我们就可以开始编码了。首先在VC里添加上个工程中的常用属性：</p>
+
+<p><span style="color:#bb2ca2">class</span>&nbsp;ViewController:&nbsp;<span style="color:#703daa">UIViewController</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">@IBOutlet</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;imageView:&nbsp;<span style="color:#703daa">UIImageView</span>!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">@IBOutlet</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;slider:&nbsp;<span style="color:#703daa">UISlider</span>!</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">lazy</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;originalImage:&nbsp;<span style="color:#703daa">UIImage</span>&nbsp;= {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;<span style="color:#703daa">UIImage</span>(named:&nbsp;<span style="color:#d12f1b">&quot;Image&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; }()</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">lazy</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;context:&nbsp;<span style="color:#703daa">CIContext</span>&nbsp;= {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;<span style="color:#703daa">CIContext</span>(options:&nbsp;<span style="color:#bb2ca2">nil</span>)</p>
+
+<p>&nbsp; &nbsp; }()</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;filter:&nbsp;<span style="color:#703daa">CIFilter</span>!</p>
+
+<p>......</p>
+
+<p>与之前工程中不同的是，我多加了一个UISlider，Main.storyboard中VC的view像这样：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140907214129468?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>把UIImageView及UISlider的连线与VC中的连接起来，然后我们在viewDidLoad方法里写上：&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">override</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;viewDidLoad() {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">super</span><span style="color:#000000">.</span>viewDidLoad<span style="color:#000000">()</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">imageView</span><span style="color:#000000">.</span>layer<span style="color:#000000">.</span>shadowOpacity<span style="color:#000000">&nbsp;=&nbsp;</span><span style="color:#272ad8">0.8</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">imageView</span><span style="color:#000000">.</span>layer<span style="color:#000000">.</span>shadowColor<span style="color:#000000">&nbsp;=&nbsp;</span>UIColor<span style="color:#000000">.</span><span style="color:#3d1d81">blackColor</span><span style="color:#000000">().</span>CGColor</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">layer</span>.<span style="color:#703daa">shadowOffset</span>&nbsp;=&nbsp;<span style="color:#703daa">CGSize</span>(width:&nbsp;<span style="color:#272ad8">1</span>, height:&nbsp;<span style="color:#272ad8">1</span>)</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">slider</span><span style="color:#000000">.</span>maximumValue<span style="color:#000000">&nbsp;=&nbsp;</span>Float<span style="color:#000000">(</span>M_PI<span style="color:#000000">)</span></p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">slider</span><span style="color:#000000">.</span>minimumValue<span style="color:#000000">&nbsp;=&nbsp;</span>Float<span style="color:#000000">(-</span>M_PI<span style="color:#000000">)</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">slider</span>.<span style="color:#703daa">value</span>&nbsp;=&nbsp;<span style="color:#272ad8">0</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">slider</span>.<span style="color:#3d1d81">addTarget</span>(<span style="color:#bb2ca2">self</span>, action:&nbsp;<span style="color:#d12f1b">&quot;valueChanged&quot;</span>, forControlEvents:&nbsp;<span style="color:#703daa">UIControlEvents</span>.ValueChanged)</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;inputImage =&nbsp;<span style="color:#703daa">CIImage</span>(image:&nbsp;<span style="color:#4f8187">originalImage</span>)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">filter</span>&nbsp;=&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIHueAdjust&quot;</span>)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">filter</span>.<span style="color:#3d1d81">setValue</span>(inputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">slider</span><span style="color:#000000">.</span>sendActionsForControlEvents<span style="color:#000000">(</span><span style="color:#703daa">UIControlEvents</span><span style="color:#000000">.ValueChanged)</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>showFiltersInConsole<span style="color:#000000">()</span></p>
+
+<p>}</p>
+
+<p>imageView的设置同以前一样，增加点阴影显得好看多了。</p>
+
+<p>接着对slider初始化，在之前我们了解到CIHueAdjust滤镜的inputAngle参数最大值是Ԉ，最小值是负Ԉ，默认值是0，就用这些值来初始化，然后添加一个当值发生改变时触发的事件。</p>
+
+<p>初始化filter，由于只有一个滤镜，filter对象也可以重用，设置完inputImage后，触发slider的事件就可以了。</p>
+
+<p>valueChanged方法实现：</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;valueChanged() {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#4f8187">filter</span><span style="color:#000000">.</span><span style="color:#3d1d81">setValue</span><span style="color:#000000">(</span><span style="color:#4f8187">slider</span><span style="color:#000000">.</span>value<span style="color:#000000">, forKey:&nbsp;</span>kCIInputAngleKey<span style="color:#000000">)</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;outputImage =&nbsp;<span style="color:#4f8187">filter</span>.<span style="color:#703daa">outputImage</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;cgImage =&nbsp;<span style="color:#4f8187">context</span>.<span style="color:#3d1d81">createCGImage</span>(outputImage, fromRect: outputImage.<span style="color:#3d1d81">extent</span>())</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">image</span>&nbsp;=&nbsp;<span style="color:#703daa">UIImage</span>(CGImage: cgImage)</p>
+
+<p>}&nbsp;</p>
+
+<p>filter会在每次触发这个事件的时候更新inputAngle属性，同时输出到imageView上。</p>
+
+<p>&nbsp;</p>
+
+<p>虽然我并不是在Storyboard里把slider的valueChanged事件连接到VC的方法上，但是在这里使用<strong><span style="color:#cc0000">@IBAction</span></strong>也是适当的，这样可以表明这个方法不是业务逻辑方法，而是一个UI控件触发的方法。</p>
+
+<p>编译、运行，应该可以看到效果了。</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140907222759102?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>复合滤镜--老电影效果</h2>
+
+<p>在此之前，无论是使用简单滤镜，还是能动态修改参数值的滤镜，都不算复杂，因为我们最多也只是对一个滤镜设置点参数而已。可是如果现有的滤镜没有想要的效果，或者说单个滤镜实现不了自己想要的效果，就只能自己处理了，其中，最简单的做法是把<strong><span style="color:#cc0000">多个滤镜组合起来</span></strong>。</p>
+
+<p>Core Image并没有内置类似于老电影的效果，就是那种影像有点发黄，同时还会带点黑条、白条之类的，而我们如果要实现这种效果，总体上就像这样：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140908193052866" /></p>
+
+<p>&nbsp;</p>
+
+<p>大致过程如下：</p>
+
+<ul>
+	<li>需要使用CISepiaTone滤镜，CISepiaTone能使整体颜色偏棕褐色，又有点像复古</li>
+	<li>需要创建随机噪点图，很像以前电视机没信号时显示的图像，再通过它生成一张白斑图滤镜</li>
+	<li>需要创建另一个随机噪点图，然后通过它生成一张黑色磨砂图滤镜，就像是一张使用过的黑色砂纸一样</li>
+	<li>把它们组合起来</li>
+</ul>
+
+<p>在开始之前首先要知道一件事，我们已经知道了一些简单的滤镜，它们只需要设置inputImage就行了；还有一些除了inputImage参数外有其他参数的滤镜，除此之外，还有一些滤镜<strong><span style="color:#cc0000">不需要任何参数</span></strong>，就是上面提到的随机噪点图，另外，<strong><span style="color:#cc0000">有些Core Image滤镜会生成无限大小的图，比如</span><span style="color:#cc0000">CICategoryTileEffect</span><span style="color:#cc0000">类别下的滤镜，在渲染它们生成的图之前，必须先把这些无限大小的图裁剪一番，你可以通过</span><span style="color:#cc0000">CICrop</span><span style="color:#cc0000">滤镜来完成这一步，也可以通过在一个有限的矩形范围之类渲染这张图来达到同样的效果。</span></strong></p>
+
+<p>然后我们就动手吧。</p>
+
+<p>在VC里添加一个IBAction方法：oldFilmEffect，然后在Storyboard的VC上增加一个按钮，就叫&ldquo;老电影&rdquo;，然后连接到oldFilmEffect方法上，oldFilmEffect方法实现的代码稍后给出，这里先描述下详细步骤，其实通过这些详细步骤，已经可以自己先实现出来了：</p>
+
+<p>&nbsp;</p>
+
+<h3>应用CISepiaTone滤镜到原图上</h3>
+
+<ul>
+	<li>设置inputImage为原图</li>
+	<li>设置inputIntensity为1.0</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>创建白斑图滤镜</h3>
+
+<p>&nbsp;</p>
+
+<p>用CIRandomGenerator生成随机噪点滤镜，然后通过<strong><span style="color:#cc0000">imageByCroppingToRect</span></strong>方法对其进行裁剪，<strong><span style="color:#cc0000">在imageByCroppingToRect方法内Core Image隐式的使用了</span><span style="color:#cc0000">CICrop</span><span style="color:#cc0000">滤镜</span></strong>。</p>
+
+<p>接下来使用<strong><span style="color:#cc0000">CIColorMatrix</span></strong>滤镜，该滤镜可以很方便的调整图片中RGBA各分量的值，其参数设置如下：</p>
+
+<ul>
+	<li>设置inputImage为CIRandomGenerator生成的随机噪点图</li>
+	<li>设置inputRVector、inputGVector和inputBVector为(0,1,0,0)</li>
+	<li>设置inputBiasVector为(0,0,0,0)</li>
+</ul>
+
+<p>用<span style="color:#cc0000"><strong>CISourceOverCompositing</strong></span>（源覆盖）滤镜把前景图（inputImage）覆盖在背景图（inputBackgroundImage）上：</p>
+
+<ul>
+	<li>设置inputImage为CISepiaTone滤镜生成的图</li>
+	<li>设置inputBackgroundImage为白斑图滤镜</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>创建黑色磨砂图滤镜</h3>
+
+<p>&nbsp;</p>
+
+<p>还是先用CIRandomGenerator生成随机噪点图，然后用CIAffineTransform滤镜对其进行处理，其实就是把生成的点放大。参数设置如下：</p>
+
+<ul>
+	<li>设置inputImage为CIRandomGenerator生成的随机噪点图</li>
+	<li>设置inputTransform为x放大1.5倍、y放大25倍，把点拉长、拉厚，但是它们仍然是有颜色的</li>
+</ul>
+
+<p>在这里除了使用CIAffineTransform滤镜外，还有一种替代方法可以达到同样的效果，同时不用显式创建CIAffineTransform滤镜，就是使用CIImage的<strong><span style="color:#cc0000">imageByApplyingTransform:</span></strong>方法。</p>
+
+<p>再次用CIColorMatrix滤镜对颜色进行处理：</p>
+
+<ul>
+	<li>设置inputImage为CIAffineTransform生成的图</li>
+	<li>设置inputRVector为(4,0,0,0)</li>
+	<li>设置inputGVector、inputBVector和inputAVector为(0,0,0,0)</li>
+	<li>设置inputBiasVector为(0,1,1,1)</li>
+</ul>
+
+<p>现在产生的是一个蓝绿色磨砂图滤镜，再把CIMinimumComponent滤镜应用到这个蓝绿色磨砂图滤镜产生的图上。CIMinimumComponent滤镜会使用r、g、b的最小值生成一张灰度图像。</p>
+
+<p>&nbsp;</p>
+
+<h3>把所有的滤镜组合起来</h3>
+
+<p>使用CIMultiplyCompositing做最后的组合，参数设置如下：</p>
+
+<ul>
+	<li>设置inputImage为CISourceOverCompositing滤镜生成的图（内含CISepiaTone、白斑图滤镜的效果）</li>
+	<li>设置inputBackgroundImage为CIMinimumComponent滤镜生成的图（内含黑色磨砂图滤镜效果）</li>
+</ul>
+
+<p>最后把CIMultiplyCompositing生成出的图输出到imageView上，还是以前的方式，先转成CGImage，再把CGImage转成UIImage。</p>
+
+<p>有点小长，而且同时用到了多个滤镜，其实想表达的意思并没有那么复杂，可以使用<strong><span style="color:#cc0000">kCICategoryBuiltIn</span></strong>把所有的滤镜打印出来，然后对照着看它们的参数。</p>
+
+<p>这里是oldFilmEffect方法实现：</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;oldFilmEffect() {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;inputImage =&nbsp;<span style="color:#703daa">CIImage</span>(image:&nbsp;<span style="color:#4f8187">originalImage</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 1.创建CISepiaTone滤镜</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;sepiaToneFilter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CISepiaTone&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; sepiaToneFilter.<span style="color:#3d1d81">setValue</span>(inputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; sepiaToneFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#272ad8">1</span>, forKey:&nbsp;<span style="color:#703daa">kCIInputIntensityKey</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 2.创建白斑图滤镜</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;whiteSpecksFilter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIColorMatrix&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; whiteSpecksFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIRandomGenerator&quot;</span>).<span style="color:#703daa">outputImage</span>.<span style="color:#3d1d81">imageByCroppingToRect</span>(inputImage.<span style="color:#3d1d81">extent</span>()), forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; whiteSpecksFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">0</span>, y:&nbsp;<span style="color:#272ad8">1</span>, z:&nbsp;<span style="color:#272ad8">0</span>, w:&nbsp;<span style="color:#272ad8">0</span>), forKey:&nbsp;<span style="color:#d12f1b">&quot;inputRVector&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; whiteSpecksFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">0</span>, y:&nbsp;<span style="color:#272ad8">1</span>, z:&nbsp;<span style="color:#272ad8">0</span>, w:&nbsp;<span style="color:#272ad8">0</span>), forKey:&nbsp;<span style="color:#d12f1b">&quot;inputGVector&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; whiteSpecksFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">0</span>, y:&nbsp;<span style="color:#272ad8">1</span>, z:&nbsp;<span style="color:#272ad8">0</span>, w:&nbsp;<span style="color:#272ad8">0</span>), forKey:&nbsp;<span style="color:#d12f1b">&quot;inputBVector&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; whiteSpecksFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">0</span>, y:&nbsp;<span style="color:#272ad8">0</span>, z:&nbsp;<span style="color:#272ad8">0</span>, w:&nbsp;<span style="color:#272ad8">0</span>), forKey:&nbsp;<span style="color:#d12f1b">&quot;inputBiasVector&quot;</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 3.把CISepiaTone滤镜和白斑图滤镜以源覆盖(source over)的方式先组合起来</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;sourceOverCompositingFilter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CISourceOverCompositing&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; sourceOverCompositingFilter.<span style="color:#3d1d81">setValue</span>(whiteSpecksFilter.<span style="color:#703daa">outputImage</span>, forKey:&nbsp;<span style="color:#703daa">kCIInputBackgroundImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; sourceOverCompositingFilter.<span style="color:#3d1d81">setValue</span>(sepiaToneFilter.<span style="color:#703daa">outputImage</span>, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// ---------上面算是完成了一半</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 4.用CIAffineTransform滤镜先对随机噪点图进行处理</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;affineTransformFilter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIAffineTransform&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; affineTransformFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIRandomGenerator&quot;</span>).<span style="color:#703daa">outputImage</span>.<span style="color:#3d1d81">imageByCroppingToRect</span>(inputImage.<span style="color:#3d1d81">extent</span>()), forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span></p>
+
+<p>&nbsp; &nbsp; affineTransformFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">NSValue</span>(CGAffineTransform:&nbsp;<span style="color:#3d1d81">CGAffineTransformMakeScale</span>(<span style="color:#272ad8">1.5</span>,&nbsp;<span style="color:#272ad8">25</span>)), forKey:&nbsp;<span style="color:#703daa">kCIInputTransformKey</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 5.创建蓝绿色磨砂图滤镜</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;darkScratchesFilter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIColorMatrix&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; darkScratchesFilter.<span style="color:#3d1d81">setValue</span>(affineTransformFilter.<span style="color:#703daa">outputImage</span>, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; darkScratchesFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">4</span>, y:&nbsp;<span style="color:#272ad8">0</span>, z:&nbsp;<span style="color:#272ad8">0</span>, w:&nbsp;<span style="color:#272ad8">0</span>), forKey:&nbsp;<span style="color:#d12f1b">&quot;inputRVector&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; darkScratchesFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">0</span>, y:&nbsp;<span style="color:#272ad8">0</span>, z:&nbsp;<span style="color:#272ad8">0</span>, w:&nbsp;<span style="color:#272ad8">0</span>), forKey:&nbsp;<span style="color:#d12f1b">&quot;inputGVector&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; darkScratchesFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">0</span>, y:&nbsp;<span style="color:#272ad8">0</span>, z:&nbsp;<span style="color:#272ad8">0</span>, w:&nbsp;<span style="color:#272ad8">0</span>), forKey:&nbsp;<span style="color:#d12f1b">&quot;inputBVector&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; darkScratchesFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">0</span>, y:&nbsp;<span style="color:#272ad8">0</span>, z:&nbsp;<span style="color:#272ad8">0</span>, w:&nbsp;<span style="color:#272ad8">0</span>), forKey:&nbsp;<span style="color:#d12f1b">&quot;inputAVector&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; darkScratchesFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">0</span>, y:&nbsp;<span style="color:#272ad8">1</span>, z:&nbsp;<span style="color:#272ad8">1</span>, w:&nbsp;<span style="color:#272ad8">1</span>), forKey:&nbsp;<span style="color:#d12f1b">&quot;inputBiasVector&quot;</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 6.用CIMinimumComponent滤镜把蓝绿色磨砂图滤镜处理成黑色磨砂图滤镜</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;minimumComponentFilter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIMinimumComponent&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; minimumComponentFilter.<span style="color:#3d1d81">setValue</span>(darkScratchesFilter.<span style="color:#703daa">outputImage</span>, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// ---------上面算是基本完成了</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 7.最终组合在一起</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;multiplyCompositingFilter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIMultiplyCompositing&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; multiplyCompositingFilter.<span style="color:#3d1d81">setValue</span>(minimumComponentFilter.<span style="color:#703daa">outputImage</span>, forKey:&nbsp;<span style="color:#703daa">kCIInputBackgroundImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; multiplyCompositingFilter.<span style="color:#3d1d81">setValue</span>(sourceOverCompositingFilter.<span style="color:#703daa">outputImage</span>, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>// 8.最后输出</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;outputImage = multiplyCompositingFilter.<span style="color:#703daa">outputImage</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;cgImage =&nbsp;<span style="color:#4f8187">context</span>.<span style="color:#3d1d81">createCGImage</span>(outputImage, fromRect: outputImage.<span style="color:#3d1d81">extent</span>())</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">image</span>&nbsp;=&nbsp;<span style="color:#703daa">UIImage</span>(CGImage: cgImage)</p>
+
+<p>}</p>
+
+<p>以上就是一个老电影滤镜的&ldquo;配方&rdquo;了。</p>
+
+<p>编译、运行，显示效果如下：</p>
+
+<p>&nbsp;</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140908192754589?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>子类化CIFilter</h2>
+
+<p>有时可能会对一些图片应用同样的滤镜，我们可能会像上面那样把一连串的滤镜组合起来，以达到自己想要的效果，那么我们就可以把这些操作封装到一个CIFilter的子类中，然后在多个地方反复使用，就像使用Core Image预置的滤镜那样。</p>
+
+<p>CICategoryColorEffect类别中有个<strong><span style="color:#cc0000">CIColorInvert</span></strong>滤镜，这个滤镜提供反色功能，实现起来并不复杂，因为我们并不是做一个真正的自定义滤镜，而是在里面对Core Image已有滤镜的封装，我们可以为子类定义一些输入参数，参照苹果对CIFilter子类的命名约定，输入参数必须用input作前缀，如inputImage，然后再重写outputImage方法就行了。</p>
+
+<p>现在我们回到Xcode中，做以下几件事：</p>
+
+<ol>
+	<li>新建一个Cocoa Touch Class，类名就叫<strong><span style="color:#cc0000">CIColorInvert</span></strong>，继承自<strong><span style="color:#cc0000">CIFilter</span>。</strong></li>
+	<li>添加一个inputImage参数，类型自然是CIImage，由外界赋值。</li>
+	<li>重写outputImage属性的getter。如果你之前写过Objective-C，应该对属性有这样一个印象：子类要重写父类的属性，只需要单独写个getter或setter方法就行了，但在Swift里，不能通过这种方式重写属性，必须连getter、setter（如果父类的属性支持setter的话）一起重写。在我们的例子中outputImage在CIFilter中只是一个getter属性，</li>
+	<li>在outputImage里通过<strong><span style="color:#cc0000">CIColorMatrix</span></strong>滤镜对图像的各向量进行调整。</li>
+</ol>
+
+<p>CIColorInvert类实现：</p>
+
+<p><span style="color:#bb2ca2">class</span>&nbsp;CIColorInvert:&nbsp;<span style="color:#703daa">CIFilter</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;inputImage:&nbsp;<span style="color:#703daa">CIImage</span>!</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">override</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;outputImage:&nbsp;<span style="color:#703daa">CIImage</span>! {</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">get</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIColorMatrix&quot;</span>, withInputParameters: [</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#703daa">kCIInputImageKey</span>&nbsp;:&nbsp;<span style="color:#4f8187">inputImage</span>,</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputRVector&quot;</span>&nbsp;:&nbsp;<span style="color:#703daa">CIVector</span>(x: -<span style="color:#272ad8">1</span>, y:&nbsp;<span style="color:#272ad8">0</span>, z:&nbsp;<span style="color:#272ad8">0</span>),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputGVector&quot;</span>&nbsp;:&nbsp;<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">0</span>, y: -<span style="color:#272ad8">1</span>, z:&nbsp;<span style="color:#272ad8">0</span>),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputBVector&quot;</span>&nbsp;:&nbsp;<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">0</span>, y:&nbsp;<span style="color:#272ad8">0</span>, z: -<span style="color:#272ad8">1</span>),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#d12f1b">&quot;inputBiasVector&quot;</span>&nbsp;:&nbsp;<span style="color:#703daa">CIVector</span>(x:&nbsp;<span style="color:#272ad8">1</span>, y:&nbsp;<span style="color:#272ad8">1</span>, z:&nbsp;<span style="color:#272ad8">1</span>),</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ]).<span style="color:#703daa">outputImage</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>}</p>
+
+<p>然后在Storyboard的VC上增加一个按钮&ldquo;反色&rdquo;，连接到VC的<strong><span style="color:#cc0000">colorInvert</span></strong>方法上，colorInvert方法实现如下：</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;colorInvert() {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;colorInvertFilter =&nbsp;<span style="color:#4f8187">CIColorInvert</span>()</p>
+
+<p>&nbsp; &nbsp; colorInvertFilter.<span style="color:#4f8187">inputImage</span>&nbsp;=&nbsp;<span style="color:#703daa">CIImage</span>(image:&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">image</span>)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;outputImage = colorInvertFilter.<span style="color:#4f8187">outputImage</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;cgImage =&nbsp;<span style="color:#4f8187">context</span>.<span style="color:#3d1d81">createCGImage</span>(outputImage, fromRect: outputImage.<span style="color:#3d1d81">extent</span>())</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">image</span>&nbsp;=&nbsp;<span style="color:#703daa">UIImage</span>(CGImage: cgImage)</p>
+
+<p>}&nbsp;</p>
+
+<p>这样一下，一个对Core Image预置滤镜的简单封装就完成了，每一个滤镜的效果就像是一张配方，CIFilter就是装有配方的瓶子，所以子类化CIFilter并不算自定义滤镜，但是从iOS 8开始，Core Image是支持真正的自定义滤镜的，自定义的滤镜被称之为内核（CIKernel），在WWDC视频里对其有50分钟的介绍：<a href="https://developer.apple.com/videos/wwdc/2014/#515">https://developer.apple.com/videos/wwdc/2014/#515</a>。</p>
+
+<p>运行后反色的效果，再次点击反色按钮后显示原图：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140909003856917?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2>简单抠图并更换背景</h2>
+
+<p>利用Core Image预置的滤镜能满足大部分使用场景，我们做一个简单的替换背景的功能。</p>
+
+<p>为了方便测试，加入两张新的图：</p>
+
+<p><a href="https://img-blog.csdn.net/20140911225746004"><img alt="" class="has" src="https://img-blog.csdn.net/20140911225746004" /></a><a href="https://img-blog.csdn.net/20140911225752509"><img alt="" class="has" src="https://img-blog.csdn.net/20140911225752509" /></a></p>
+
+<p>点击图片可以打开原图。</p>
+
+<p>将两张图添加到当前工程中，然后把ViewController的属性originalImage改为返回左边的图：</p>
+
+<p>......</p>
+
+<p><span style="color:#bb2ca2">lazy</span>&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;originalImage:&nbsp;<span style="color:#703daa">UIImage</span>&nbsp;= {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;<span style="color:#703daa">UIImage</span>(named:&nbsp;<span style="color:#d12f1b">&quot;Image2&quot;</span>)</p>
+
+<p>}()</p>
+
+<p>......</p>
+
+<p>然后在Storyboard的VC上增加两个按钮：一个用于显示原图：</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;showOriginalImage() {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span><span style="color:#bb2ca2">self</span><span style="color:#000000">.</span>imageView<span style="color:#000000">.</span><span style="color:#703daa">image</span><span style="color:#000000">&nbsp;=&nbsp;</span>originalImage</p>
+
+<p>}</p>
+
+<p>另一个按钮就叫&ldquo;更换背景&rdquo;，连接到VC的IBAction方法<strong><span style="color:#cc0000">replaceBackground</span></strong>上。</p>
+
+<p>我们先看要做的事情：</p>
+
+<ul>
+	<li>消除深绿色</li>
+	<li>组合图片</li>
+</ul>
+
+<h3>消除深绿色</h3>
+
+<p>就像Photoshop的魔法棒一样，Core Image也有类似的滤镜，但是没有那么简单粗暴，使用起来很麻烦。</p>
+
+<p>在Core Image里，我们为了消除某种颜色，需要使用<strong><span style="color:#cc0000">CIColorCube</span></strong>滤镜，而CIColorCube滤镜需要一张cube映射表，这张表其实就是张颜色表（3D颜色查找表），把你想消除的颜色的alpha值设置为0，其他的颜色不变，Core Image将会把图像数据上的颜色映射为表中的颜色，以此来达到消除某种颜色的目的。</p>
+
+<p>CIColorCube的这张表默认不会对inputImage作任何处理，但在我们这里要将所有的深绿色干掉，所以需要自己来建立这张表。</p>
+
+<p>我们要消除的&ldquo;深绿色&rdquo;并不只是视觉上的一种颜色，而是颜色的范围，最直接的方法是<strong><span style="color:#cc0000">将RGBA转成HSV（Hue，Saturation，Value）</span></strong>，在HSV的格式下，颜色是围绕圆柱体中轴的角度来表现的，在这种表现方法下，你能把颜色的范围想象成连在一起的扇形，然后直接把该块区域干掉（alpha设为0），这就表示我们实际上需要指定颜色区域的范围------围绕圆柱体中轴线的最小角度以及最大角度，此范围内的颜色alpha设为0。最后，Cube Map表中的数据<strong><span style="color:#cc0000">必须乘以alpha</span></strong>，所以创建Cube Map的最后一步是把RGB值乘以你刚刚计算出来的alpha值：如果是想要消除的颜色，乘出来就是0，反之则不变。这是一张代表颜色值区域的HSV（Hue值）图：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140911233815109" /></p>
+
+<p>可以看到如果是纯绿色，其取值是120度，蓝色是240度，我们这种情况取值大概在60到90左右（偏绿一点），<a href="http://www.color-blindness.com/color-name-hue/">在这个网站</a>上可以看到更详细的RGB颜色对应的HSV值。</p>
+
+<p>那么接下来我们就准备创建Cube Map表，创建Cube Map表的方法在苹果官方示例中可以找到，是C语言实现的，为了方便起见，我们就直接创建一个C文件来包含这些代码。</p>
+
+<p>在工程里选择<strong><span style="color:#cc0000">新建一个.c文件</span></strong>，我取名为CubeMap.c，在创建这个.c文件的时候，不出意外的话Xcode会问你是否需要创建一个桥接头文件（xxxx.Bridging-Header.H），选择是，Xcode会创建该文件，并自动把其路径放到编译选项的<strong><span style="color:#cc0000">Objective-C Bridging Header</span></strong>中。如果你要自己添加这个文件，并且需要手动修改<strong><span style="color:#cc0000">Objective-C Bridging Header</span></strong>的编译选项，可以看<a href="http://blog.csdn.net/zhangao0086/article/details/38064287">这里</a>。</p>
+
+<p>.c文件搞完以后，即把苹果官方示例中的代码（以下代码）添加进去：</p>
+
+<p><span style="color:#bb2ca2">struct</span>&nbsp;CubeMap {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">int</span>&nbsp;length;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">float</span>&nbsp;dimension;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">float</span>&nbsp;*data;</p>
+
+<p>};</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#bb2ca2">struct</span>&nbsp;<span style="color:#4f8187">CubeMap</span>&nbsp;createCubeMap(<span style="color:#bb2ca2">float</span>&nbsp;minHueAngle,&nbsp;<span style="color:#bb2ca2">float</span>&nbsp;maxHueAngle) {</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp;&nbsp;</span>const<span style="color:#000000">&nbsp;</span>unsigned<span style="color:#000000">&nbsp;</span>int<span style="color:#000000">&nbsp;size =&nbsp;</span><span style="color:#272ad8">64</span><span style="color:#000000">;</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">struct</span>&nbsp;<span style="color:#4f8187">CubeMap</span>&nbsp;map;</p>
+
+<p>&nbsp; &nbsp; map.<span style="color:#4f8187">length</span>&nbsp;= size * size * size *&nbsp;<span style="color:#bb2ca2">sizeof</span>&nbsp;(<span style="color:#bb2ca2">float</span>) *&nbsp;<span style="color:#272ad8">4</span>;</p>
+
+<p>&nbsp; &nbsp; map.<span style="color:#4f8187">dimension</span>&nbsp;= size;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">float</span>&nbsp;*cubeData = (<span style="color:#bb2ca2">float</span>&nbsp;*)<span style="color:#3d1d81">malloc</span>&nbsp;(map.<span style="color:#4f8187">length</span>);</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">float</span>&nbsp;rgb[<span style="color:#272ad8">3</span>], hsv[<span style="color:#272ad8">3</span>], *c = cubeData;</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">for</span>&nbsp;(<span style="color:#bb2ca2">int</span>&nbsp;z =&nbsp;<span style="color:#272ad8">0</span>; z &lt; size; z++){</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; rgb[<span style="color:#272ad8">2</span>] = ((<span style="color:#bb2ca2">double</span>)z)/(size-<span style="color:#272ad8">1</span>);&nbsp;<span style="color:#008400">// Blue value</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">for</span>&nbsp;(<span style="color:#bb2ca2">int</span>&nbsp;y =&nbsp;<span style="color:#272ad8">0</span>; y &lt; size; y++){</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; rgb[<span style="color:#272ad8">1</span>] = ((<span style="color:#bb2ca2">double</span>)y)/(size-<span style="color:#272ad8">1</span>);&nbsp;<span style="color:#008400">// Green value</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">for</span>&nbsp;(<span style="color:#bb2ca2">int</span>&nbsp;x =&nbsp;<span style="color:#272ad8">0</span>; x &lt; size; x ++){</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; rgb[<span style="color:#272ad8">0</span>] = ((<span style="color:#bb2ca2">double</span>)x)/(size-<span style="color:#272ad8">1</span>);&nbsp;<span style="color:#008400">// Red value</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#31595d">rgbToHSV</span>(rgb,hsv);</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>// Use the hue value to determine which to make transparent</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>// The minimum and maximum hue angle depends on</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>// the color you want to remove</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">float</span>&nbsp;alpha = (hsv[<span style="color:#272ad8">0</span>] &gt; minHueAngle &amp;&amp; hsv[<span style="color:#272ad8">0</span>] &lt; maxHueAngle) ?&nbsp;<span style="color:#272ad8">0.0f</span>:&nbsp;<span style="color:#272ad8">1.0f</span>;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span>// Calculate premultiplied alpha values for the cube</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; c[<span style="color:#272ad8">0</span>] = rgb[<span style="color:#272ad8">0</span>] * alpha;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; c[<span style="color:#272ad8">1</span>] = rgb[<span style="color:#272ad8">1</span>] * alpha;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; c[<span style="color:#272ad8">2</span>] = rgb[<span style="color:#272ad8">2</span>] * alpha;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; c[<span style="color:#272ad8">3</span>] = alpha;</p>
+
+<p><span style="color:#000000">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; c +=&nbsp;</span><span style="color:#272ad8">4</span><span style="color:#000000">;&nbsp;</span>// advance our pointer into memory for the next color value</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; map.<span style="color:#4f8187">data</span>&nbsp;= cubeData;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>&nbsp;map;</p>
+
+<p>}</p>
+
+<p>我将这个方法稍微改造了一下，选回一个结构体，因为外面要用到length和dimension。苹果没有提供rgbToHSV方法的实现，可以用我找到的这个：</p>
+
+<p><span style="color:#bb2ca2">void</span>&nbsp;rgbToHSV(<span style="color:#bb2ca2">float</span>&nbsp;*rgb,&nbsp;<span style="color:#bb2ca2">float</span>&nbsp;*hsv) {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">float</span>&nbsp;min, max, delta;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">float</span>&nbsp;r = rgb[<span style="color:#272ad8">0</span>], g = rgb[<span style="color:#272ad8">1</span>], b = rgb[<span style="color:#272ad8">2</span>];</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">float</span>&nbsp;*h = hsv, *s = hsv +&nbsp;<span style="color:#272ad8">1</span>, *v = hsv +&nbsp;<span style="color:#272ad8">2</span>;</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; min =&nbsp;<span style="color:#3d1d81">fmin</span>(<span style="color:#3d1d81">fmin</span>(r, g), b );</p>
+
+<p>&nbsp; &nbsp; max =&nbsp;<span style="color:#3d1d81">fmax</span>(<span style="color:#3d1d81">fmax</span>(r, g), b );</p>
+
+<p>&nbsp; &nbsp; *v = max;</p>
+
+<p>&nbsp; &nbsp; delta = max - min;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>( max !=&nbsp;<span style="color:#272ad8">0</span>&nbsp;)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; *s = delta / max;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;{</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; *s =&nbsp;<span style="color:#272ad8">0</span>;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; *h = -<span style="color:#272ad8">1</span>;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">return</span>;</p>
+
+<p>&nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>( r == max )</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; *h = ( g - b ) / delta;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">else</span>&nbsp;<span style="color:#bb2ca2">if</span>( g == max )</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; *h =&nbsp;<span style="color:#272ad8">2</span>&nbsp;+ ( b - r ) / delta;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">else</span></p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; *h =&nbsp;<span style="color:#272ad8">4</span>&nbsp;+ ( r - g ) / delta;</p>
+
+<p>&nbsp; &nbsp; *h *=&nbsp;<span style="color:#272ad8">60</span>;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">if</span>( *h &lt;&nbsp;<span style="color:#272ad8">0</span>&nbsp;)</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; *h +=&nbsp;<span style="color:#272ad8">360</span>;</p>
+
+<p>}</p>
+
+<p>我在.c文件中导入的库：</p>
+
+<p>#include&nbsp;<span style="color:#d12f1b">&lt;stdio.h&gt;</span></p>
+
+<p><span style="color:#78492a">#include&nbsp;</span>&lt;stdlib.h&gt;</p>
+
+<p>#include&nbsp;<span style="color:#d12f1b">&lt;math.h&gt;</span></p>
+
+<p>对了，如果那个桥接文件里没有导入这个.c文件的话是不行的，Swift的类会找不到这里面的方法。</p>
+
+<p>//&nbsp; ComplexFilters-Bridging-Header.h</p>
+
+<p>//&nbsp; Use this file to import your target&#39;s public headers that you would like to expose to Swift.</p>
+
+<p>//</p>
+
+<p>&nbsp;</p>
+
+<p><span style="color:#78492a">#import&nbsp;</span>&quot;CubeMap.c&quot;&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h3>组合图片</h3>
+
+<p>VC中的<strong><span style="color:#cc0000">replaceBackground</span></strong>方法只需要做三件事：</p>
+
+<ul>
+	<li>创建Cube Map表</li>
+	<li>创建CIColorCube滤镜并使用Cube Map</li>
+	<li>用CISourceOverCompositing滤镜将处理过的人物图像和未处理过的背景图粘合起来</li>
+</ul>
+
+<p>方法实现如下：</p>
+
+<p><span style="color:#bb2ca2">@IBAction</span>&nbsp;<span style="color:#bb2ca2">func</span>&nbsp;replaceBackground() {</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;cubeMap =&nbsp;<span style="color:#31595d">createCubeMap</span>(<span style="color:#272ad8">60</span>,<span style="color:#272ad8">90</span>)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;data =&nbsp;<span style="color:#703daa">NSData</span>(bytesNoCopy: cubeMap.<span style="color:#4f8187">data</span>, length:&nbsp;<span style="color:#703daa">Int</span>(cubeMap.<span style="color:#4f8187">length</span>), freeWhenDone:&nbsp;<span style="color:#bb2ca2">true</span>)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;colorCubeFilter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CIColorCube&quot;</span>)</p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp; colorCubeFilter.<span style="color:#3d1d81">setValue</span>(cubeMap.<span style="color:#4f8187">dimension</span>, forKey:&nbsp;<span style="color:#d12f1b">&quot;inputCubeDimension&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; colorCubeFilter.<span style="color:#3d1d81">setValue</span>(data, forKey:&nbsp;<span style="color:#d12f1b">&quot;inputCubeData&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; colorCubeFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIImage</span>(image:&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">image</span>), forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">var</span>&nbsp;outputImage = colorCubeFilter.<span style="color:#703daa">outputImage</span></p>
+
+<p>&nbsp;&nbsp; &nbsp;</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;sourceOverCompositingFilter =&nbsp;<span style="color:#703daa">CIFilter</span>(name:&nbsp;<span style="color:#d12f1b">&quot;CISourceOverCompositing&quot;</span>)</p>
+
+<p>&nbsp; &nbsp; sourceOverCompositingFilter.<span style="color:#3d1d81">setValue</span>(outputImage, forKey:&nbsp;<span style="color:#703daa">kCIInputImageKey</span>)</p>
+
+<p>&nbsp; &nbsp; sourceOverCompositingFilter.<span style="color:#3d1d81">setValue</span>(<span style="color:#703daa">CIImage</span>(image:&nbsp;<span style="color:#703daa">UIImage</span>(named:&nbsp;<span style="color:#d12f1b">&quot;background&quot;</span>)), forKey:&nbsp;<span style="color:#703daa">kCIInputBackgroundImageKey</span>)</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; &nbsp; outputImage = sourceOverCompositingFilter.<span style="color:#703daa">outputImage</span></p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#bb2ca2">let</span>&nbsp;cgImage =&nbsp;<span style="color:#4f8187">context</span>.<span style="color:#3d1d81">createCGImage</span>(outputImage, fromRect: outputImage.<span style="color:#3d1d81">extent</span>())</p>
+
+<p>&nbsp; &nbsp;&nbsp;<span style="color:#4f8187">imageView</span>.<span style="color:#703daa">image</span>&nbsp;=&nbsp;<span style="color:#703daa">UIImage</span>(CGImage: cgImage)</p>
+
+<p>}</p>
+
+<p>参数设置都还比较简单，CISourceOverCompositing滤镜目前已经使用过多次了，并没有什么复杂的。</p>
+
+<p>编译、运行，可以分两次执行，先看消除深绿色的效果，再看最后使用CISourceOverCompositing滤镜组合图片之后的效果：</p>
+
+<p><img alt="" class="has" src="https://img-blog.csdn.net/20140912005230732?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvemhhbmdhbzAwODY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color:#cc0000"><a href="https://github.com/zhangao0086/iOS-CoreImage-Swift">GitHub下载地址</a></span></h2>
+
+<p>我在GitHub上会保持更新。</p>
+
+<p>&nbsp;</p>
+
+<h2><span style="color:#cc0000">UPDATED:</span></h2>
+
+<p>我在更换背景的右侧，新加入了一个显示图2的button，已在GitHub上更新。</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>参考资料：</p>
+
+<p><a href="http://www.docin.com/p-387777241.html">http://www.docin.com/p-387777241.html</a></p>
+
+<p><a href="https://developer.apple.com/library/mac/documentation/graphicsimaging/conceptual/CoreImaging/ci_intro/ci_intro.html">https://developer.apple.com/library/mac/documentation/graphicsimaging/conceptual/CoreImaging/ci_intro/ci_intro.html</a></p>
+
+<p>&nbsp;</p>

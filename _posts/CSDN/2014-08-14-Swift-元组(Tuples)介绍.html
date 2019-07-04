@@ -1,0 +1,99 @@
+---
+layout: post
+title: "Swift 元组(Tuples)介绍"
+date: 2014-08-14 23:38:26
+categories: [iOS,Swift]
+---
+
+
+<h2>元组的定义</h2>
+
+<p>元组是Objective-C中没有的数据类型，与数组类似，都是表示一组数据的集合，但与数组不同，它的特点是：</p>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>元组的长度任意</li>
+	<li>元组中的数据可以是不同的数据类型</li>
+</ul>
+
+<p>元组的定义很简单，用小括号括起来，然后以逗号隔开就可以了，如：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var userInfo = ("Bannings" ,true, 22)</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>读取元组中的数据</h2>
+
+<p>这样就创建了一个元组，而想要获取其中的值，则有多种方法，可以直接通过索引来取：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">userInfo.0  //Bannings
+userInfo.1  //true
+userInfo.2  //22</code></pre>
+
+<p>但是这样并不方便，也不直观，那么可以用下面这种方式来访问：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let (name, isMale, age) = userInfo
+name    //Bannings
+isMale  //true
+age     //22</code></pre>
+
+<p>把已知的userInfo赋给一个全是变量名组成的新的元组，那么就能以变量名去访问元组中的数据了。</p>
+
+<p>还有另外一种方法也能以变量名的方式去访问元组中的数据，那就是在元组初始化的时候就给它一个变量名：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let userInfo = (name:"Bannings" ,isMale:true, age:22)
+userInfo.name       //Bannings
+userInfo.isMale     //true
+userInfo.age        //22</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>跳过不关心的值</h2>
+
+<p>除此之外，元组还支持&ldquo;跳过&rdquo;某些你并不关心的值，只需要用下划线（_）去忽略它们就行了：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let (name,  _, age) = userInfo
+name    //Bannings
+//isMale  这个就不能访问了
+age     //22</code></pre>
+
+<p>或者是在该元组初始化的时候不给它指定变量名：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">let userInfo = (name:"Bannings" ,true, age:22)
+userInfo.name       //Bannings
+//userInfo.isMale     这个就不能访问了
+userInfo.age        //22</code></pre>
+
+<p>&nbsp;</p>
+
+<h2>可变元组和不可变元组</h2>
+
+<p>用var定义的元组就是可变元组，let定义的就是不可变元组。不管是可变还是不可变元组，元组在创建后就不能对其长度进行增加和删除之类的修改，只有可变元组能在创建之后修改元组中的数据：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var userInfo = (name:&quot;Bannings&quot; ,true, age:22)	//定义可变元组
+userInfo.name = &quot;newName&quot;
+userInfo.name   //newName
+
+let userInfo1 = (name:&quot;Bannings&quot; ,true, age:22)	//定义不可变元组
+userInfo1.name = &quot;newName&quot;  //报错，不可修改</code>	//定义可变元组
+userInfo.name = &quot;newName&quot;
+userInfo.name   //newName
+
+let userInfo1 = (name:&quot;Bannings&quot; ,true, age:22)	//定义不可变元组
+userInfo1.name = &quot;newName&quot;  //报错，不可修改</pre>
+
+<p>需要注意的是，可变元组虽然可以修改数据，但却不能改变其数据的数据类型：</p>
+
+<pre class="has" name="code">
+<code class="language-javascript">var userInfo = (name:"Bannings" ,true, age:22)
+userInfo.name = 1   //报错</code></pre>
+
+<p>&nbsp;</p>
