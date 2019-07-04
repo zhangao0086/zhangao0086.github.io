@@ -2,7 +2,7 @@ theme: jekyll-theme-cayman
 max_excerpt_chars: 167
 paginate: 20
 timezone: Asia/Shanghai
-title: ARTS 记录
+title: Coding Tour
 
 plugins:
     - jemoji
