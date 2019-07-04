@@ -29,10 +29,9 @@
       </nav>
     {% endif %}
     <nav class="right">
-      {% if site.github.is_project_page %}
         <div id="floating-buttons">
           <a href="{{ site.github.url | append: '/README.html' }}" class="btn">什么是 ARTS？</a>
-          <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
+          <!-- <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a> -->
         </div>
         
         <details id="floating-more" class="dropdown details-reset details-overlay">
@@ -42,10 +41,9 @@
       
           <ul class="dropdown-menu dropdown-menu-sw">
             <li><a class="dropdown-item" href="{{ site.github.url | append: '/README.html' }}">什么是 ARTS？</a></li>
-            <li><a class="dropdown-item" href="{{ site.github.repository_url }}">View on GitHub</a></li>
+            <!-- <li><a class="dropdown-item" href="{{ site.github.repository_url }}">View on GitHub</a></li> -->
           </ul>
         </details>
-      {% endif %}
       </nav>
 
     <header class="page-header" role="banner">
@@ -54,6 +52,7 @@
       {% if page.date %}
         <h2 class="project-tagline">发表于 {{ page.date | date: "%Y-%m-%d %H:%M:%S"}}</h2>
       {% endif %}
+      <!-- <img src="http://stackoverflow.com/users/flair/907422.png?theme=clean" width="208" height="58" alt="profile for Bannings at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Bannings at Stack Overflow, Q&amp;A for professional and enthusiast programmers"> -->
     </header>
 
     <main class="main-content" role="main">
