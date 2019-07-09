@@ -1,8 +1,10 @@
 ---
 layout: post
-title: "利用Jekyll在GitHub Pages上部署博客"
+title: '利用Jekyll在GitHub Pages上部署博客'
 date: 2014-07-18 13:12:32
 categories: [随笔]
+csdn_read_num: 22875
+article_type: 1
 ---
 
 
@@ -198,18 +200,14 @@ paginate_path: "page:num"</code></pre>
 <p>在首页里面对文章进行分页，用一个简单的循环：</p>
 
 <pre class="has" name="code">
-{% raw %}
-{% for post in paginator.posts %}
+<code class="language-html">{% for post in paginator.posts %}
     &lt;a href="{{ post.url }}"&gt;{{ post.title }}&lt;/a&gt;
-{% endfor %}
-{% endraw %}
-</pre>
+{% endfor %}</code></pre>
 
 <p>为了生成分页的链接，在根目录的index.html文件里面加上：</p>
-
-<pre class="has" name="code">
 {% raw %}
-{% if paginator.total_pages &gt; 1 %}
+<pre class="has" name="code">
+<code class="language-html">{% if paginator.total_pages &gt; 1 %}
 	{% if paginator.previous_page %}
 		&lt;a href="{{ paginator.previous_page_path }}"&gt;上一页&lt;/a&gt;
 	{% endif %}
@@ -217,24 +215,19 @@ paginate_path: "page:num"</code></pre>
 	{% if paginator.next_page %}
 		&lt;a href="{{ paginator.next_page_path }}"&gt;下一页&lt;/a&gt;
 	{% endif %}
-{% endif %}
-{% endraw %}
-</pre>
+{% endif %}</code></pre>
 
 <p>如果想要显示所有的页码：</p>
 
 <pre class="has" name="code">
-{% raw %}
-{% for page in (1..paginator.total_pages) %}
+<code class="language-html">{% for page in (1..paginator.total_pages) %}
 	{% if page == 1 %}
 		&lt;a href="/index.html"&gt;{{ page }}&lt;/a&gt;
 	{% else %}
 		&lt;a href="{{ site.paginate_path | replace: ':num',page }}"&gt;{{ page }}&lt;/a&gt;
 	{% endif %}
-{% endfor %}
+{% endfor %}</code></pre>
 {% endraw %}
-</pre>
-
 <p>因为第一页是index.html，不是page1，所以要特殊处理一下。这样一个简单的分页就完成了。</p>
 
 <p>附分页对象paginator的所有属性：</p>

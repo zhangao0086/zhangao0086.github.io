@@ -1,8 +1,10 @@
 ---
 layout: post
-title: "Introduction to the Volatile Keyword"
+title: 'Introduction to the Volatile Keyword'
 date: 2015-03-02 11:49:00
 categories: [随笔]
+csdn_read_num: 2921
+article_type: 2
 ---
 
 

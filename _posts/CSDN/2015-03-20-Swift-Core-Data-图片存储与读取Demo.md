@@ -1,8 +1,10 @@
 ---
 layout: post
-title: "Swift Core Data 图片存储与读取Demo"
+title: 'Swift Core Data 图片存储与读取Demo'
 date: 2015-03-20 23:08:37
 categories: [iOS,Swift]
+csdn_read_num: 9928
+article_type: 1
 ---
 
 

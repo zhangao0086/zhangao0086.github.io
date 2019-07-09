@@ -1,8 +1,10 @@
 ---
 layout: post
-title: "TestFlight Beta 备忘"
+title: 'TestFlight Beta 备忘'
 date: 2015-04-07 13:30:36
 categories: [iOS]
+csdn_read_num: 3235
+article_type: 1
 ---
 
 
