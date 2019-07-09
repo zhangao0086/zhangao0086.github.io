@@ -328,7 +328,7 @@ nav i { font-size: 1.2em; min-width: 1.5em; text-align: center; }
 
 .page-heade { z-index: 2 }
 
-.navbar { width: calc(100% - 3rem); margin: auto auto; position: relative; }
+.navbar { margin: auto auto; position: relative; }
 .navbar .left { position: absolute; left: 0; }
 .navbar .right { position: absolute; right: 0; }
 .navbar ul { display: flex; padding: 0; }
@@ -337,8 +337,13 @@ nav i { font-size: 1.2em; min-width: 1.5em; text-align: center; }
 
 @media screen {
   .toc { display: none }
+  .navbar { width: calc(100% - 3rem); }
 }
 
 @media screen and (min-width: 92em) {
   .toc { display: block }
+}
+
+@media screen and (max-width: 42em) {
+  .navbar { width: calc(100% - 1rem); }
 }
