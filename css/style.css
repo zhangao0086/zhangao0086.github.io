@@ -268,8 +268,9 @@ a:hover { text-decoration: underline; }
 
 .page-header { color: #fff; text-align: center; background-color: #159957; background-image: linear-gradient(120deg, #155799, #159957); }
 @media screen and (min-width: 64em) { .page-header { padding: 5rem 6rem; } }
-@media screen and (min-width: 42em) and (max-width: 64em) { .page-header { padding: 3rem 4rem; } }
-@media screen and (max-width: 42em) { .page-header { padding: 2rem 1rem; } }
+@media screen and (max-width: 64em) { .page-header { padding: 3rem 4rem; } }
+/* @media screen and (min-width: 42em) and (max-width: 64em) { .page-header { padding: 3rem 4rem; } } */
+/* @media screen and (max-width: 42em) { .page-header { padding: 2rem 1rem; } } */
 
 .project-name { margin-top: 0; margin-bottom: 0.1rem; }
 @media screen and (min-width: 64em) { .project-name { font-size: 3.25rem; } }
@@ -316,28 +317,26 @@ a:hover { text-decoration: underline; }
 
 .site-footer-owner { display: block; font-weight: bold; }
 
-.site-footer-credits { color: #819198; }
+.site-footer-credits { display: block; color: #819198; }
 
 /* By Bannings */
 article { font-weight: bolder; color: #159957; }
 
-nav.left, nav.right { position: absolute; top: 20px; color: white; }
-nav.left { left: 15px; }
+nav.right { position: absolute; top: 20px; color: white; }
 nav.right { right: 15px; }
 nav i { font-size: 1.2em; min-width: 1.5em; text-align: center; }
 
 .page-heade { z-index: 2 }
 
+.navbar { width: calc(100% - 3rem); margin: auto auto; position: relative; }
+.navbar .left { position: absolute; left: 0; }
+.navbar .right { position: absolute; right: 0; }
+.navbar ul { display: flex; padding: 0; }
+.navbar li { display: inline; list-style: none; margin-left: 10px; margin-right: 10px; }
+.navbar a, .navbar { color: white; text-decoration: none; }
+
 @media screen {
   .toc { display: none }
-
-  #floating-buttons { display: none }
-  #floating-more { display: block }
-
-}
-@media screen and (min-width: 42em) { 
-  #floating-buttons { display: block }
-  #floating-more { display: none }
 }
 
 @media screen and (min-width: 92em) {

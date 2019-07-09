@@ -1,0 +1,131 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 18rem;
+    visibility: hidden;
+    overflow-y: auto;
+    background-color: black;
+    z-index: 999;
+
+    right: -18rem;
+    left: auto;
+}
+
+@media (min-width: 30em) {
+  .sidebar {
+    font-size: 0.8rem;
+  }
+}
+
+.sidebar a {
+  font-weight: normal;
+  color: white;
+}
+
+.sidebar-checkbox {
+    position: absolute;
+    opacity: 0;
+}
+
+#sidebar-overlay {
+  visibility: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 997;
+  opacity: 0;
+  transition: opacity 0.25s
+}
+
+.wrap, .sidebar {
+    transition: all .3s ease;
+}
+
+#sidebar-checkbox:checked + .sidebar {
+    visibility: visible;
+}
+
+#sidebar-checkbox:checked ~ .wrap,
+#sidebar-checkbox:checked ~ .sidebar {
+    transform: translateX(-18rem);
+}
+
+#sidebar-checkbox:checked ~ .sidebar {
+  box-shadow: -.25rem 0 .5rem rgba(0,0,0,.2)
+}
+
+.body-overflow-hidden {
+  overflow: hidden;
+}
+
+.sidebar-overlay-display-show {
+  visibility: visible !important;
+  opacity: 0;
+}
+
+.sidebar-item {
+  padding: 1rem;
+}
+
+.sidebar-item p:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar-nav {
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.sidebar-nav-item {
+  display: block;
+  padding: .5rem 1rem;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+
+.sidebar-nav-item-sub {
+  font-size: 85%;
+  line-height: 85%;
+}
+
+.sidebar-nav-item-sub::before {
+  content: "";
+  padding-left: 1em;
+}
+
+.sidebar-nav-item.active,
+a.sidebar-nav-item:hover,
+a.sidebar-nav-item:focus {
+  text-decoration: none;
+  background-color: rgba(255,255,255,.1);
+  border-color: transparent;
+}
+
+@media (min-width: 48em) {
+  .sidebar-item {
+    padding: 1.5rem;
+  }
+  .sidebar-nav-item {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.sidebar-personal-info .sidebar-personal-info-section:not(:first-of-type) {
+  margin-top: .75rem;
+}
+
+.sidebar-personal-info .sidebar-personal-info-section {
+  line-height: 1rem;
+}
+
+.sidebar-personal-info .sidebar-personal-info-section a,
+.sidebar-personal-info .sidebar-personal-info-section strong {
+  color: white;
+  text-decoration: none;
+}
+
+.sidebar img {
+  max-width: 100%;
+  border-radius: 5px;
+}

@@ -7,6 +7,29 @@ title: Coding Tour
 plugins:
     - jemoji
 
+author:
+    name: CodingTour
+    description: A passionate <strong>developer</strong> <i class="fas fa-battery-full"></i>.
+    gravatar: e17021414b4e92b5f20f6bef96e76b08
+    contact:
+        'fab fa-github':    https://github.com/zhangao0086
+        'fab fa-stack-overflow':    https://stackoverflow.com/users/907422/bannings
+        'fa fa-envelope':     mailto:zhangao0086@gmail.com
+
+nav:
+  Home:           
+    - '/'
+#   Blog:           
+#     - '/blog/'
+    # - { Categories: '/blog/categories/' }
+    # - { Tags: '/blog/tags/' }
+#   About:          
+#     - '/about/'
+  What's the ARTS?:
+      - '/README.html'
+  Fork me on GitHub: 
+    - 'https://github.com/zhangao0086/zhangao0086.github.io'
+
 gitalk:
     enable: true
     owner: zhangao0086
