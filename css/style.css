@@ -336,12 +336,7 @@ nav i { font-size: 1.2em; min-width: 1.5em; text-align: center; }
 .navbar a, .navbar { color: white; text-decoration: none; }
 
 @media screen {
-  .toc { display: none }
   .navbar { width: calc(100% - 3rem); }
-}
-
-@media screen and (min-width: 92em) {
-  .toc { display: block }
 }
 
 @media screen and (max-width: 42em) {

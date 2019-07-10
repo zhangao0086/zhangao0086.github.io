@@ -10,7 +10,8 @@
     padding: 2rem;
     z-index: 1;
     font-size: 1.2rem;
-    background-color: transparent
+    background-color: transparent;
+    display: none;
 }
 a.toc-link{
     text-decoration:none
@@ -18,7 +19,8 @@ a.toc-link{
 .toc-icon{
     position:fixed;
     top:0;
-    right:0
+    right:0;
+    display:none;
 }
 #toc:checked ~ .toc{
     box-shadow:0 0 5px #c8c8c8;
@@ -48,19 +50,11 @@ a.toc-link{
     font-size: 0.9rem;
 }
 
-@media (min-width: 52em){
-    /* .toc{
-        transform:translateX(0)
-    } */
-    .toc.toc-right{
-        /* transform:translateX(0); */
-        left:calc(100% - 6rem - 280px)
-    }
-    .toc-icon{
-        display:none
-    }
-    .toc-right ~ .content{
-        margin-left:0;
-        margin-right:280px
-    }
+@media screen and (min-width: 85em) {
+    .toc { display: block }
+    .toc.toc-right { margin-left: calc(64rem - 12rem) }
+}
+
+@media screen and (min-width: 90em) {
+    .toc.toc-right { margin-left: calc(64rem - 12rem + 2rem) }
 }
