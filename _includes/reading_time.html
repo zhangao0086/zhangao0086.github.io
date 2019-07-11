@@ -1,0 +1,1 @@
+{% assign words = include.content | strip_html | size %}{% assign minutes = words | divided_by:500 %}{% if minutes > 0 %}{{ minutes }} min read{% else %}1 min read{% endif %}

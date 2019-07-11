@@ -3,9 +3,14 @@ layout: default
 ---
 <div style="padding: 0px">
   {% for post in paginator.posts %}
+  <div class="article">
+    <a href="{{ post.url }}"><span class="title">{{ post.title }}</span></a>
     {% if post.disable_excerpt != true %}
       <span style="display: block">{{ post.excerpt | strip_html | strip_newlines | truncate:site.max_excerpt_chars }}</span>
     {% endif %}
+    <span class="footer">
+      {{ post.date | date: "%Y-%m-%d" }}<i class="fas fa-circle circle-divider"></i>{% include reading_time.html content = post.content %} 
+    </span>
   </div>
 	{% endfor %}
 </div>
@@ -28,6 +33,19 @@ layout: default
   </div>
 
 <style>
+  .article { 
+    padding:10px 0px;
+  }
+  .article .title {
+    font-weight: bolder;
+    color: #159957;
+    display: block;
+  }
+  .article .footer {
+    color:rgba(0, 0, 0, .54); 
+    font-weight: lighter;
+    font-size: 0.9rem;
+  }
   .pager {
     margin-top: 20px;
     margin-bottom: 80px;
@@ -50,6 +68,7 @@ layout: default
     color: white;
     background-color: #5ca580;
     border: 1px solid #5ca580;
-}
+  }
+
 </style>
 {% endif %}

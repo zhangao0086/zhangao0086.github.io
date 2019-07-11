@@ -267,8 +267,8 @@ a:hover { text-decoration: underline; }
   .btn + .btn { margin-top: 1rem; margin-left: 0; } }
 
 .page-header { color: #fff; text-align: center; background-color: #159957; background-image: linear-gradient(120deg, #155799, #159957); }
-@media screen and (min-width: 64em) { .page-header { padding: 5rem 6rem; } }
-@media screen and (max-width: 64em) { .page-header { padding: 3rem 4rem; } }
+@media screen and (min-width: 64em) { .page-header { padding: 5rem 6rem 2rem 6rem; } }
+@media screen and (max-width: 64em) { .page-header { padding: 3rem 4rem 1rem 4rem; } }
 /* @media screen and (min-width: 42em) and (max-width: 64em) { .page-header { padding: 3rem 4rem; } } */
 /* @media screen and (max-width: 42em) { .page-header { padding: 2rem 1rem; } } */
 
@@ -277,7 +277,7 @@ a:hover { text-decoration: underline; }
 @media screen and (min-width: 42em) and (max-width: 64em) { .project-name { font-size: 2.25rem; } }
 @media screen and (max-width: 42em) { .project-name { font-size: 1.75rem; } }
 
-.project-tagline { margin-bottom: 2rem; font-weight: normal; opacity: 0.7; }
+.project-tagline { font-weight: normal; opacity: 0.7; }
 @media screen and (min-width: 64em) { .project-tagline { font-size: 1.25rem; } }
 @media screen and (min-width: 42em) and (max-width: 64em) { .project-tagline { font-size: 1.15rem; } }
 @media screen and (max-width: 42em) { .project-tagline { font-size: 1rem; } }
@@ -320,7 +320,10 @@ a:hover { text-decoration: underline; }
 .site-footer-credits { display: block; color: #819198; }
 
 /* By Bannings */
-article { font-weight: bolder; color: #159957; }
+
+middle { font-size: 90%; display: block; opacity: 0.7; }
+
+.circle-divider { transform: scale(0.2, 0.2); }
 
 nav.right { position: absolute; top: 20px; color: white; }
 nav.right { right: 15px; }
@@ -337,6 +340,10 @@ nav i { font-size: 1.2em; min-width: 1.5em; text-align: center; }
 
 @media screen {
   .navbar { width: calc(100% - 3rem); }
+}
+
+@media screen and (min-width: 92em) {
+  .toc { display: block }
 }
 
 @media screen and (max-width: 42em) {

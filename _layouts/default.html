@@ -56,7 +56,7 @@
         <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
   
         {% if page.date %}
-          <h2 class="project-tagline">发表于 {{ page.date | date: "%Y-%m-%d %H:%M:%S"}}</h2>
+          <middle>{{ page.date | date: "%Y-%m-%d %H:%M:%S"}}<i class="fas fa-circle circle-divider"></i>{% include reading_time.html content = content %}</middle>
         {% endif %}
         <!-- <img src="http://stackoverflow.com/users/flair/907422.png?theme=clean" width="208" height="58" alt="profile for Bannings at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Bannings at Stack Overflow, Q&amp;A for professional and enthusiast programmers"> -->
       </header>
