@@ -6,7 +6,7 @@ layout: default
   <div class="article">
     <a href="{{ post.url }}"><span class="title">{{ post.title }}</span></a>
     {% if post.disable_excerpt != true %}
-      <span style="display: block">{{ post.excerpt | strip_html | strip_newlines | truncate:site.max_excerpt_chars }}</span>
+      <span class="excerpt">{{ post.excerpt | strip_html | strip_newlines | truncate:site.max_excerpt_chars }}</span>
     {% endif %}
     <span class="footer">
       {{ post.date | date: "%Y-%m-%d" }}<i class="fas fa-circle circle-divider"></i>{% include reading_time.html content = post.content %} 
@@ -40,6 +40,10 @@ layout: default
     font-weight: bolder;
     color: #159957;
     display: block;
+  }
+  .article .excerpt {
+    display: block;
+    font-size: 1rem;
   }
   .article .footer {
     color:rgba(0, 0, 0, .54); 
