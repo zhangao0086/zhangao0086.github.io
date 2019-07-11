@@ -34,9 +34,6 @@ a.toc-link{
     transform:translateX(100%);
     right:0
 } */
-.transition--300{
-    transition:all 300ms ease-in-out
-}
 
 .node-name--H2 {
     font-size: 1.1rem;
@@ -55,7 +52,7 @@ a.toc-link{
 }
 
 @media screen and (min-width: 85em) {
-    .toc { display: block }
+    .toc { display: block; transition:all 300ms ease-in-out; }
 }
 
 @media screen and (min-width: 90em) {
