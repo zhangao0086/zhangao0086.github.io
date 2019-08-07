@@ -2,13 +2,13 @@
 layout: post
 title: 'Introduction to the Volatile Keyword'
 date: 2015-03-02 11:49:00
-categories: [随笔]
+categories: [Software]
 csdn_read_num: 2921
 article_type: 2
 ---
 
 
-﻿**The use of volatile is poorly understood by many programmers. This is not surprising, as most C texts dismiss it in a sentence or two.**
+**The use of volatile is poorly understood by many programmers. This is not surprising, as most C texts dismiss it in a sentence or two.**
 
 Have you experienced any of the following in your C/C++ embedded code?
 

@@ -3,7 +3,7 @@ layout: post
 title: "The most important skill a programmer can learn"
 date: 2019-08-03 08:43:20
 disable_excerpt: false
-categories: [随笔]
+categories: [Software]
 article_type: 3
 ---
 

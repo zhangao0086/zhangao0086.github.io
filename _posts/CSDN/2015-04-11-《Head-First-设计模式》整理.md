@@ -2,7 +2,7 @@
 layout: post
 title: '《Head First 设计模式》整理'
 date: 2015-04-11 00:56:51
-categories: [随笔,阅读笔记]
+categories: [Notes]
 csdn_read_num: 3893
 article_type: 1
 ---
