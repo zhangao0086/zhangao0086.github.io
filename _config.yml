@@ -7,6 +7,7 @@ permalink: pretty
 
 plugins:
     - jemoji
+    - jekyll-gist
 
 author:
     name: CodingTour
