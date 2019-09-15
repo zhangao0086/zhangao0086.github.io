@@ -47,6 +47,10 @@ a.toc-link{
     font-size: 0.9rem;
 }
 
+.node-name--H5 {
+    font-size: 0.8rem;
+}
+
 .toc.toc-right { 
     margin-left: calc(64rem - 12rem);
 }
