@@ -193,8 +193,6 @@ CI 机器只需要开启 agent，部署脚本，等待执行即可。
 
 部署该仓库即可，后续更新时只需要 `git pull origin master`。
 
-技术栈上以 python 为主，引入 ruby 只是为了在现阶段完成快速开发，后续很容易将 slather(采集数据)、xcpretty(解析 Log) 拿掉。
-
 ### coverage.json 是干什么用的？
 
 我们的流程需要知道哪些组件可以执行测试以及如何执行，所以在支持测试的组件根路径下添加了一个配置文件：
@@ -212,3 +210,16 @@ workspace 和 source_directory 填名称即可，这样整体的使用流程就�
 1. 在组件内创建一个测试工程，用于执行测试用例
 2. 在组件根目录创建 coverage.json 文件
 3. Done!
+
+### 其他
+
+技术栈上以 python 为主，引入 ruby 只是为了在现阶段完成快速开发，后续很容易将 slather(采集数据)、xcpretty(解析 Log) 替换掉。
+
+#### 如何替换 slather？
+
+slather 的 HTML 模板以及 css 等文件我们已经不需要了，现阶段保留它只是为了采集数据，事实上 LLVM 的 API 很丰富，slather 确实不是必须的，网上有很多资料展示了如何采集数据：
+
+- [Clang 的文档](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html)
+- [LLVM 的文档](https://llvm.org/docs/CommandGuide/llvm-cov.html)
+- [Generate code coverage data](https://llvm.org/docs/CommandGuide/llvm-cov.html)
+- 以及之前提到过的二进制格式描述：https://llvm.org/docs/CoverageMappingFormat.html
