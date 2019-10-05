@@ -5,6 +5,7 @@ date: 2019-09-25 08:09:20
 disable_excerpt: false
 categories: [iOS, ARTS]
 article_type: 1
+excerpt_separator: <!--more-->
 ---
 
 需求文档简述：
@@ -17,7 +18,7 @@ article_type: 1
 >
 > 3、一个页面对于同一个内容仅曝光一次。仅当重新进入页面后会继续上报。
 
-
+<!--more-->
 
 ### 技术上进一步拆解出规则
 
