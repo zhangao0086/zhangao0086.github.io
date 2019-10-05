@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "关于坑位曝的光检测方案"
-date: 2019-09-25 08:09:20
+date: 2019-09-25 16:09:20 +0800
 disable_excerpt: false
 categories: [iOS, ARTS]
 article_type: 1

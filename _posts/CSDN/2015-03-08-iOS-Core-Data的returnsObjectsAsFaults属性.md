@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'iOS Core Data的returnsObjectsAsFaults属性'
-date: 2015-03-08 10:15:29
+date: 2015-03-08 10:15:29 +0800
 categories: [iOS,Swift]
 csdn_read_num: 4953
 article_type: 1

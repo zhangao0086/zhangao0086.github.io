@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Introduction to the Volatile Keyword'
-date: 2015-03-02 11:49:00
+date: 2015-03-02 11:49:00 +0800
 categories: [Software]
 csdn_read_num: 2921
 article_type: 2
