@@ -4,6 +4,7 @@ paginate: 20
 timezone: Asia/Shanghai
 title: Coding Tour
 permalink: /:year/:month/:day/:title/
+timezone: Asia/Shanghai
 
 plugins:
     - jemoji
