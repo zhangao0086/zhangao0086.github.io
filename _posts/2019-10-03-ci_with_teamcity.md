@@ -222,4 +222,4 @@ slather 的 HTML 模板以及 css 等文件我们已经不需要了，现阶段�
 - [Clang 的文档](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html)
 - [LLVM 的文档](https://llvm.org/docs/CommandGuide/llvm-cov.html)
 - [Generate code coverage data](https://llvm.org/docs/CommandGuide/llvm-cov.html)
-- 以及之前提到过的二进制格式描述：https://llvm.org/docs/CoverageMappingFormat.html
+- 以及之前提到过的二进制格式描述：<https://llvm.org/docs/CoverageMappingFormat.html>
