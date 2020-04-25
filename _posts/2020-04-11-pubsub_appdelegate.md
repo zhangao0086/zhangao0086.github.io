@@ -20,7 +20,7 @@ excerpt_separator: <!--more-->
 - Sidecar + Launch 的组合：
   - Sidecar 为 App 们提供统一的能力，如日志、监控、加密等
   - Launch 作为一个启动项管理组件，方便业务方实现一些可以自包含的配置逻辑
-- “杀掉” `AppDelegate`：
+- “干掉” `AppDelegate`：
   - 移除 App 们的 AppDelegate，在运行时采用消息转发的方式实现一个虚拟的角色
   - 将传统 AppDelegate 中操作视图层的逻辑单独封装成一个角色，提供创建 `window`、`rootViewController`  之类的行为
 - 为 `UIApplicationDelegate` 的所有接口提供两种类型的 Pub/Sub 服务：
