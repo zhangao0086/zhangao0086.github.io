@@ -20,8 +20,31 @@
     transform: translateZ(0);
 }
 
+.floating-header img {
+    margin: 0 10px 0 0;
+    max-height: 20px;
+}
+
+.floating-header a {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+    color: #15171A;
+    line-height: 1.3em;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.floating-header a:hover {
+    text-decoration: none;
+}
+
+.floating-header-divider {
+    margin: 0 5px;
+    line-height: 1.3em;
+}
+
 .floating-header-title {
-    margin: auto;
     font-weight: 700;
     /* font-family: auto; */
     color: #2e2e2e;

@@ -1,6 +1,11 @@
 <link rel="stylesheet" href="{{ '/css/floating_header.css?v=' | append: site.github.build_revision | relative_url }}" />
 <script src="{{ '/js/jquery-3.2.1.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
 <div class="floating-header">
+    <a href="/">
+        <img src="{{ site.github.url | append: '/favicon.png' }}" />
+        <span>{{ site.author.name }}</span>
+    </a>
+    <span class="floating-header-divider">—</span>
     <div class="floating-header-title">{{ page.title }}</div>
     <progress class="progress" value="50" max="100"></progress>
 </div>
