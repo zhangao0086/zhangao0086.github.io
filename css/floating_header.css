@@ -23,7 +23,7 @@
 .floating-header-title {
     margin: auto;
     font-weight: 700;
-    font-family: auto;
+    /* font-family: auto; */
     color: #2e2e2e;
     text-overflow: ellipsis;
     font-size: 1rem;
