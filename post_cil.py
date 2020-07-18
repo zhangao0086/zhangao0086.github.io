@@ -70,7 +70,7 @@ excerpt_separator: <!--more-->
 
 ## Share
 
-    '''
+'''
 
 if __name__ == '__main__':
     start()
