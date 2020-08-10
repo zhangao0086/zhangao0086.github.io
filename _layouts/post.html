@@ -1,6 +1,8 @@
 ---
 layout: default
 ---
+<script src="{{ '/js/jquery-3.2.1.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
+
 {% include floating_header.html %}
 <div class="post-content">
   <!-- Table of Contents -->
@@ -9,13 +11,25 @@ layout: default
   {{ content }}
 </div>
 
-<!-- 添加评论系统 -->
+<!-- 评论系统 -->
 <link rel="stylesheet" href="{{ '/css/gitalk.css?v=' | append: site.github.build_revision | relative_url }}" />
 <script src="{{ '/js/gitalk.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
 
 <!-- MathJax -->
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+<!-- fancybox -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script type="text/javascript" async>
+  $(".post-content img").each(function () {
+    var element = document.createElement("a");
+    $(element).attr("data-fancybox", "gallery");
+    $(element).attr("href", $(this).attr("src"));
+    $(this).wrap(element);
+});
 </script>
 
 <!-- Back to Top -->

@@ -12,7 +12,7 @@ article_type: 3
 
 
 
-![The Most Important Skill a Programmer Can Learn](http://huseyinpolatyuruk.com/wp-content/uploads/2019/05/medium_0_g3s1fSBT7Gdl3hfX.jpg)
+![The Most Important Skill a Programmer Can Learn](https://cdn-media-1.freecodecamp.org/images/0*XG0c4KW0GKI5h3Sq)
 
 **No, no, no, no, and no. And no.**
 
@@ -59,7 +59,7 @@ Now, let’s say it together. NOOOOOOO!
 >
 > *此外，代码量大通常意味着灵活性差，这是反直觉的，但很多时候，一个简单、优雅的解决方案比混乱、庞杂的代码要更快更通用.*
 >
-> *代码是由工程师产出的，要产出更多代码，就需要更多工程师，工程师之间有 $$ n^{2}​$$ 的沟通成本，代码越大，成本越大.*
+> *代码是由工程师产出的，要产出更多代码，就需要更多工程师，工程师之间有 $$ n^{2}$$ 的沟通成本，代码越大，成本越大.*
 
 很正确，不是吗？能增加开发效率和灵感的程序员正是那些知道什么时候说 NO 的程序员，易于维护、长期运行、能不断帮助用户的软件是没有不必要的代码的。
 
@@ -81,7 +81,7 @@ Now, let’s say it together. NOOOOOOO!
 
 > *知道什么时候不需要代码能让你的代码库变少*
 
-![img](http://huseyinpolatyuruk.com/wp-content/uploads/2019/05/medium_1_GtdHh1UB0uFM5sQJ4WCNSg.png)
+![img](https://cdn-media-1.freecodecamp.org/images/AaXgIsHTyVquQeabDnz5kMCsyEmPuMnod3E9)
 
 在项目刚启动时，你知道两、三个源文件，看起来很简单，编译和运行只需要几秒钟，你知道在哪里能找到你想要的东西。
 

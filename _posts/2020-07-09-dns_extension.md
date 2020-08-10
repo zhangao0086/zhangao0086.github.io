@@ -13,7 +13,8 @@ DNS 除了做域名解析，还能干啥
 
 ## 思维导图：
 
-[![](https://github.com/zhangao0086/mind/blob/master/DNS%20%E7%9A%84%E7%94%A8%E6%AD%A6%E4%B9%8B%E5%9C%B0/DNS%20%E7%9A%84%E7%94%A8%E6%AD%A6%E4%B9%8B%E5%9C%B0.png?raw=true)](https://github.com/zhangao0086/mind/blob/master/DNS%20%E7%9A%84%E7%94%A8%E6%AD%A6%E4%B9%8B%E5%9C%B0/DNS%20%E7%9A%84%E7%94%A8%E6%AD%A6%E4%B9%8B%E5%9C%B0.xmind)
+![](https://github.com/zhangao0086/mind/blob/master/DNS%20%E7%9A%84%E7%94%A8%E6%AD%A6%E4%B9%8B%E5%9C%B0/DNS%20%E7%9A%84%E7%94%A8%E6%AD%A6%E4%B9%8B%E5%9C%B0.png?raw=true)
+*[xmind](https://github.com/zhangao0086/mind/blob/master/DNS%20%E7%9A%84%E7%94%A8%E6%AD%A6%E4%B9%8B%E5%9C%B0/DNS%20%E7%9A%84%E7%94%A8%E6%AD%A6%E4%B9%8B%E5%9C%B0.xmind)*
 
 ## 文字资料
 

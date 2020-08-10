@@ -13,7 +13,8 @@ excerpt_separator: <!--more-->
 
 ## 思维导图：
 
-[![](https://github.com/zhangao0086/mind/blob/master/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.png?raw=true)](https://github.com/zhangao0086/mind/blob/master/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.xmind)
+![](https://github.com/zhangao0086/mind/blob/master/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.png?raw=true)
+*[xmind](https://github.com/zhangao0086/mind/blob/master/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.xmind)*
 
 ## 文字资料
 
