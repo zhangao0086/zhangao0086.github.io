@@ -9,6 +9,10 @@ plugins:
     - jemoji
     - jekyll-gist
 
+sass:
+    sass_dir: ./css
+    style: compressed
+
 author:
     name: CodingTour
     description: A passionate <strong>developer</strong> <i class="fas fa-battery-full"></i>.
