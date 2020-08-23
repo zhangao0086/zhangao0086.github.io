@@ -1,21 +1,22 @@
+---
+---
+
+$sidebarWidth: 27rem;
+
 .sidebar {
     position: fixed;
     top: 0;
     bottom: 0;
-    width: 18rem;
+    width: $sidebarWidth;
     visibility: hidden;
     overflow-y: auto;
+    font-size: 80%;
     background-color: black;
+    color: var(--summary-color);
     z-index: 999;
 
-    right: -18rem;
+    right: -$sidebarWidth;
     left: auto;
-}
-
-@media (min-width: 30em) {
-  .sidebar {
-    font-size: 0.8rem;
-  }
 }
 
 .sidebar a {
@@ -49,11 +50,11 @@
 
 #sidebar-checkbox:checked ~ .wrap,
 #sidebar-checkbox:checked ~ .sidebar {
-    transform: translateX(-18rem);
+    transform: translateX(-$sidebarWidth);
 }
 
 #sidebar-checkbox:checked ~ .sidebar {
-  box-shadow: -.25rem 0 .5rem rgba(0,0,0,.2)
+  box-shadow: -.25em 0 .5em rgba(0,0,0,.2)
 }
 
 .body-overflow-hidden {
@@ -66,7 +67,7 @@
 }
 
 .sidebar-item {
-  padding: 1rem;
+  padding: 1em;
 }
 
 .sidebar-item p:last-child {
@@ -79,7 +80,7 @@
 
 .sidebar-nav-item {
   display: block;
-  padding: .5rem 1rem;
+  padding: .5em 1em;
   border-top: 1px solid rgba(255,255,255,.1);
 }
 
@@ -103,20 +104,20 @@ a.sidebar-nav-item:focus {
 
 @media (min-width: 48em) {
   .sidebar-item {
-    padding: 1.5rem;
+    padding: 1.5em;
   }
   .sidebar-nav-item {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
   }
 }
 
 .sidebar-personal-info .sidebar-personal-info-section:not(:first-of-type) {
-  margin-top: .75rem;
+  margin-top: .75em;
 }
 
 .sidebar-personal-info .sidebar-personal-info-section {
-  line-height: 1rem;
+  line-height: 1em;
 }
 
 .sidebar-personal-info .sidebar-personal-info-section a,

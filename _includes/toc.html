@@ -3,6 +3,8 @@
 <script src="{{ '/js/tocbot.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
 <script type="text/javascript" defer>
   window.onload = function () {
+    let initialLevel = null;
+    let previousLevel = null;
     tocbot.init({
       // Where to render the table of contents.
       tocSelector: '.js-toc',
@@ -11,7 +13,28 @@
       // Which headings to grab inside of the contentSelector element.
       headingSelector: 'h1, h2, h3, h4, h5',
       positionFixedSelector: '.js-toc',
-      includeHtml: true
+      includeHtml: true,
+      linkClass: 'toc-link-custom',
+      activeLinkClass: 'is-active-link-custom',
+      isCollapsedClass: 'is-collapsed-custom',
+      collapsibleClass: 'is-collapsible-custom',
+      headingObjectCallback: (n, t) => {
+        if (initialLevel == null || n.headingLevel == initialLevel) {
+          previousLevel = null;
+          initialLevel = n.headingLevel;
+          n.headingLevel = 1;
+          n.nodeName = "H1";
+          return n;
+        }
+
+        if (previousLevel == null || previousLevel == n.headingLevel) {
+          previousLevel = n.headingLevel;
+          n.headingLevel = 2;
+          n.nodeName = "H2";
+          return n;
+        }
+        return;
+      },
     }); 
   }
 </script>

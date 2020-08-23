@@ -1,0 +1,49 @@
+// Colors
+// Common
+$summarycolor: #606c71;
+
+// Light Mode
+$navColor: black;
+$headerColor: #515151;
+$headerBackgroundColor: #efefef;
+$backgroundColor: white;
+$contentColor: #232323;
+$baseColor: #159957;
+$codeBackgroundColor: #f3f6fa;
+$separatorColor: #dbdbdb;
+
+// Dark Mode
+$navColorDark: white;
+$backgroundColorDark: #191919;
+$headerColorDark: #efefefCC;
+$headerBackgroundColorDark: #414141;
+$contentColorDark: #a3a3a3;
+$baseColorDark: #c6c6c6;
+$codeBackgroundColorDark: #1d1f21;
+$separatorColorDark: #404040;
+
+// Switcher
+:root {
+  --summary-color: #{$summarycolor};
+  --base-color: #{$baseColor};
+  --nav-color: #{$navColor};
+  --header-color: #{$headerColor};
+  --header-background-color: #{$headerBackgroundColor};
+  --content-color: #{$contentColor};
+  --background-color: #{$backgroundColor};
+  --code-background-color: #{$codeBackgroundColor};
+  --separator-color: #{$separatorColor};
+}
+  
+@media (prefers-color-scheme: dark) {
+  :root {
+    --base-color: #{$baseColorDark};
+    --nav-color: #{$navColorDark};
+    --header-color: #{$headerColorDark};
+    --header-background-color: #{$headerBackgroundColorDark};
+    --content-color: #{$contentColorDark};
+    --background-color: #{$backgroundColorDark};
+    --code-background-color: #{$codeBackgroundColorDark};
+    --separator-color: #{$separatorColorDark};
+  }
+}
