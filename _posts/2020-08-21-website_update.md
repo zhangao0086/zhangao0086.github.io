@@ -138,7 +138,7 @@ headingObjectCallback: (n, t) => {
 
 简单设计了几种样式：
 
-![Image 1](/assets/img/image-20200823193517903.png)
+![image-20200824111955865](/assets/img/image-20200823193517903.png)
 
 实际对比后还是元素简单、辨识度高的效果最好。
 
