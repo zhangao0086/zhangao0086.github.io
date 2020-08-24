@@ -74,14 +74,8 @@ body { padding: 0; margin: 0; font-family: "Open Sans", "Helvetica Neue", Helvet
 a { color: #007ffc; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-.page-header { color: var(--header-color); text-align: center; background-color: var(--header-background-color); }
-@media screen and (min-width: 64rem) { .page-header { padding: 5rem 6rem 2rem 6rem; } }
-@media screen and (max-width: 64rem) { .page-header { padding: 3rem 4rem 1rem 4rem; } }
-
-.project-name { margin-top: 0; margin-bottom: 0.1rem; }
-@media screen and (min-width: 64rem) { .project-name { font-size: 2.25rem; } }
-@media screen and (min-width: 42rem) and (max-width: 64rem) { .project-name { font-size: 2.25rem; } }
-@media screen and (max-width: 42rem) { .project-name { font-size: 1.75rem; } }
+.page-header { color: var(--header-color); text-align: center; background-color: var(--header-background-color); padding: 1.5rem 4rem 1rem 4rem; min-height: calc(2em + 2rem); }
+.project-name { margin-top: 0; margin-bottom: 0.1rem; font-size: 1.2em; }
 
 .main-content { word-wrap: break-word; color: var(--content-color); max-width: 102.4rem; margin: 0 auto; }
 @media screen and (min-width: 64rem) { .main-content { padding: 3rem 12rem; } }
@@ -113,15 +107,15 @@ middle { font-size: 90%; display: block; opacity: 0.7; }
 
 .circle-divider { transform: scale(0.2, 0.2); }
 
-nav i { font-size: 1.1em; min-width: 1.5rem; text-align: center; }
+nav i { font-size: 1.1em; min-width: 1.5rem; text-align: center; padding: 1rem 1rem; }
 
 .page-header { z-index: 2 }
 
-.navbar { color: var(--nav-color);  margin: auto auto; position: relative; }
+.navbar { color: var(--nav-color);  margin: auto auto; position: relative; width: 100%; }
 .navbar .left { position: absolute; left: 0; }
 .navbar .right { position: absolute; right: 0; }
-.navbar ul { display: flex; padding: 0; }
-.navbar li { display: inline; list-style: none; margin-left: 10px; margin-right: 10px; }
+.navbar ul { display: flex; padding: 0; margin-block-start: 1rem; margin-block-end: 1rem; }
+.navbar li { display: inline; list-style: none; margin-left: 1rem; margin-right: 1rem; }
 .navbar a, .navbar { text-decoration: none; }
 
 .main-content h1, .main-content h2 {
@@ -178,12 +172,4 @@ nav i { font-size: 1.1em; min-width: 1.5rem; text-align: center; }
   color: white;
   background-color: #5ca580;
   border: 1px solid #5ca580;
-}
-
-@media screen {
-  .navbar { width: calc(100% - 3rem); }
-}
-
-@media screen and (max-width: 42rem) {
-  .navbar { width: calc(100% - 1rem); }
 }

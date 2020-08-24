@@ -3,7 +3,7 @@
 
 .floating-header {
     visibility: hidden;
-    height: 60px;
+    height: 40px;
     position: fixed;
     top: 0;
     right: 0;
@@ -80,10 +80,6 @@
 
 .progress::-moz-progress-bar {
     background-color: currentColor;
-}
-
-@media screen and (max-width: 900px) {
-    .floating-header { height: 40px; }
 }
 
 @media (prefers-color-scheme: dark) {
