@@ -17,13 +17,17 @@
     opacity: 0.6;
 }
 
-.toc-icon{
+.toc-list {
+    line-height: 1.5em;
+}
+
+.toc-icon {
     position:fixed;
     top:0;
     right:0;
     display:none;
 }
-#toc:checked ~ .toc{
+#toc:checked ~ .toc {
     box-shadow:0 0 5px #c8c8c8;
 }
 
@@ -38,7 +42,7 @@
     padding: 0;
 }
 
-.is-collapsed-custom {}
+// .is-collapsed-custom {}
 
 .is-active-link-custom {
     border-radius:2px;
