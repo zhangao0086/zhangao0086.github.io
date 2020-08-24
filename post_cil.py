@@ -42,6 +42,7 @@ date: {date}
 categories: [ARTS]
 article_type: 1
 excerpt_separator: <!--more-->
+typora-root-url: ../../github.io
 ---
 
 
