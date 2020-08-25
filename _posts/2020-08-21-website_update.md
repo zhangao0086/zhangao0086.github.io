@@ -49,7 +49,7 @@ Coverage 就是体力活了。
 
 在开始之前我特意找了几篇实践文章和应用以获取灵感，其中 [A Complete Guide to Dark Mode on the Web](https://css-tricks.com/a-complete-guide-to-dark-mode-on-the-web/) 这篇文章细节很丰富，对我帮助很大；Chrome 的  [Stylus](https://github.com/StylishThemes/GitHub-Dark) 也给我提供了很好的配色作为参考。
 
-然而我还是低估了 Dark Mode 的适配难度，我几乎所有的 CSS 文件里的样式都要进行适配，这是一个工作量很大的体力活，究其原因还是因为初版做的太糙，
+然而我还是低估了 Dark Mode 的适配难度，我几乎所有的 CSS 文件里的样式都要进行适配，这是一个工作量很大的体力活，究其原因还是因为初版做的太糙。
 
 ### 动态更新配色
 
