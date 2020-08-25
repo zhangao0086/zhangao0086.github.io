@@ -4,6 +4,7 @@ paginate: 20
 timezone: Asia/Chongqing
 title: Coding Tour
 permalink: /:year/:month/:day/:title/
+highlighter: rouge
 
 plugins:
     - jemoji

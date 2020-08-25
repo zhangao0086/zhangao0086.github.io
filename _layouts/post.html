@@ -11,6 +11,9 @@ layout: default
   {{ content }}
 </div>
 
+<!-- 语法高亮 -->
+<link rel="stylesheet" href="{{ '/css/syntax.css?v=' | append: site.github.build_revision | relative_url }}" />
+
 <!-- 评论系统 -->
 <link rel="stylesheet" href="{{ '/css/gitalk.css?v=' | append: site.github.build_revision | relative_url }}" />
 <script src="{{ '/js/gitalk.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
