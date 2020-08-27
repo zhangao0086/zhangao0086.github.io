@@ -16,13 +16,13 @@ excerpt_separator: <!--more-->
 
 <!--more-->
 
-## 过程思考
+# 过程思考
 
-### PR 接入 checks
+## PR 接入 checks
 
 TeamCity 自带的插件就支持：<https://www.jetbrains.com/help/teamcity/pull-requests.html>
 
-### 单元测试的自动化执行
+## 单元测试的自动化执行
 
 iOS 开发下的单元测试一般是通过 xcodebuild  test 来跑，xcodebuild 依赖 scheme，scheme 只是 target 的容器，具体如何编译由 target 来决定。
 
@@ -34,7 +34,7 @@ xcodebuild  →   TestsProject  →   scheme  →   target for tests  →   编�
 
 组件的维护者需要提供一个用于测试的工程，并在该工程内写好测试用例。
 
-### 集成代码覆盖率报告
+## 集成代码覆盖率报告
 
 TeamCity 对 Java、.Net 平台有现成的插件可用，iOS 平台得自己处理，需要自己采集数据和生成报告。
 
@@ -64,7 +64,7 @@ llvm-cov show ./test -instr-profile=test.profdata test.c
 
 数据采集完后，我们需要将数据生成 HTML 页面以供 TeamCity 展示。
 
-### 集成测试报告
+## 集成测试报告
 
 同样，TeamCity 只对 Java、.Net 平台有现成的支持，iOS 得自己处理，有两种处理方式：
 
@@ -73,7 +73,7 @@ llvm-cov show ./test -instr-profile=test.profdata test.c
 
 如果是生成 XML 报告，可以考虑使用 JUnit 的格式，这在 Java 平台适用性比较广，协议很干净。但是由于我们是基于 Monorepo，基于组件化的测试会生成多份 XML 报告，于是我们不得不在所有的测试用例跑完后，手动合并这些报告，最终给 TeamCity 提供的是一个包含了所有组件测试结果的 XML 文件。在这个方案里，大量写入 XML 文件和最终合并成一个大的 XML 文件没有太多价值，所以我们选择第二种：在测试过程中，发布 Service Message。
 
-## 实现过程
+# 实现过程
 
 主流程用 python 控制。
 
@@ -118,7 +118,7 @@ libwebp 的源码 source 指向是 googlesource.com，该地址正常在国内�
 
 在这个过程中，我们针对 slather 和 xcpretty 进行了定制化开发。
 
-### 为什么要对 slather 定制化开发？
+## 为什么要对 slather 定制化开发？
 
 slather 的命令行参数较冗余，在我们的 Monorepo 里，各组件下通常只有一个源码文件夹需要扫描，slather 需要添加很多 --ignore 参数，而且还只支持在当前目录下执行，意味着我们需要不停的 cd + slather、cd + slather...，除此之外，我们最终是需要将多份代码覆盖率报告整合成一份的，这就意味着 css、js 文件只需要一套，且需要一个组件索引页，也就是说哪怕我不针对 slather 进行开发，索引页这个开发工作也少不了，所以我们才最终决定对 slather 进行定制化开发。
 
@@ -155,7 +155,7 @@ slather 定制化的功能有：
 2. 收集并汇总各组件的覆盖率数据
 3. 发布 TeamCity Service Message，以报告代码覆盖率汇总结果
 
-### 为什么要对 xcpretty 定制化开发？
+## 为什么要对 xcpretty 定制化开发？
 
 xcpretty 比较成熟，虽然我们不需要生成输出文件，但是我们可以利用它对 Xcode Build Log 的解析能力快速生成 Service Message：
 
@@ -180,7 +180,7 @@ end
 - xctool 不支持自定义输出格式，未来拓展性较低
 - xctool 不能完全代替 xcodebuild 的调用，当我们需要指定 derivedDataPath 时，需要先执行 xcodebuild，再执行 xctool
 
-### 在 CI 的机器上需要做什么？
+## 在 CI 的机器上需要做什么？
 
 CI 机器只需要开启 agent，部署脚本，等待执行即可。
 
@@ -193,7 +193,7 @@ CI 机器只需要开启 agent，部署脚本，等待执行即可。
 
 部署该仓库即可，后续更新时只需要 `git pull origin master`。
 
-### coverage.json 是干什么用的？
+## coverage.json 是干什么用的？
 
 我们的流程需要知道哪些组件可以执行测试以及如何执行，所以在支持测试的组件根路径下添加了一个配置文件：
 
@@ -211,11 +211,11 @@ workspace 和 source_directory 填名称即可，这样整体的使用流程就�
 2. 在组件根目录创建 coverage.json 文件
 3. Done!
 
-### 其他
+## 其他
 
 技术栈上以 python 为主，引入 ruby 只是为了在现阶段完成快速开发，后续很容易将 slather(采集数据)、xcpretty(解析 Log) 替换掉。
 
-#### 如何替换 slather？
+### 如何替换 slather？
 
 slather 的 HTML 模板以及 css 等文件我们已经不需要了，现阶段保留它只是为了采集数据，事实上 LLVM 的 API 很丰富，slather 确实不是必须的，网上有很多资料展示了如何采集数据：
 

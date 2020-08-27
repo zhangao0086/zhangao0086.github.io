@@ -65,7 +65,7 @@ Now, let’s say it together. NOOOOOOO!
 
 > *The best code is no code at all and the most effective programmer is the one who knows when not to code.*
 
-### 你怎么知道何时不需要代码?
+## 你怎么知道何时不需要代码?
 
 当你在一个项目上开发并想像要实现的功能时，很自然会感到兴奋，但是程序员往往倾向于高估项目实际所需要的功能，许多功能未完成或者没有使用过或者只是让程序过于复杂，你应用知道什么对你的项目是至关重要的，以避免这个坑。
 

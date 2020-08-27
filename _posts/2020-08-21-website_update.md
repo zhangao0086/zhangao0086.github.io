@@ -16,7 +16,7 @@ typora-root-url: ../../github.io
 
 <!--more-->
 
-## 优化 CSS
+# 优化 CSS
 
 现在的这套 CSS 代码自去年建站以来就没怎么动过，文件既没有压缩，还充斥着各种尝试、注释和临时的解决方案。这次想通过对一些工具的使用来指导自己改善代码，我选择了两个工具：
 
@@ -45,13 +45,13 @@ Coverage 就是体力活了。
 
 ![image-20200824105725157](/assets/img/image-20200824004312465.png)
 
-## 支持 Dark Mode
+# 支持 Dark Mode
 
 在开始之前我特意找了几篇实践文章和应用以获取灵感，其中 [A Complete Guide to Dark Mode on the Web](https://css-tricks.com/a-complete-guide-to-dark-mode-on-the-web/) 这篇文章细节很丰富，对我帮助很大；Chrome 的  [Stylus](https://github.com/StylishThemes/GitHub-Dark) 也给我提供了很好的配色作为参考。
 
 然而我还是低估了 Dark Mode 的适配难度，我几乎所有的 CSS 文件里的样式都要进行适配，这是一个工作量很大的体力活，究其原因还是因为初版做的太糙。
 
-### 动态更新配色
+## 动态更新配色
 
 我选择了纯 CSS 的方案，在该方案下，网站跟随用户系统的偏好来决定是否启用 Dark Mode，好处是页面不用重新刷新，对用户来说完全是透明的。
 
@@ -93,7 +93,7 @@ $baseColorDark: #c6c6c6;
 
 一般来说接入 Dark Mode 后应用的配色都会进行一轮调整，减少色值的使用，多数情况下选择黑白色作为主题色是简单又普适的方案。
 
-### 布局调整
+## 布局调整
 
 我为了日后维护方便减化了一些效果，对一些布局也进行了调整，让整体结构变得更简单，同时将布局单位进行了统一，以 `rem`、`em` 为主，这个阶段也是体力活，根据实际情况来调整。
 
@@ -135,7 +135,7 @@ headingObjectCallback: (n, t) => {
 
 其实挺简单的。
 
-## 新的 Logo
+# 新的 Logo
 
 简单设计了几种样式：
 
@@ -143,7 +143,7 @@ headingObjectCallback: (n, t) => {
 
 实际对比后还是元素简单、辨识度高的效果最好。
 
-## 最后
+# 最后
 
 优化的过程充满乐趣和挑战，有些细节就留在下次再处理了，如 Safari 的顶部适配：
 

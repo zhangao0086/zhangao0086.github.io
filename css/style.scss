@@ -30,8 +30,8 @@ a:active, a:hover { outline: 0; }
 /** Address style set to `bolder` in Firefox 4+, Safari, and Chrome. */
 b, strong { font-weight: bold; }
 
-/** Address variable `h1` font-size and margin within `section` and `article` contexts in Firefox 4+, Safari, and Chrome. */
-h1 { font-size: 2rem; margin: 0.67rem 0; }
+/** Address variable `h1` margin within `section` and `article` contexts in Firefox 4+, Safari, and Chrome. */
+h1 { margin: 0.67rem 0; }
 
 /* Embedded content ========================================================================== */
 /** Remove border when inside `a` element in IE 8/9/10. */
@@ -82,7 +82,6 @@ a:hover { text-decoration: underline; }
 @media screen and (min-width: 42rem) and (max-width: 64rem) { .main-content { padding: 2rem 4rem; } }
 @media screen and (max-width: 42rem) { .main-content { padding: 2rem 1.5rem; } }
 .main-content img { max-width: 100%; }
-.main-content h1, .main-content h2, .main-content h3, .main-content h4, .main-content h5, .main-content h6 { margin-top: 2rem; margin-bottom: 1rem; font-weight: normal; outline: none; }
 .main-content p { margin-bottom: 1rem; }
 .main-content code { padding: 2px 4px; font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace; font-size: 0.9em; color: #567482; background-color: var(--code-background-color); border-radius: 0.3rem; }
 .main-content pre { padding: 0.8rem; margin-top: 0; margin-bottom: 1rem; font: 1rem Consolas, "Liberation Mono", Menlo, Courier, monospace; color: #567482; word-wrap: normal; background-color: var(--code-background-color); /* border: solid 1px #dce6f0;*/ border-radius: 0.3rem; }
@@ -118,10 +117,18 @@ nav i { font-size: 1.1em; min-width: 1.5rem; text-align: center; padding: 1rem 1
 .navbar li { display: inline; list-style: none; margin-left: 1rem; margin-right: 1rem; }
 .navbar a, .navbar { text-decoration: none; }
 
-.main-content h1, .main-content h2 {
-  border-left: 0.35rem solid green;
-  padding-left: 20px;
-}
+.main-content h1, .main-content h2, .main-content h3, .main-content h4, .main-content h5, .main-content h6 { margin-top: 2rem; margin-bottom: 1rem; font-weight: bold; outline: none; }
+.main-content h1 { font-size: 1.3em; border-left: 0.35rem solid green; padding-left: 20px; }
+.main-content h2 { font-size: 1.25em; }
+.main-content h3 { font-size: 1.2em; }
+.main-content h4 { font-size: 1.15em; }
+.main-content h5 { font-size: 1.1em; }
+.main-content h6 { font-size: 1.05em; }
+
+table { border-collapse: collapse; border-spacing: 0; }
+td, th { padding: 0; }
+.main-content table th { font-weight: bold; }
+.main-content table th, .main-content table td { padding: 0.5rem 1rem; border: 1px solid #e9ebec; }
 
 .comment .gt-svg svg {
   background-color: white;
@@ -172,4 +179,11 @@ nav i { font-size: 1.1em; min-width: 1.5rem; text-align: center; padding: 1rem 1
   color: white;
   background-color: #5ca580;
   border: 1px solid #5ca580;
+}
+
+@media (prefers-color-scheme: dark) {
+  .main-content img, .main-content .comment { 
+    -webkit-filter: brightness(0.8);
+    filter: brightness(0.8);
+  }
 }

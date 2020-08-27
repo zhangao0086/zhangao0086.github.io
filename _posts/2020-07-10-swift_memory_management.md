@@ -11,16 +11,16 @@ excerpt_separator: <!--more-->
 
 <!--more-->
 
-## 思维导图：
+# 思维导图：
 
 ![](https://github.com/zhangao0086/mind/blob/master/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.png?raw=true)
 *[xmind](https://github.com/zhangao0086/mind/blob/master/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Swift%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.xmind)*
 
-## 文字资料
+# 文字资料
 
-### Swift 4-
+## Swift 4-
 
-#### ARC
+### ARC
 
 - 原理
 
@@ -75,21 +75,21 @@ excerpt_separator: <!--more-->
     - 当对象不存在时，触发一个断言
     - 当 strong 为0，而 unowned 大于0时对象不会被完全释放（对象及其父类的 deinit 会被调用，然而对象头信息还在，通过头信息可以取到计数，验证以及完成后续的释放流程）
 
-#### 对象内存布局
+### 对象内存布局
 
 - 引用计数采用内联方式布局，访问更快
 
-### Swift 4+
+## Swift 4+
 
-#### 旧版本的缺点
+### 旧版本的缺点
 
 - strong 为 0 而 weak 不为 0 时无法释放对象，作为僵尸对象可能会存活很长时间
 
-#### 修改了内存布局
+### 修改了内存布局
 
 - 独立于对象之外内存区域存放对象相关的信息
 
-#### 引入了 Side Table
+### 引入了 Side Table
 
 - Side Table 和 Object 有一个指针指向彼此
 - 出于节约内存的目的，只在需要时才创建
@@ -99,19 +99,19 @@ excerpt_separator: <!--more-->
 
 - 支持后续可以拓展出其他的玩法
 
-#### Weak 指向 Side Table，而不是真正的对象
+### Weak 指向 Side Table，而不是真正的对象
 
 - 由于不直接指向对象，允许保留 Weak 访问的同时提前销毁对象
 
-### Swift 对象生命周期
+## Swift 对象生命周期
 
-#### 对象不立即销毁，而是经过 live -> deiniting -> deinited -> freed -> dead 这五个阶段
+### 对象不立即销毁，而是经过 live -> deiniting -> deinited -> freed -> dead 这五个阶段
 
-#### 当 strong 为0时
+### 当 strong 为0时
 
 - 对象进入 deinited 状态；Unowned 访问触发断言；Weak 访问返回 nil
 
-### 参考资料
+## 参考资料
 
 - [Discover Side Tables - Weak Reference Management Concept in Swift](https://maximeremenko.com/swift-arc-weak-references)
 - [Advanced iOS Memory Management with Swift: ARC, Strong, Weak and Unowned Explained](https://www.vadimbulavin.com/swift-memory-management-arc-strong-weak-and-unowned/)
