@@ -42,6 +42,8 @@ var fSpec = { [weak c2] in
 fSpec()
 ```
 
+我们主要通过闭包内的两条 `log` 语句寻找其中的答案。
+
 用以下命令将 Swift 源码转成 SIL：
 
 ```shell
@@ -93,16 +95,16 @@ bb0(%0 : $Int32, %1 : $UnsafeMutablePointer<Optional<UnsafeMutablePointer<Int8>>
 在这个 `main` 方法里有一些我们熟悉和不熟悉的东西：
 
 - `enum` - `Optional` 实际上就是枚举
-- `function_ref` - SIL 函数的引用
+- `function_ref` - 表示对 SIL 函数的引用
 
-从这里知道闭包调用就是执行了 `@$s4testyycfU_` 函数：
+通过上下文和注释可以知道闭包调用就是执行了 `@$s4testyycfU_` 函数：
 
 ```swift
   // function_ref closure #1 in 
   %19 = function_ref @$s4testyycfU_ : $@convention(thin) (@guaranteed { var @sil_weak Optional<aClass> }) -> () // user: %21
 ```
 
-再通过 `@$s4testyycfU_` 就能找到具体的 SIL 实现：
+再通过 `@$s4testyycfU_` 找到具体的 SIL 实现：
 
 ```swift
 // closure #1 in 
@@ -127,7 +129,13 @@ bb0(%0 : ${ var @sil_weak Optional<aClass> }):
 >
 > Selects one of the "case" or "default" operands based on the case of the referenced enum value. This is the address-only counterpart to [select_enum](https://github.com/apple/swift/blob/master/docs/SIL.rst#select-enum).
 
-这个指令是这里实际上读取了 `some`，然后执行 `cond_br`，它是带条件的 `br` 指令，意为当 `%9` 为1时执行**bb2**，为0时执行**bb1**，接下来看看这两个位置：
+这个指令是这里实际上读取了 `some`，然后执行 `cond_br`，它是带条件的 `br` 指令，意为当 `%9` 为1时执行**bb2**，为0时执行**bb1**：
+
+> 注：SIL 会将方法分解成连续的 building blocks
+>
+> bb = building block
+
+接下来看看**bb2**和**bb1**这两个 blocks 的实现：
 
 ```swift
 bb1:                                              // Preds: bb0
@@ -157,7 +165,7 @@ bb2:                                              // Preds: bb0
 - bb1 直接做了清理工作就跳到了 **bb3**
 - bb2 在通过 `some` 拿到值后，在访问前对引用计数+1，调用对象方法，然后清理前再对引用计数-1
 
-bb3 的执行过程和 bb0 很像，也是通过 `Optional` 的 `some` 值条件跳转 bb5 or bb4：
+后续 bb3 的执行过程和 bb0 很像，也是通过 `Optional` 的 `some` 值条件跳转 bb5 or bb4：
 
 ```swift
 %39 = select_enum_addr %34 : $*Optional<aClass>, case #Optional.some!enumelt.1: %37, default %38 : $Builtin.Int1 // user: %40
