@@ -5,6 +5,7 @@ timezone: Asia/Chongqing
 title: Coding Tour
 permalink: /:year/:month/:day/:title/
 highlighter: rouge
+repository: zhangao0086/zhangao0086.github.io
 
 plugins:
     - jemoji
