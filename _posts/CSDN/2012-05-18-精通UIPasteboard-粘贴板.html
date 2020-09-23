@@ -101,7 +101,7 @@ article_type: 1
 
 <p>接下来我们做一个可复制的UIImageView，创建一个新的viewController，放两个imageView，默认显示不同的图：</p>
 
-<p><img alt="" class="has" src="http://my.csdn.net/uploads/201205/18/1337331909_8043.png" /></p>
+<p><img alt="" class="has" src="https://my.csdn.net/uploads/201205/18/1337331909_8043.png" /></p>
 
 <p>然后把上面的代码直接拷过来，改三个地方：</p>
 
@@ -141,7 +141,7 @@ UIPasteboard不仅可以在应用程序内通信，还能在应用程序间通�
 
 <p>我们用模板Single View Application来创建两个简单的工程，一个叫PasteBoardWrite，另一个叫PasteBoardRead，界面分别如下：</p>
 
-<p><img alt="" class="has" src="http://my.csdn.net/uploads/201205/18/1337333776_3100.png" />&nbsp; &nbsp; &nbsp;<img alt="" class="has" src="http://my.csdn.net/uploads/201205/18/1337333771_5823.png" /></p>
+<p><img alt="" class="has" src="https://my.csdn.net/uploads/201205/18/1337333776_3100.png" />&nbsp; &nbsp; &nbsp;<img alt="" class="has" src="https://my.csdn.net/uploads/201205/18/1337333771_5823.png" /></p>
 
 <p>在PasteBoardWrite里面点&ldquo;写入&rdquo;后把textField中的文本写入粘贴板，然后切换到PasteBoardRead的时候显示出来。如果我们的粘贴板只想给&ldquo;自己人&rdquo;用的话，就不能用系统的通用粘贴板，需要我们自己创建一个：</p>
 
@@ -156,7 +156,7 @@ UIPasteboard *pb = [UIPasteboard pasteboardWithName:@"testBoard" create:YES];</c
 
 <p>&nbsp;</p>
 
-<p><img alt="" class="has" src="http://my.csdn.net/uploads/201205/18/1337335581_8039.png" /></p>
+<p><img alt="" class="has" src="https://my.csdn.net/uploads/201205/18/1337335581_8039.png" /></p>
 
 <p>除此之外，如果是能够转换成plist的数据类型（NSString, NSArray, NSDictionary, NSDate, NSNumber 和 NSURL），我们可以调用setValue:forPasteboardType:方法去存储数据，其他类型只能调用setData:forPasteboardType:方法（plist数据类型也可使用），类似于这样：</p>
 
