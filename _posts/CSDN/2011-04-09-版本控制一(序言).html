@@ -13,7 +13,7 @@ article_type: 1
 <p>因为版本控制并不是从软件行业发展而来的,最初是运用在各种工程管理上,后来有了软件工程,也引入了版本控制.</p>
 <p><strong>版本控制能够解决什么问题?</strong></p>
 <p>只要参与过2个人以上的软件项目开发,不管是在工作中,还是在大学的项目中,就应该遇到过问题.比如大家先是划分好各自的工作,也许有一些约定,但是一些公共的方法或类可能就被成员写了很多次,而且每个都不一样,这样在代码上就会有冲突,容易引发BUG.而且想恢复到之前的版本只能copy、paste,不方便,而且还要经常这么做.发布项目时也困难重重:</p>
-<p><a href="http://hi.csdn.net/attachment/201104/9/0_1302356395Bugg.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/9/0_1302356396xqgj.gif" border="0" alt="image" width="545" height="511" /></a></p>
+<p><a href="https://hi.csdn.net/attachment/201104/9/0_1302356395Bugg.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="https://hi.csdn.net/attachment/201104/9/0_1302356396xqgj.gif" border="0" alt="image" width="545" height="511" /></a></p>
 <p>所以总结之后,没有版本控制的项目有如下难处:</p>
 <ul>
 <li>代码管理混乱</li>
@@ -28,12 +28,12 @@ article_type: 1
 <p><strong>SVN</strong></p>
 <p>SVN(Subversion)是一种开放源码的全新版本控制系统,是新一代的版本控制工具,由于其优于CVS的一些特点,得到了越来越多人的关注和使用,支持可在本地访问或通过网络访问的数据库和文件系统存储库.不但提供了常见的比较、修补、标记、提交、恢复和分支等功能,而且Subversion 还增加了追踪移动和删除的能力.此外,它支持非ASCII 文本和二进制数据,所有这一切都使Subversion不仅对传统的编程任务非常有用,同时也适于Web开发、图书创作和其他在传统方式下未采纳版本控制功能的领域.Subversion是近年来崛起的版本管理工具,在当前的开源项目里(JavaEE),几乎95%以上的项目都用到了SVN.Subversion项目的初衷是为了替换当年开源社区最为流行的版本控制软件CVS,在CVS的功能的基础上有很多的提升,同时也能较好的解决CVS系统的一些不足.</p>
 <p>工作流程图:</p>
-<p><a href="http://hi.csdn.net/attachment/201104/9/0_1302356398YXxF.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/9/0_130235639981HM.gif" border="0" alt="image" width="546" height="577" /></a></p>
+<p><a href="https://hi.csdn.net/attachment/201104/9/0_1302356398YXxF.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="https://hi.csdn.net/attachment/201104/9/0_130235639981HM.gif" border="0" alt="image" width="546" height="577" /></a></p>
 <p>从该图可以看出SVN分为三部分:客户端、服务器和数据仓库.客户端又分为命令行和图形用户界面两种,SVN安装完默认只有命令行.GUI只是对命令行功能的一种封装;服务器的访问方式有三种,主要是两种:mod_dav_svn和svnserve.mod_dav_svn是借助Apache的方式进行访问,svnserve是SVN内置的独立服务器;SVN支持两种数据仓库:数据库和文件系统.使用文件系统是推荐方式.以下是SVN对工程的管理方式:</p>
-<p><a href="http://hi.csdn.net/attachment/201104/9/0_1302356400ZHh9.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/9/0_1302356402771Y.gif" border="0" alt="image" width="543" height="514" /></a></p>
+<p><a href="https://hi.csdn.net/attachment/201104/9/0_1302356400ZHh9.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="https://hi.csdn.net/attachment/201104/9/0_1302356402771Y.gif" border="0" alt="image" width="543" height="514" /></a></p>
 <p>这种方案被称为<strong>拷贝-修改-合并</strong>,是Subversion、CVS和一些版本控制系统共同使用的模型,在这种模型里,每一个客户联系项目版本库建立一个个人工作拷贝和到版本库中文件和目录的本地映射.用户并行工作,修改各自的工作拷贝,最终各个私有的拷贝合并在一起,成为最终的版本,这种系统通常可以辅助合并操作,但是最终要<strong>靠人工去确定正误</strong>.拷贝-修改-合并模型感觉有一点混乱,但在实践中,通常运行的很平稳,用户可以并行的工作,不必等待别人,当工作在同一个文件上时,也很少会有交迭发生,<strong>冲突并不频繁</strong>,处理冲突的时间远比等待解锁花费的时间少.最后,一切都要归结到一条重要的因素:<strong>用户交流</strong>.当用户交流贫乏,语法和语义的冲突就会增加,没有系统可以强制用户完美的交流,没有系统可以检测语义上的冲突,所以没有任何证据能够承诺锁定系统可以防止冲突,实践中,锁定除了约束了生产力,并没有做什么事.拷贝-修改-合并有一个很致命的缺点,就是对那些无法合并的二进制文件管理起来困难,因此,Subversion也提供了锁定-修改-解锁的方案,用来更好的管理二进制文件.因此,我们采取混合版本控制方案,即,对源代码的纯文本文档实行<strong>拷贝-修改-合并</strong>的方案,对二进制文件,如dll、图书等采用<strong>锁定-修改-解锁</strong>的方案.也就是通过autoprops.reg中的信息,来告诉Subversion怎么去管理这些文件.</p>
 <p>以下是采用<strong>锁定-修改-解锁</strong>方案的vss工作流程:</p>
-<p><a href="http://hi.csdn.net/attachment/201104/9/0_1302356403qQl3.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/9/0_1302356407Ent8.gif" border="0" alt="image" width="541" height="501" /></a></p>
+<p><a href="https://hi.csdn.net/attachment/201104/9/0_1302356403qQl3.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="https://hi.csdn.net/attachment/201104/9/0_1302356407Ent8.gif" border="0" alt="image" width="541" height="501" /></a></p>
 <p>可以看出这种模型的效率并不高,在一个时间段里版本库的一个文件只允许被一个人修改.但是它也有优点:能非常好的保证版本库中所有文件的一致性,能避免大部分的冲突.但锁定-修改-解锁模型有一点问题就是限制太多,经常会成为用户的障碍,比如:</p>
 <ul>
 <li>锁定可能导致管理问题</li>
@@ -42,7 +42,7 @@ article_type: 1
 </ul>
 <p>如果万一被某个人锁住,然后离开,半天不回来,那项目组的其他人就可以放假了.当然这种情况基本上不会发生.</p>
 <p>SVN需要与人交互,来获取服务器的最新文件,或者更新服务器版本库的文件,流程图如下:</p>
-<p><a href="http://hi.csdn.net/attachment/201104/9/0_1302356409j5o2.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/9/0_1302356411jYy2.gif" border="0" alt="image" width="713" height="548" /></a></p>
+<p><a href="https://hi.csdn.net/attachment/201104/9/0_1302356409j5o2.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="https://hi.csdn.net/attachment/201104/9/0_1302356411jYy2.gif" border="0" alt="image" width="713" height="548" /></a></p>
 <p>上图也基本列出了必然使用的方法,SVN工作的基本思路是这样的:在一台服务器上建立一个仓库,仓库里可以存放许多不同项目的源程序.由仓库管理员统一管理这些源程序,这样,就好像一个人在修改文件一样.避免了冲突,每个用户在使用仓库之前,首先要把仓库的项目文件下载到本地.用户做的任何修改首先都是在本地进行,然后用SVN命令进行提交,由SVN仓库管理员统一修改,这样就可以做到跟踪文件变化、冲突控制等等.</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

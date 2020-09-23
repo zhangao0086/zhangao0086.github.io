@@ -12,37 +12,37 @@ article_type: 1
 
 <p>首页显示所有的书：</p>
 
-<p><img alt="" class="has" height="400" src="http://hi.csdn.net/attachment/201108/5/0_13125338503mgi.gif" width="650" /></p>
+<p><img alt="" class="has" height="400" src="https://hi.csdn.net/attachment/201108/5/0_13125338503mgi.gif" width="650" /></p>
 
 <p>增加书后，默认没有封面：</p>
 
-<p><img alt="" class="has" height="420" src="http://hi.csdn.net/attachment/201108/5/0_1312533945tqH2.gif" width="650" /></p>
+<p><img alt="" class="has" height="420" src="https://hi.csdn.net/attachment/201108/5/0_1312533945tqH2.gif" width="650" /></p>
 
 <p>编辑页面：</p>
 
-<p><img alt="" class="has" height="360" src="http://hi.csdn.net/attachment/201108/5/0_1312534096OjOp.gif" width="700" /></p>
+<p><img alt="" class="has" height="360" src="https://hi.csdn.net/attachment/201108/5/0_1312534096OjOp.gif" width="700" /></p>
 
 <p>上传的文件可以包括图片和swf，gif格式的图片也作为静态图片处理。后台对图片进行压缩、调整尺寸（由用户选择）以及切分（由用户选择，在一张图片过大，可以作为两张使用的时候）等。</p>
 
 <p>上传成功后：</p>
 
-<p><img alt="" class="has" height="400" src="http://hi.csdn.net/attachment/201108/5/0_13125343942D8n.gif" width="680" /></p>
+<p><img alt="" class="has" height="400" src="https://hi.csdn.net/attachment/201108/5/0_13125343942D8n.gif" width="680" /></p>
 
 <p>在增加页之后：</p>
 
-<p><img alt="" class="has" height="420" src="http://hi.csdn.net/attachment/201108/5/0_1312534684Dyd0.gif" width="700" /></p>
+<p><img alt="" class="has" height="420" src="https://hi.csdn.net/attachment/201108/5/0_1312534684Dyd0.gif" width="700" /></p>
 
 <p>手头上没有现成的大图，就将两张示例图片合成一张：</p>
 
-<p><img alt="" class="has" src="http://hi.csdn.net/attachment/201108/5/0_1312535024Lr8l.gif" /></p>
+<p><img alt="" class="has" src="https://hi.csdn.net/attachment/201108/5/0_1312535024Lr8l.gif" /></p>
 
 <p>在页面上采用切分（竖切）上传成功后被切分为两张：</p>
 
-<p><img alt="" class="has" height="450" src="http://hi.csdn.net/attachment/201108/5/0_1312535128ac69.gif" width="700" /></p>
+<p><img alt="" class="has" height="450" src="https://hi.csdn.net/attachment/201108/5/0_1312535128ac69.gif" width="700" /></p>
 
 <p>生成电子杂志效果图，使用修改后的Flash Page Flip的swf文件：</p>
 
-<p><img alt="" class="has" src="http://hi.csdn.net/attachment/201108/5/0_1312535351dv99.gif" /></p>
+<p><img alt="" class="has" src="https://hi.csdn.net/attachment/201108/5/0_1312535351dv99.gif" /></p>
 
 <h3><strong><a href="http://download.csdn.net/source/3497735">电子杂志源码地址</a></strong></h3>
 
@@ -54,7 +54,7 @@ article_type: 1
 
 <p>1.使用了动态文本，但是只嵌入了英文，故中文无法显示，我解决的方法就是直接修改库里已存在的字体组件，如果包含一个字体全部的字符，比如宋体，整个编译后的swf文件有近20M，显然不合适，所以我就将只使用到的字符嵌入进来，能够保证界面上可以显示就够了.</p>
 
-<p><img alt="" class="has" height="320" src="http://hi.csdn.net/attachment/201107/14/0_1310621604ThQH.gif" width="580" /></p>
+<p><img alt="" class="has" height="320" src="https://hi.csdn.net/attachment/201107/14/0_1310621604ThQH.gif" width="580" /></p>
 
 <p>2.由于业务需要可能会建立多本电子书，所以每本书有不同的内容，但是是由相同的ActionScript脚本组合起来的，所以除了公共资源以外，每本书的内容单独放在一个目录下，除了内容，我还把swf文件也每个子目录下放了一份，当用户读取指定的swf的时候，每个swf只需要检索各自的内容就行了，这种情况下我只用读取相对路径下的文件即可，但是问题是我在脚本里明明写的相对路径，但是实际上访问的却是我站点的根路径。</p>
 

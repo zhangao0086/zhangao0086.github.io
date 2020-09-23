@@ -54,7 +54,7 @@ article_type: 1
 <p>先使用svn服务器启动的方式,在cmd命令行输入语法为:</p>
 <p>svnserve -d &ndash;r 文档仓库路径</p>
 <p>其中d代表后台执行,r是指定仓库的根目录.命令执行后,如果不知道是否启动,因为命令行没有任何反应,有的只是没有反应.可以通过在另一个cmd命令行中输入netstat -an的命令查看当前端面的监听情况来辨别是否启动.它的<strong><span style="color: #ff0000;">监听端口号为:3690</span></strong>:</p>
-<p><a href="http://hi.csdn.net/attachment/201104/10/0_13024452657G5x.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/10/0_1302445266ZqV1.gif" border="0" alt="image" width="644" height="81" /></a></p>
+<p><a href="https://hi.csdn.net/attachment/201104/10/0_13024452657G5x.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="https://hi.csdn.net/attachment/201104/10/0_1302445266ZqV1.gif" border="0" alt="image" width="644" height="81" /></a></p>
 <p>图为已启动.但是这种启动方式不好,因为只要你关闭了输入启动命令的命令行,你的Subversion也就停止了.所以建议使用第二种方式:以服务方式启动.</p>
 <p>还是在命令行输入:</p>
 <div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
@@ -71,7 +71,7 @@ article_type: 1
 <!--CRLF--></div>
 </div>
 <p>表示创建一个名为"SVN-Service"的服务,要指定binpath,设置自动启动.需要注意一点,这种方式为<strong><span style="color: #ff0000;">多仓库</span></strong>,如果指定到svn目录下的firstsvn,就是<strong><span style="color: #ff0000;">单仓库</span></strong>.多仓库可以对目录下多个工程进行版本控制.下方出现"[SC] CreateService SUCCESS"表示创建成功.这个时候可以在服务里面找到它:</p>
-<p><a href="http://hi.csdn.net/attachment/201104/10/0_1302445266T422.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/10/0_1302445269mOf8.gif" border="0" alt="image" width="533" height="344" /></a></p>
+<p><a href="https://hi.csdn.net/attachment/201104/10/0_1302445266T422.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="https://hi.csdn.net/attachment/201104/10/0_1302445269mOf8.gif" border="0" alt="image" width="533" height="344" /></a></p>
 <p>可以看出创建完它是没有启动的,启动后就可以使用了.删除的语法为: </p>
 <div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
 <div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">
@@ -102,7 +102,7 @@ article_type: 1
 <p>子命令checkout后面可以跟两个参数,第一个参数为指定的url,由于我是多仓库,所以需要指定具体的仓库.第二个参数(上面没写)指定checkout的目的地.默认就是当前执行命令的路径,我用cd命令切过来了,所以不指定也行.</p>
 <p>命令执行后可以看到user1的目录下多了个目录:firstsvn.里面有一个隐藏目录:.svn.这个目录里面包含了你的版本库的信息,可以让你commit或者update的时候不用再输入url.</p>
 <p>由于目前版本库里面没有任何东西,也没有对它操作过,所以是<strong><span style="color: #ff0000;">取出版本0</span></strong>.现在我就在里面增加一个文件,就叫hello.txt,里面只有一句话:hello world:</p>
-<p><a href="http://hi.csdn.net/attachment/201104/10/0_1302445269JrqV.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="http://hi.csdn.net/attachment/201104/10/0_1302445269LOsi.gif" border="0" alt="image" width="153" height="116" /></a></p>
+<p><a href="https://hi.csdn.net/attachment/201104/10/0_1302445269JrqV.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" src="https://hi.csdn.net/attachment/201104/10/0_1302445269LOsi.gif" border="0" alt="image" width="153" height="116" /></a></p>
 <p>然后commit,commit之前输入先要add,相当于给它一个标记.输入命令:</p>
 <div id="codeSnippetWrapper" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; width: 99%; font-family: 'Courier New', courier, monospace; direction: ltr; font-size: 10pt; overflow: auto; cursor: text; border: silver 1px solid; padding: 4px;">
 <div id="codeSnippet" style="text-align: left; line-height: 12pt; background-color: #f4f4f4; width: 100%; font-family: 'Courier New', courier, monospace; direction: ltr; color: black; font-size: 10pt; overflow: visible; border-style: none; padding: 0px;">

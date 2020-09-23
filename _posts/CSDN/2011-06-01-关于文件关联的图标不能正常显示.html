@@ -11,22 +11,22 @@ article_type: 1
 <p>不知道有没有人<br />
 遇到过这种情况：</p>
 
-<p><a href="http://hi.csdn.net/attachment/201106/1/0_13069392238JUJ.gif"><img alt="image" class="has" height="96" src="http://hi.csdn.net/attachment/201106/1/0_13069392241Ndc.gif" width="307" /></a></p>
+<p><a href="https://hi.csdn.net/attachment/201106/1/0_13069392238JUJ.gif"><img alt="image" class="has" height="96" src="https://hi.csdn.net/attachment/201106/1/0_13069392241Ndc.gif" width="307" /></a></p>
 
-<p><a href="http://hi.csdn.net/attachment/201106/1/0_1306939224LkiK.gif"><img alt="image" class="has" height="117" src="http://hi.csdn.net/attachment/201106/1/0_1306939224Vwo8.gif" width="115" /></a></p>
+<p><a href="https://hi.csdn.net/attachment/201106/1/0_1306939224LkiK.gif"><img alt="image" class="has" height="117" src="https://hi.csdn.net/attachment/201106/1/0_1306939224Vwo8.gif" width="115" /></a></p>
 
 <p>这两种情况都是关联的图标不能正常显示，但是可以正常打开。总觉得看着挺碍眼的，就看了下注册表，发现可以用以下方法解决：</p>
 
 <ol>
 	<li>打开注册表，[HKEY_CLASSES_ROOT]</li>
-	<li>找到需要修改的文件类型，比如html文件的图标不能正常显示，就找.html<a href="http://hi.csdn.net/attachment/201106/1/0_1306939224081t.gif"><img alt="image" class="has" height="32" src="http://hi.csdn.net/attachment/201106/1/0_1306939225cUG6.gif" width="85" /></a><br />
+	<li>找到需要修改的文件类型，比如html文件的图标不能正常显示，就找.html<a href="https://hi.csdn.net/attachment/201106/1/0_1306939224081t.gif"><img alt="image" class="has" height="32" src="https://hi.csdn.net/attachment/201106/1/0_1306939225cUG6.gif" width="85" /></a><br />
 	<br />
 	&nbsp;</li>
-	<li>到右边找到&ldquo;默认&rdquo;，<a href="http://hi.csdn.net/attachment/201106/1/0_13069392253Nqo.gif"><img alt="image" class="has" height="42" src="http://hi.csdn.net/attachment/201106/1/0_13069392261a1a.gif" width="458" /></a>，把它的值记下就可以了，比如ChromeHTML，不要修改</li>
-	<li>在注册表里面继续找ChromeHTML<a href="http://hi.csdn.net/attachment/201106/1/0_13069392265Bn5.gif"><img alt="image" class="has" height="31" src="http://hi.csdn.net/attachment/201106/1/0_1306939226NHj6.gif" width="129" /></a><br />
+	<li>到右边找到&ldquo;默认&rdquo;，<a href="https://hi.csdn.net/attachment/201106/1/0_13069392253Nqo.gif"><img alt="image" class="has" height="42" src="https://hi.csdn.net/attachment/201106/1/0_13069392261a1a.gif" width="458" /></a>，把它的值记下就可以了，比如ChromeHTML，不要修改</li>
+	<li>在注册表里面继续找ChromeHTML<a href="https://hi.csdn.net/attachment/201106/1/0_13069392265Bn5.gif"><img alt="image" class="has" height="31" src="https://hi.csdn.net/attachment/201106/1/0_1306939226NHj6.gif" width="129" /></a><br />
 	&nbsp;</li>
 	<li>展开后新建一个Key,Key名叫：DefaultIcon</li>
-	<li>设置DefaultIcon的值:<a href="http://hi.csdn.net/attachment/201106/1/0_13069392273TIN.gif"><img alt="image" class="has" height="49" src="http://hi.csdn.net/attachment/201106/1/0_1306939227wVFv.gif" width="736" /></a>，值就是应用程序的路径</li>
+	<li>设置DefaultIcon的值:<a href="https://hi.csdn.net/attachment/201106/1/0_13069392273TIN.gif"><img alt="image" class="has" height="49" src="https://hi.csdn.net/attachment/201106/1/0_1306939227wVFv.gif" width="736" /></a>，值就是应用程序的路径</li>
 	<li>接着在任务管理器中干掉explorer，在重新启动</li>
 </ol>
 
@@ -34,4 +34,4 @@ article_type: 1
 
 <p>就可以了，其他任何后缀的文件都可以通过这种方式解决.</p>
 
-<p><a href="http://hi.csdn.net/attachment/201106/1/0_13069392273uk5.gif"><img alt="image" class="has" height="68" src="http://hi.csdn.net/attachment/201106/1/0_1306939228j0sd.gif" width="233" /></a></p>
+<p><a href="https://hi.csdn.net/attachment/201106/1/0_13069392273uk5.gif"><img alt="image" class="has" height="68" src="https://hi.csdn.net/attachment/201106/1/0_1306939228j0sd.gif" width="233" /></a></p>
