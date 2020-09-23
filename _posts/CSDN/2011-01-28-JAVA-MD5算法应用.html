@@ -12,12 +12,12 @@ article_type: 1
 <p>&nbsp;&nbsp; &nbsp; &nbsp;在一些对安全需求比较高的WEB站点中,除了要保证数据的传输有保障之外,数据库的内容也需要做一些处理,像银行之类的系统,要防止外人取得数据,还不能让管理员看到账号和密码.很多时候都是利用MD5算法来保证数据的完整性和安全性,但是MD5算法并<span>不是</span>一个加密算法,它就像人的&quot;指纹&quot;一样,每个人都有指纹,而且指纹都不一样,MD5算法算出的结果,就像数据的指纹一样,任何数据,不论它占用多少空间,它的指纹都能作为这块数据的唯一标识.,SUN公司的JDK文档就描述了如何通过类<strong>java.security.MessageDigest
 </strong>来完成JAVA的MD5算法实现.</p>
 <p>&nbsp;&nbsp;&nbsp;&nbsp; 我们先来看一看它的继承关系:</p>
-<p><span style="white-space:pre"></span><img src="http://hi.csdn.net/attachment/201101/28/0_12961820049Q4C.gif" alt="" width="290" height="72"></p>
+<p><span style="white-space:pre"></span><img src="https://hi.csdn.net/attachment/201101/28/0_12961820049Q4C.gif" alt="" width="290" height="72"></p>
 <p>&nbsp;&nbsp;&nbsp;&nbsp; 此类为抽象类,并且其父类也是抽象类, <strong>MessageDigestSpi </strong>是一个Service Provider Interface (服务提供者接口),主要是为其子类提供方法摘要,并由其子类完成.</p>
 <p>&nbsp;&nbsp;&nbsp;&nbsp; 由于 MessageDigest 是一个抽象类,我们不可以直接实例化它,得用它的静态方法就能得到这个对象的实例:</p>
 <blockquote>
-<pre>public static <a href="http://mk:@MSITStoreE%5CDevelopment%20Doc%5Cjdk1.6??????????????????.CHM::/java/security/MessageDigest.html">MessageDigest</a> <strong>getInstance</strong>(<a href="http://mk:@MSITStoreE%5CDevelopment%20Doc%5Cjdk1.6??????????????????.CHM::/java/lang/String.html">String</a> algorithm)
-                                 throws <a href="http://mk:@MSITStoreE%5CDevelopment%20Doc%5Cjdk1.6??????????????????.CHM::/java/security/NoSuchAlgorithmException.html">NoSuchAlgorithmException</a></pre>
+<pre>public static <a href="https://mk:@MSITStoreE%5CDevelopment%20Doc%5Cjdk1.6??????????????????.CHM::/java/security/MessageDigest.html">MessageDigest</a> <strong>getInstance</strong>(<a href="https://mk:@MSITStoreE%5CDevelopment%20Doc%5Cjdk1.6??????????????????.CHM::/java/lang/String.html">String</a> algorithm)
+                                 throws <a href="https://mk:@MSITStoreE%5CDevelopment%20Doc%5Cjdk1.6??????????????????.CHM::/java/security/NoSuchAlgorithmException.html">NoSuchAlgorithmException</a></pre>
 </blockquote>
 <pre>   它接受一个字符串参数,我们只需传递一个算法的名称即可,就像这样:</pre>
 <pre>   MessageDigest md = MessageDigest.getInstance(&quot;md5&quot;);</pre>

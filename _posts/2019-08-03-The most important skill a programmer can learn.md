@@ -8,7 +8,7 @@ article_type: 3
 ---
 
 
-> *Originally published at [http://huseyinpolatyuruk.com](<http://huseyinpolatyuruk.com/2019/05/03/the-most-important-skill-a-programmer-can-learn/>).*
+> *Originally published at [https://huseyinpolatyuruk.com](<https://huseyinpolatyuruk.com/2019/05/03/the-most-important-skill-a-programmer-can-learn/>).*
 
 
 
@@ -51,7 +51,7 @@ Now, let’s say it together. NOOOOOOO!
 - 会潜在增加软件的缺陷
 - 可能会在未来引入新的 Bugs
 
-就像 Rich Skrenta 在 [code is our enemy](http://www.skrenta.com/2007/05/code_is_our_enemy.html) 里写的：
+就像 Rich Skrenta 在 [code is our enemy](https://www.skrenta.com/2007/05/code_is_our_enemy.html) 里写的：
 
 > *代码不好，它需要定期维护，它隐藏着 Bugs 等你发现，增加新功能意味着有老代码必须被调整.*
 >
