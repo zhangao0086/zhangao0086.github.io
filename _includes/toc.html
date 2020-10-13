@@ -1,40 +1,54 @@
-<nav class="toc toc-right js-toc"></nav>
+<nav class="toc toc-right"></nav>
 <link rel="stylesheet" href="{{ '/css/tocbot.css?v=' | append: site.github.build_revision | relative_url }}" />
 <script src="{{ '/js/tocbot.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
 <script type="text/javascript" defer>
   window.onload = function () {
-    let initialLevel = null;
-    let previousLevel = null;
     tocbot.init({
       // Where to render the table of contents.
-      tocSelector: '.js-toc',
+      tocSelector: '.toc',
       // Where to grab the headings to build the table of contents.
       contentSelector: '.post-content',
       // Which headings to grab inside of the contentSelector element.
       headingSelector: 'h1, h2',
-      positionFixedSelector: '.js-toc',
+      positionFixedSelector: '.toc',
       includeHtml: true,
+      headingsOffset: 45,
       linkClass: 'toc-link-custom',
       activeLinkClass: 'is-active-link-custom',
       isCollapsedClass: 'is-collapsed-custom',
       collapsibleClass: 'is-collapsible-custom',
-      // headingObjectCallback: (n, t) => {
-      //   if (initialLevel == null || n.headingLevel == initialLevel) {
-      //     previousLevel = null;
-      //     initialLevel = n.headingLevel;
-      //     n.headingLevel = 1;
-      //     n.nodeName = "H1";
-      //     return n;
-      //   }
+      onClick: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // 添加一个新的 hash
+        history.pushState(null, document.title, location.pathname + e.target.hash);
+        jumpToHash();
+        return false;
+      }
+    });
 
-      //   if (previousLevel == null || previousLevel == n.headingLevel) {
-      //     previousLevel = n.headingLevel;
-      //     n.headingLevel = 2;
-      //     n.nodeName = "H2";
-      //     return n;
-      //   }
-      //   return;
-      // },
-    }); 
+    // 跳转到指定的 hash 位置
+    function jumpToHash() {
+      if (location.hash.length !== 0) {
+        let targetTop = document.getElementById(decodeURI(location.hash).substring(1)).offsetTop - 45;
+        window.scrollBy({
+          top: targetTop - window.pageYOffset,
+          left: 0,
+          behavior: 'smooth'
+        });
+      }
+    }
+
+    // 在页面内手动修改 hash
+    $(window).on('hashchange', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      jumpToHash();
+      return false;
+    });
+
+    // 进入页面时也根据 hash 设置 offset
+    window.setTimeout(jumpToHash, 0);
   }
 </script>
