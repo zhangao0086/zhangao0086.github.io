@@ -127,7 +127,7 @@ s.preserve_paths = 'Frameworks/**/*.framework'
 #         lists.
 #
 def read_file_system
-	...
+  ...
   escaped_root = escape_path_for_glob(root)
   Dir.glob(escaped_root + '**/*', File::FNM_DOTMATCH).each do |f|
     directory = File.directory?(f)
