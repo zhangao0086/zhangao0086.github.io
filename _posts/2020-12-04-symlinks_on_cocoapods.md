@@ -24,7 +24,7 @@ Flutter 支持三种编译模式：
 
 ```ruby
 if ENV['GD_Develop'] == nil || ENV['GD_Develop'] == '1'
-	$env = 'Debug'
+  $env = 'Debug'
 else
   $env = 'Release'
 end
