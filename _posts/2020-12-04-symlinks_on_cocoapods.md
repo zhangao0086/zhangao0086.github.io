@@ -8,7 +8,7 @@ excerpt_separator: <!--more-->
 typora-root-url: ../../github.io
 ---
 
-`CocoaPods` 是一个管理 Xcode 工程依赖的工具，其因为简单易用、功能覆盖广、拓展性强，成为了这个领域最常用的工具之一。不过想让工具完美适配各种 workflow 是不现实的，总归会有一些需要二次开发的东西，这一篇就是我们在实现环境切换时，如何利用它的特性达到最终目的的记录。
+CocoaPods 是一个管理 Xcode 工程依赖的工具，其因为简单易用、功能覆盖广、拓展性强，成为了这个领域最常用的工具之一。不过想让工具完美适配各种 workflow 是不现实的，总归会有一些需要二次开发的东西，这一篇就是我们在实现环境切换时，如何利用它的特性达到最终目的的记录。
 
 <!--more-->
 
@@ -20,7 +20,7 @@ Flutter 支持三种编译模式：
 - profile - 用于分析性能时使用
 - release - 部署到线上环境时使用
 
-为了简化版本管理，我们会将 `debug` 和 `release` 的产物放在同一个目录下，使它们有相同的版本号，然后在应用集成时，通过环境变量决定 `CocoaPods` 最终的依赖目录，就像这样：
+为了简化版本管理，我们会将 debug 和 release 的产物放在同一个目录下，使它们有相同的版本号，然后在应用集成时，通过环境变量决定 CocoaPods 最终的依赖目录，就像这样：
 
 ```ruby
 if ENV['GD_Develop'] == nil || ENV['GD_Develop'] == '1'
@@ -38,19 +38,19 @@ s.vendored_frameworks = "Frameworks/#$env/*.framework"
 
 <center style="color:#999;font-size:.9em;">部分配置参数</center>
 
-于是我们的产物仓库有的版本有 `debug` 制品，有的没有，这是前提。
+于是我们的产物仓库有的版本有 debug 制品，有的没有，这是前提。
 
 同时我们的应用 CI 会有两种 workflow：
 
 - dev - 用于快速 check 代码库的兼容性，以及执行一些开发模式下的检查，这个模式下不会产出包，编译的架构也有一定的裁剪
-- standard - 构建 `release` 包，也会执行一些检查
+- standard - 构建 release 包，也会执行一些检查
 
 而这两种 workflow 会自动设置不同的环境变量，这会产生一些限制：
 
-- 只存在 `release` 的包将无法通过 dev 的构建
-- 提测的包必须包含 `release`
+- 只存在 release 的包将无法通过 dev 的构建
+- 提测的包必须包含 release
 
-这些限制虽然也合理，但是站在开发者的角度看，如果我这个包只是想给其他同学 review 下，应用虽然是 Release，但如果 Flutter 是 `debug` 包，会自带一些调试工具，协作起来可能会更方便一些。
+这些限制虽然也合理，但是站在开发者的角度看，如果我这个包只是想给其他同学 review 下，应用虽然是 Release，但如果 Flutter 是 debug 包，会自带一些调试工具，协作起来可能会更方便一些。
 
 所以我们最终在设计流程是采用了 symlink 的方式：
 
@@ -58,7 +58,7 @@ s.vendored_frameworks = "Frameworks/#$env/*.framework"
 ln -s ./Release ./Debug
 ```
 
-这样就算只产出了 `release` 包，也不会影响 dev 的构建。
+这样就算只产出了 release 包，也不会影响 dev 的构建。
 
 # 实现细节
 
@@ -70,11 +70,11 @@ Frameworks
 |--- Release
 ```
 
-接下来还要继续确认 `CocoaPods` 对此是否有足够的支持。
+接下来还要继续确认 CocoaPods 对此是否有足够的支持。
 
-根据我们对 `CocoaPods` 的了解，我们知道：
+根据我们对 CocoaPods 的了解，我们知道：
 
-- `CocoaPods` 会将 `podspec` 缓存到本地，直到需要依赖时才去下载对应的 Pod，下载完 Pod 后会有一个预清洗的逻辑，即根据 `podspec` 的文件匹配（如 `vendored_frameworks`、`source_files` 等）语法，将不需要的文件删除，这样集成到 Xcode 工程时只需要将 Pod 目录复制过去即可
+- CocoaPods 会将 `podspec` 缓存到本地，直到需要依赖时才去下载对应的 Pod，下载完 Pod 后会有一个预清洗的逻辑，即根据 `podspec` 的文件匹配（如 `vendored_frameworks`、`source_files` 等）语法，将不需要的文件删除，这样集成到 Xcode 工程时只需要将 Pod 目录复制过去即可
 - 只有匹配成功的文件才会出现在 Pods 工程里
 - 只有匹配成功的文件才会设置正确的 `search path`
 
@@ -94,7 +94,7 @@ s.vendored_frameworks = "Frameworks/#$env/*.framework"
 
 而我们需要确保 Debug 和 Release 被同时保留，然后后续根据环境变量来选择实际的依赖。
 
-这个问题很容易解决，`CocoaPods` 在 `podspec` 里提供了 `preserve_paths` 配置项：
+这个问题很容易解决，CocoaPods 在 `podspec` 里提供了 `preserve_paths` 配置项：
 
 > **preserve_paths**
 >
@@ -120,7 +120,7 @@ s.preserve_paths = 'Frameworks/**/*.framework'
 
 ## 检查文件是否正确匹配
 
-下面这段代码是 `CocoaPods` 读取文件系统的方法：
+下面这段代码是 CocoaPods 读取文件系统的方法：
 
 ```ruby
 # @return [void] Reads the file system and populates the files and paths
@@ -143,7 +143,7 @@ def read_file_system
 end
 ```
 
-从这段实现可以看出 `CocoaPods` 是支持读取 symlink 的，它会被当作正常的目录来处理。
+从这段实现可以看出 CocoaPods 是支持读取 symlink 的，它会被当作正常的目录来处理。
 
 不过最终的 files 就不一定了。
 
@@ -167,11 +167,11 @@ s.vendored_frameworks = "Frameworks/#$env/*.framework"
 
 用 symlink 的初衷是为了节省 CI 构建资源、产物仓库磁盘的占用以及加快 Pod 使用者的集成速度（减少了下载时间），我们的解决方案需要维持这些优点，思路有两个。
 
-思路一，使 symlink 文件返回 symlink 目录前缀，这样后续的匹配也就正常了。不过这种方式破坏了 symlink 自身的语义，而且需要修改 `CocoaPods` 的源码，可以说是费力不讨好，难度 **Hard**。
+思路一，使 symlink 文件返回 symlink 目录前缀，这样后续的匹配也就正常了。不过这种方式破坏了 symlink 自身的语义，而且需要修改 CocoaPods 的源码，可以说是费力不讨好，难度 **Hard**。
 
 思路二，将 symlink 变成实际的物理目录 - 需要找准时机，在 Pod 下载后和 Pod 集成前，难度 **Easy**。
 
-根据思路二可以找到好几个时机，不过最完美的当属 `CocoaPods` 自身提供的 `prepare_command`：
+根据思路二可以找到好几个时机，不过最完美的当属 CocoaPods 自身提供的 `prepare_command`：
 
 > **prepare_command**
 >
