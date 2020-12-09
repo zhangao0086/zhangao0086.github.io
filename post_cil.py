@@ -52,7 +52,7 @@ typora-root-url: ../../github.io
 
 <!--more-->
 
-规则如下：
+## 规则
 
 
 
