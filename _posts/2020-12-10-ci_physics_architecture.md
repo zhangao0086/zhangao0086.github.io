@@ -5,6 +5,7 @@ date: 2020-12-10 21:31:51 +0800
 categories: [CI]
 article_type: 1
 excerpt_separator: <!--more-->
+typora-root-url: ../../github.io
 ---
 
 这一篇介绍稿定客户端持续集成的物理架构。
@@ -13,7 +14,7 @@ excerpt_separator: <!--more-->
 
 目前整体的设计是这样的：
 
-![image-20201210213658094](../assets/img/ci_physics_architecture-1.png)
+![image-20201210213658094](/assets/img/ci_physics_architecture-1.png)
 
 在我们引入容器、虚拟化之前的很长一段时间，我们的 CI 基础设施都处于*雪花服务器*的状态：
 
