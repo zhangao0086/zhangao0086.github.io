@@ -15,7 +15,7 @@ excerpt_separator: <!--more-->
 
 ![image-20201210213658094](../assets/img/ci_physics_architecture-1.png)
 
-在我们引入容器、虚拟化之前的很长一段时间，我们的基础设施都处于*雪花服务器*的状态：
+在我们引入容器、虚拟化之前的很长一段时间，我们的 CI 基础设施都处于*雪花服务器*的状态：
 
 - 手动管理一堆服务器
 - 手动登陆每台服务器
@@ -31,11 +31,11 @@ excerpt_separator: <!--more-->
 - Linux - 解决 Android 场景
 - macOS - 解决 iOS 和 Flutter
 
-Linux 上有成熟的容器化技术可以用，但是 macOS 就不好解决了，早期的 Docker Toolbox 虽然也可以在 macOS 上跑 Docker，但是它的底层内核是基于 VirtualBox 的，也就是说它需要厚重的 Guest OS 层（参考上图）。
+Linux 上有成熟的容器化技术可以用，但是 macOS 就不好解决了，早期的 Docker Toolbox 虽然也可以在 macOS 上跑 Docker，但是它的底层内核是基于 VirtualBox 的，也就是需要厚重的 Guest OS 层（参考上图）。
 
 容器化相比虚拟化的好处很明显，不需要 Guest OS，节省资源，而且 Docker 技术成熟，可靠稳定。
 
-而 macOS 只能选择虚拟化了，经过一番调研我们最终选择了以苹果原生虚拟化技术为标准，同时支持终端运行的 VMWare 作为我们的 macOS 虚拟化解决方案，同时为了在使用体验上接近 Docker，我们在虚拟机内做了自动登陆、自启动脚本等，在宿主机上同样可以一行代码完成虚拟机的运行：
+而 macOS 只能选择虚拟化了，经过一番调研我们最终选择了以苹果原生虚拟化技术为标准，同时支持终端运行的 VMWare 作为我们的 macOS 虚拟化解决方案，同时为了在使用体验上接近 Docker，我们在虚拟机内做了自动登陆、自启动脚本等基础工具，在宿主机上同样可以一行代码完成虚拟机的运行：
 
 ```shell
 # 启动
@@ -48,5 +48,4 @@ vmrun stop /path/to/vmx
 vmrun clone /path/to/source/vmx /path/to/target/vmx full -cloneName=NewName
 ```
 
-目前实践下来基本上可以达到设计目标，不过与 Docker 相比，在资源占用上和稳定性上还是存在一定的差距。
-
+目前实践下来基本上可以达到设计目标，不过与 Docker 相比，在资源占用上和稳定性上还是存在很大的差距。
