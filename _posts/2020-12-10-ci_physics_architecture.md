@@ -30,7 +30,7 @@ typora-root-url: ../../github.io
 虽然我们的客户端有 Android、iOS、Flutter 三套开发环境，但是物理环境只有两种：
 
 - Linux - 解决 Android 场景
-- macOS - 解决 iOS 和 Flutter
+- macOS - 解决 iOS 和 Flutter 场景
 
 Linux 上有成熟的容器化技术可以用，但是 macOS 就不好解决了，早期的 Docker Toolbox 虽然也可以在 macOS 上跑 Docker，但是它的底层内核是基于 VirtualBox 的，也就是需要厚重的 Guest OS 层（参考上图）。
 
@@ -38,7 +38,7 @@ Linux 上有成熟的容器化技术可以用，但是 macOS 就不好解决了�
 
 而 macOS 只能选择虚拟化了，经过一番调研我们最终选择了以苹果原生虚拟化技术为标准，同时支持终端运行的 VMWare 作为我们的 macOS 虚拟化解决方案，同时为了在使用体验上接近 Docker，我们在虚拟机内做了自动登陆、自启动脚本等基础工具，在宿主机上同样可以一行代码完成虚拟机的运行：
 
-```shell
+```bash
 # 启动
 vmrun start path/to/vmwarevm nogui
 
@@ -48,5 +48,14 @@ vmrun stop /path/to/vmx
 # 克隆
 vmrun clone /path/to/source/vmx /path/to/target/vmx full -cloneName=NewName
 ```
+
+其中：
+
+- 自动登录是 macOS 原生提供的功能
+- 自启动可以通过 launchd 解决
+- 机器的性能监控基于 `top` 实现
+- ...
+
+之后在整体上做一层简单的封装，比如集成到一套后台管理系统中。
 
 目前实践下来基本上可以达到设计目标，不过与 Docker 相比，在资源占用上和稳定性上还是存在很大的差距。
