@@ -2,7 +2,7 @@
 layout: post
 title: "CI 物理架构"
 date: 2020-12-10 21:31:51 +0800
-categories: [CI]
+categories: [DevOps, 分享]
 article_type: 1
 excerpt_separator: <!--more-->
 typora-root-url: ../../github.io
