@@ -48,8 +48,8 @@ Chrome 直接采用了 JSON 作为它的 DSL：
 ```json
 {
     "manifest_version": 2,
-  	"version": "1.0",
-  	/*...*/
+    "version": "1.0",
+    /*...*/
     "background": {
         "scripts": ["js/background.js"]
     },
