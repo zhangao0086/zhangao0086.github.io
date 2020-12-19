@@ -63,7 +63,7 @@ Chrome 直接采用了 JSON 作为它的 DSL：
 }
 ```
 
-下面介绍下为什么要使用 background、content_scripts 和 webNavigation。
+介绍下为什么要使用 background、content_scripts 和 webNavigation。
 
 > 为什么要使用 background
 
