@@ -3,13 +3,17 @@ max_excerpt_chars: 167
 paginate: 20
 timezone: Asia/Chongqing
 title: Coding Tour
-permalink: /:year/:month/:day/:title/
+permalink: /posts/:slug/
 highlighter: rouge
 repository: zhangao0086/zhangao0086.github.io
 
 plugins:
     - jemoji
     - jekyll-gist
+    - jekyll-redirect-from
+
+whitelist:
+    - jekyll-redirect-from
 
 sass:
     sass_dir: ./css
