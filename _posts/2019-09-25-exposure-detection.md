@@ -1,5 +1,6 @@
 ---
 layout: post
+redirect_from: /2019/09/25/exposure-detection
 title: "关于坑位曝的光检测方案"
 date: 2019-09-25 16:09:20 +0800
 disable_excerpt: false

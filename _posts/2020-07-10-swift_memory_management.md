@@ -1,5 +1,6 @@
 ---
 layout: post
+redirect_from: /2020/07/10/swift_memory_management
 title: "Swift 内存管理"
 date: 2020-07-10 21:12:05 +0800
 categories: [iOS, Swift]

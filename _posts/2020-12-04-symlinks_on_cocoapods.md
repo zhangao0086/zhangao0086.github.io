@@ -1,5 +1,6 @@
 ---
 layout: post
+redirect_from: /2020/12/04/symlinks_on_cocoapods
 title: "Symlinks on CocoaPods"
 date: 2020-12-04 12:53:04 +0800
 categories: [iOS, CocoaPods, 分享]

@@ -1,5 +1,6 @@
 ---
 layout: post
+redirect_from: /2020/12/30/evolutionary_architecture
 title: "《演进式架构》书评"
 date: 2020-12-30 20:31:37 +0800
 categories: [分享，书评]

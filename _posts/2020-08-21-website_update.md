@@ -1,5 +1,6 @@
 ---
 layout: post
+redirect_from: /2020/08/21/website_update
 title: "更新 CodingTour"
 date: 2020-08-21 23:32:20 +0800
 categories: [前端]

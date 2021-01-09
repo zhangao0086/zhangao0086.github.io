@@ -1,5 +1,6 @@
 ---
 layout: post
+redirect_from: /2020/07/09/dns_extension
 title: "DNS 的用武之地"
 date: 2020-07-09 23:12:51 +0800
 categories: [DNS]
