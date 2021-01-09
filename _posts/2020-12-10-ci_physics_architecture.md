@@ -1,6 +1,6 @@
 ---
 layout: post
-redirect_from: /2020/12/10/ci_physics_architecture
+redirect_from: /2020/12/10/ci_physics_architecture/
 title: "CI 物理架构"
 date: 2020-12-10 21:31:51 +0800
 categories: [DevOps, 分享]

@@ -1,6 +1,6 @@
 ---
 layout: post
-redirect_from: /2020/04/11/pubsub_appdelegate
+redirect_from: /2020/04/11/pubsub_appdelegate/
 title: "提供 Pub/Sub 服务的 AppDelegate"
 date: 2020-04-11 15:50:10 +0800
 categories: [iOS, ARTS]

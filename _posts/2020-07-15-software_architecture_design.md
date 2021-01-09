@@ -1,6 +1,6 @@
 ---
 layout: post
-redirect_from: /2020/07/15/software_architecture_design
+redirect_from: /2020/07/15/software_architecture_design/
 title: "软件架构设计"
 date: 2020-07-15 22:31:17 +0800
 categories: [架构]

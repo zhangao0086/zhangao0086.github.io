@@ -1,6 +1,6 @@
 ---
 layout: post
-redirect_from: /2020/12/18/chrome_extension
+redirect_from: /2020/12/18/chrome_extension/
 title: "为 GitHub 提供 Owner 维度的文件过滤"
 date: 2020-12-18 23:04:01 +0800
 categories: [分享]

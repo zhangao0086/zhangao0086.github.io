@@ -1,6 +1,6 @@
 ---
 layout: post
-redirect_from: /2020/12/23/official_accounts
+redirect_from: /2020/12/23/official_accounts/
 title: "微信公众号"
 date: 2020-12-23 22:10:36 +0800
 categories: [分享]

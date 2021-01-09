@@ -1,6 +1,6 @@
 ---
 layout: post
-redirect_from: /2021/01/06/evaluable_workflow
+redirect_from: /2021/01/06/evaluable_workflow/
 title: "建立可评估工作流"
 date: 2021-01-06 20:29:46 +0800
 categories: [分享]

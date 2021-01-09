@@ -1,6 +1,6 @@
 ---
 layout: post
-redirect_from: /2020/08/27/swift_weak
+redirect_from: /2020/08/27/swift_weak/
 title: "Swift: weak 的 strong 时机"
 date: 2020-08-27 20:24:10 +0800
 categories: [Swift]

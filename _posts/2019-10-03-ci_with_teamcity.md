@@ -1,6 +1,6 @@
 ---
 layout: post
-redirect_from: /2019/10/03/ci_with_teamcity
+redirect_from: /2019/10/03/ci_with_teamcity/
 title: "基于 TeamCity 的 CI 集成过程记录"
 date: 2019-10-03 22:00:11 +0800
 categories: [Software, CI]
