@@ -48,7 +48,7 @@ typora-root-url: ../../github.io
 
 # Algorithm
 
-本周选择的算法题是：[]()
+本周选择的算法题是：[]()。
 
 <!--more-->
 
