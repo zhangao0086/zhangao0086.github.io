@@ -34,7 +34,6 @@
     align-items: center;
     color: currentColor;
     line-height: 1.3em;
-    font-weight: 700;
 }
 
 .floating-header a:hover {
@@ -47,12 +46,10 @@
 }
 
 .floating-header-title {
-    font-weight: 700;
     text-overflow: ellipsis;
     overflow: hidden;
     line-height: 1.3em;
     white-space: nowrap;
-    -webkit-font-smoothing: antialiased;
 }
 
 .progress {

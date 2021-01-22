@@ -1,8 +1,10 @@
 <nav class="toc toc-right"></nav>
-<link rel="stylesheet" href="{{ '/css/tocbot.css?v=' | append: site.github.build_revision | relative_url }}" />
-<script src="{{ '/js/tocbot.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
-<script type="text/javascript" defer>
-  window.onload = function () {
+<link rel="stylesheet" href="{{ '/assets/css/tocbot.css?v=' | append: site.github.build_revision | relative_url }}" />
+<script src="{{ '/assets/js/tocbot.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
+<script>
+  const loadToc = (_) => {
+    document.removeEventListener('DOMContentLoaded', loadToc, false);
+
     tocbot.init({
       // Where to render the table of contents.
       tocSelector: '.toc',
@@ -41,14 +43,16 @@
     }
 
     // 在页面内手动修改 hash 后跳转
-    $(window).on('hashchange', function(e) {
+    window.addEventListener("hashchange", (e) => {
       e.preventDefault();
       e.stopPropagation();
       jumpToHash();
       return false;
-    });
+    }, false);
 
     // 进入页面时也根据 hash 设置 offset
     window.setTimeout(jumpToHash, 0);
   }
+
+  document.addEventListener('DOMContentLoaded', loadToc);
 </script>

@@ -1,7 +1,6 @@
 ---
 layout: default
 ---
-<script src="{{ '/js/jquery-3.2.1.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
 
 {% include floating_header.html %}
 <div class="post-content">
@@ -12,33 +11,15 @@ layout: default
 </div>
 
 <!-- 语法高亮 -->
-<link rel="stylesheet" href="{{ '/css/syntax.css?v=' | append: site.github.build_revision | relative_url }}" />
-
-<!-- 评论系统 -->
-<link rel="stylesheet" href="{{ '/css/gitalk.css?v=' | append: site.github.build_revision | relative_url }}" />
-<script src="{{ '/js/gitalk.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
+<link rel="stylesheet" href="{{ '/assets/css/syntax.css?v=' | append: site.github.build_revision | relative_url }}" />
 
 <!-- MathJax -->
-<script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
-<!-- fancybox -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
-<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
-<script type="text/javascript" async>
-  $(".post-content img").each(function () {
-    var element = document.createElement("a");
-    $(element).attr("data-fancybox", "gallery");
-    $(element).attr("href", $(this).attr("src"));
-    $(this).wrap(element);
-});
-</script>
+<script type="text/javascript" defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 
 <!-- Back to Top -->
 {% include back_to_top.html %}
 
-<!-- gitalk -->
+<!-- 评论系统 gitalk -->
 {% if site.gitalk %}
 <div class="comment">
     {% include comments.html %}

@@ -16,17 +16,17 @@ whitelist:
     - jekyll-redirect-from
 
 sass:
-    sass_dir: ./css
+    sass_dir: ./assets/css
     style: compressed
 
 author:
     name: CodingTour
-    description: A passionate <strong>developer</strong> <i class="fas fa-battery-full"></i>.
+    description: A passionate <strong>developer</strong> <i class="icon-battery"></i>.
     gravatar: e17021414b4e92b5f20f6bef96e76b08
     contact:
-        'fab fa-github':    https://github.com/zhangao0086
-        'fab fa-stack-overflow':    https://stackoverflow.com/users/907422/bannings
-        'fa fa-envelope':     mailto:zhangao0086@gmail.com
+        'icon-github': https://github.com/zhangao0086
+        'icon-stack-overflow': https://stackoverflow.com/users/907422/bannings
+        'icon-envelope': mailto:zhangao0086@gmail.com
 
 nav:
   Home:           
