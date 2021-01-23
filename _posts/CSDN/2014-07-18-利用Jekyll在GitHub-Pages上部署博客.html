@@ -14,32 +14,34 @@ article_type: 1
 
 <p>需要对Git的基本操作有些了解：</p>
 
+<!--more-->
+
 <h2>Git基本操作</h2>
 
 <p>&nbsp;</p>
 
 <pre class="has" name="code">
 <code class="language-plain">##设置全局用户名和email，作为每次提交的记录
-git config --global user.name “name"
-git config --global user.email “mail.com”
+git config --global user.name "name"
+git config --global user.email "mail.com"
 
-##添加一个仓库
+## 添加一个仓库
 git remote add origin git@….git
 git push -u origin master
 
-##当提示权限不够时，添加ssh公钥
+## 当提示权限不够时，添加ssh公钥
 ##在用户的.ssh目录下找id_rsa.pub等文件，没有的话去生成
 ssh-keygen -t rsa -C "youremail@example.com”
 
-##设置pull的默认地址
+## 设置pull的默认地址
 git branch --set-upstream-to=origin/master
 ##设置push的默认地址
 git remote add origin git@….git
 
-##配置别名
+## 配置别名
 git config --global alias.xx ''
 
-##临时保存工作区
+## 临时保存工作区
 git stash
 git stash pop
 
@@ -85,7 +87,7 @@ commit -m</code></pre>
 
 <h2>博客搬家</h2>
 
-<p>我之前没有找到mac版的，就自己做了一个：</p>
+<p>我之前没有找到 mac 版的，就自己做了一个：</p>
 
 <p><a href="https://github.com/zhangao0086/CSDN-sBlogExporter">CSDN博客导出工具Mac版</a></p>
 
@@ -102,12 +104,16 @@ commit -m</code></pre>
 
 <p>然后在需要高亮的代码那里：</p>
 
+{% raw %}
+
 <pre class="has" name="code">
 <code class="language-plain">{% highlight ruby %}
 def foo
   puts 'foo'
 end
 {% endhighlight %}</code></pre>
+
+{% endraw %}
 
 <p>ruby替换为<a href="http://pygments.org/docs/lexers/">你所使用的语言的短名称</a>即可。如果设置了pygments之后编译出错的朋友需要再加一条配置：</p>
 
@@ -132,6 +138,8 @@ end
 
 <p>显示分类：</p>
 
+{% raw %}
+
 <pre class="has" name="code">
 <code class="language-html">&lt;h4&gt;分类列表&lt;/h4&gt;
 	&lt;hr&gt;
@@ -154,6 +162,8 @@ end
 			,
 			"categories":[{% for category in post.categories %}"{{category}}"{% if forloop.last == false %},{% endif %}{% endfor %}]{% endif %}}
 			{% if forloop.last == false %},{% endif %}{% endfor %}];</code></pre>
+
+{% endraw %}
 
 <p>我在这里判断了文章有没有分类，如果没有分类的话，就不添加到这个JSON里了，另外说下post.excerpt：</p>
 
@@ -199,13 +209,15 @@ paginate_path: "page:num"</code></pre>
 
 <p>在首页里面对文章进行分页，用一个简单的循环：</p>
 
+{% raw %}
+
 <pre class="has" name="code">
 <code class="language-html">{% for post in paginator.posts %}
     &lt;a href="{{ post.url }}"&gt;{{ post.title }}&lt;/a&gt;
 {% endfor %}</code></pre>
 
 <p>为了生成分页的链接，在根目录的index.html文件里面加上：</p>
-{% raw %}
+
 <pre class="has" name="code">
 <code class="language-html">{% if paginator.total_pages &gt; 1 %}
 	{% if paginator.previous_page %}

@@ -13,8 +13,10 @@ layout: default
 <!-- 语法高亮 -->
 <link rel="stylesheet" href="{{ '/assets/css/syntax.css?v=' | append: site.github.build_revision | relative_url }}" />
 
-<!-- MathJax -->
-<script type="text/javascript" defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+{%- comment -%} MathJax {%- endcomment -%}
+{% if content contains 'math/tex' %}
+  <script type="text/javascript" defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+{% endif %}
 
 <!-- Back to Top -->
 {% include back_to_top.html %}
