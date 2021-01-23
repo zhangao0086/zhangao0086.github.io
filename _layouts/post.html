@@ -3,11 +3,21 @@ layout: default
 ---
 
 {% include floating_header.html %}
-<div class="post-content">
-  <!-- Table of Contents -->
+<div id="post-content">
   {% include toc.html %}
 
-  {{ content }}
+  {%- comment -%} 图片懒加载 {%- endcomment -%}
+  {%- capture img_placehodler -%}
+    data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7
+  {% endcapture%}
+
+  {% if content contains '<img src=' %}
+    {% assign replacement = '<img src="' | append: img_placehodler | append: '" data-src=' %}
+    {{ content | replace: '<img src=', replacement }}
+    {% include lozad.html %}
+  {% else %}
+    {{ content }}
+  {% endif %}
 </div>
 
 <!-- 语法高亮 -->
