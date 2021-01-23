@@ -28,7 +28,6 @@ title: ""
 date: {date}
 categories: [分享]
 article_type: 1
-excerpt_separator: <!--more-->
 typora-root-url: ../../github.io
 ---
 
