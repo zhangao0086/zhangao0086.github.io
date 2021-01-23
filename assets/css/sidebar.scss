@@ -24,7 +24,7 @@ $sidebarWidth: 27rem;
   color: white;
 }
 
-.sidebar-checkbox {
+#sidebar-checkbox {
     position: absolute;
     opacity: 0;
 }
@@ -127,6 +127,6 @@ a.sidebar-nav-item:focus {
 }
 
 .sidebar img {
-  max-width: 100%;
+  width: 100%;
   border-radius: 5px;
 }

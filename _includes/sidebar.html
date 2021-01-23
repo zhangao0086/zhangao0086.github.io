@@ -1,15 +1,11 @@
-<!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
-     styles, `#sidebar-checkbox` for behavior. -->
-<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+<input type="checkbox" id="sidebar-checkbox">
 
 <!-- Toggleable sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-item">
     <div class="sidebar-personal-info">
       <div class="sidebar-personal-info-section">
-        <!-- <a href="https://gravatar.com/{{ site.author.gravatar }}"> -->
-          <img src="https://www.gravatar.com/avatar/{{ site.author.gravatar }}?s=350" title="View on Gravatar" alt="View on Gravatar" />
-        <!-- </a> -->
+        <img src="https://www.gravatar.com/avatar/{{ site.author.gravatar }}?s=200" alt="View on Gravatar" onerror="this.style.display='none'" />
       </div>
       <div class="sidebar-personal-info-section">
         <p>{{ site.author.description }}</p>
@@ -68,13 +64,10 @@
 
   <div class="sidebar-item">
     <p>
-    &copy; {{ site.time | date: '%Y' }} <i class="icon-heart"></i> {{ site.author.name }}. This work is liscensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>.
+      &copy; {{ site.time | date: '%Y' }} <i class="icon-heart"></i> {{ site.author.name }}.
     </p>
-  </div>
-
-  <div class="sidebar-item">
     <p>
-    Powered by <a href="https://jekyllrb.com">jekyll</a>.
+      Powered by <a href="https://jekyllrb.com">jekyll</a>.
     </p>
   </div>
 </div>
