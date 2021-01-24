@@ -11,7 +11,7 @@
       // Where to grab the headings to build the table of contents.
       contentSelector: '#post-content',
       // Which headings to grab inside of the contentSelector element.
-      headingSelector: 'h1, h2',
+      headingSelector: '{{ page.toc_tags | join: "," }}',
       positionFixedSelector: '.toc',
       includeHtml: true,
       headingsOffset: 45,

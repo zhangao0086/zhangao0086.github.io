@@ -5,7 +5,17 @@ layout: default
 {% include floating_header.html %}
 <div id="post-content">
   {%- comment -%} Table of Contents {%- endcomment -%}
-  {% include toc.html %}
+  {% assign has_toc = false %}
+  {% for item in page.toc_tags %}
+    {% assign test = '</' | append: item | append: '>' %}
+    {% if content contains test %}
+      {% assign has_toc = true %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+  {% if has_toc %}
+    {% include toc.html %}
+  {% endif %}
 
   {%- comment -%} 图片懒加载 {%- endcomment -%}
   {%- capture img_placehodler -%}
