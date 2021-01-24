@@ -9,6 +9,7 @@ $headerBackgroundColor: #f7f7f7;
 $backgroundColor: white;
 $contentColor: #232323;
 $baseColor: #159957;
+$baseLinkColor: #008442;
 $codeBackgroundColor: #f3f6fa;
 $separatorColor: #dbdbdb;
 
@@ -19,6 +20,7 @@ $headerColorDark: #efefefCC;
 $headerBackgroundColorDark: #262626;
 $contentColorDark: #a3a3a3;
 $baseColorDark: #c6c6c6;
+$baseLinkColorDark: #c6c6c6;
 $codeBackgroundColorDark: #1d1f21;
 $separatorColorDark: #404040;
 
@@ -26,6 +28,7 @@ $separatorColorDark: #404040;
 :root {
   --summary-color: #{$summarycolor};
   --base-color: #{$baseColor};
+  --base-link-color: #{$baseLinkColor};
   --nav-color: #{$navColor};
   --header-color: #{$headerColor};
   --header-background-color: #{$headerBackgroundColor};
@@ -38,6 +41,7 @@ $separatorColorDark: #404040;
 @media (prefers-color-scheme: dark) {
   :root {
     --base-color: #{$baseColorDark};
+    --base-link-color: #{$baseLinkColorDark};
     --nav-color: #{$navColorDark};
     --header-color: #{$headerColorDark};
     --header-background-color: #{$headerBackgroundColorDark};
