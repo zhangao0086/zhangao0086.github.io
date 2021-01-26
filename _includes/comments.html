@@ -1,37 +1,49 @@
-<div id="gitalk-container"></div>
+<div id="comments-container"></div>
 <script>
-    function renderGitalk() {
-        var head = document.getElementsByTagName('head')[0];
-        
-        var script = document.createElement('script');
-        script.onload = () => {
-            var gitalk = new Gitalk({
-                id: '{{ page.date }}',
-                clientID: '{{ site.gitalk.clientID }}',
-                clientSecret: '{{ site.gitalk.clientSecret }}',
-                repo: '{{ site.gitalk.repo }}',
-                owner: '{{ site.gitalk.owner }}',
-                admin: ['{{ site.gitalk.owner }}'], 
-                labels: ['Gitalk'],
-            })
-            gitalk.render('gitalk-container')
-        }
-        script.src = "{{ '/assets/js/gitalk.min.js?v=' | append: site.github.build_revision | relative_url }}";
-        script.type = 'text/javascript';
-        head.append(script);
+    function renderCommentsContainer() {
+        var container = document.getElementById('comments-container');
 
-        var style = document.createElement('link');
-        style.href = "{{ '/assets/css/gitalk.css?v=' | append: site.github.build_revision | relative_url }}";
-        style.type = 'text/css';
-        style.rel = 'stylesheet';
-        head.append(style);
+        var script = document.createElement('script');
+        script.src = "https://utteranc.es/client.js";
+        script.type = 'text/javascript';
+        script.setAttribute("async", "");
+        script.crossorigin = 'anonymous';
+        script.setAttribute("async", "");
+        script.setAttribute("issue-term", "title");
+        script.setAttribute("repo", "{{ site.repository }}");
+        script.setAttribute("label", "utteranc");
+        script.setAttribute("theme", "github-light");
+        container.append(script);
+
+        // var script = document.createElement('script');
+        // script.onload = () => {
+        //     var gitalk = new Gitalk({
+        //         id: '{{ page.date }}',
+        //         clientID: '{{ site.gitalk.clientID }}',
+        //         clientSecret: '{{ site.gitalk.clientSecret }}',
+        //         repo: '{{ site.gitalk.repo }}',
+        //         owner: '{{ site.gitalk.owner }}',
+        //         admin: ['{{ site.gitalk.owner }}'], 
+        //         labels: ['Gitalk'],
+        //     })
+        //     gitalk.render('gitalk-container')
+        // }
+        // script.src = "{{ '/assets/js/gitalk.min.js?v=' | append: site.github.build_revision | relative_url }}";
+        // script.type = 'text/javascript';
+        // head.append(script);
+
+        // var style = document.createElement('link');
+        // style.href = "{{ '/assets/css/gitalk.css?v=' | append: site.github.build_revision | relative_url }}";
+        // style.type = 'text/css';
+        // style.rel = 'stylesheet';
+        // head.append(style);
     }
 
     function onScroll() {
-        const gitalkContainer = document.getElementById("gitalk-container");
-        if (window.scrollY + window.innerHeight >= gitalkContainer.offsetTop) {
+        const container = document.getElementById("comments-container");
+        if (window.scrollY + window.innerHeight >= container.offsetTop) {
             window.removeEventListener('scroll', onScroll);
-            renderGitalk();
+            renderCommentsContainer();
         }
     }
 
