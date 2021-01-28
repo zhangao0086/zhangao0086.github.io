@@ -140,11 +140,6 @@ td, th { padding: 0; }
 .main-content table th { font-weight: bold; }
 .main-content table th, .main-content table td { padding: 0.5rem 1rem; border: 1px solid #e9ebec; }
 
-.comment .gt-svg svg {
-  background-color: white;
-  border-radius: 50%;
-}
-
 .article { 
   padding:10px 0px;
 }
@@ -191,7 +186,7 @@ td, th { padding: 0; }
 }
 
 @media (prefers-color-scheme: dark) {
-  .main-content img, .main-content .comment { 
+  .main-content img, #comments-container { 
     -webkit-filter: brightness(0.8);
     filter: brightness(0.8);
   }

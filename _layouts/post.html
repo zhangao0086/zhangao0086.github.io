@@ -44,9 +44,5 @@ layout: default
 {%- comment -%} Back to Top {%- endcomment -%}
 {% include back_to_top.html %}
 
-{%- comment -%} gitalk {%- endcomment -%}
-{% if site.gitalk %}
-  <div class="comment">
-      {% include comments.html %}
-  </div>
-{% endif %}
+{%- comment -%} 评论 {%- endcomment -%}
+{% include comments.html %}
