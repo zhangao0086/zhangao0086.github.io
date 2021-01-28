@@ -5,9 +5,9 @@ layout: default
   {% for post in paginator.posts %}
   <div class="article">
     <a href="{{ post.url }}"><span class="title">{{ post.title }}</span></a>
-    {% if post.disable_excerpt != true %}
-      <span class="excerpt">{{ post.excerpt | strip_html | strip_newlines | truncate:site.max_excerpt_chars }}</span>
-    {% endif %}
+      <span class="excerpt">
+        {{ post.content | markdownify | strip_html | truncate: site.max_excerpt_chars }}
+      </span>
     <span class="footer">
       {{ post.date | date: "%Y-%m-%d" }}<i class="icon-circle circle-divider"></i>{% include reading_time.html content = post.content %} 
     </span>
