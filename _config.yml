@@ -1,5 +1,5 @@
 theme: jekyll-theme-cayman
-max_excerpt_chars: 167
+max_excerpt_chars: 200
 paginate: 20
 timezone: Asia/Chongqing
 title: Coding Tour
