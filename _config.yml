@@ -48,11 +48,3 @@ nav:
       - '/arts.html'
   Fork me on GitHub: 
     - 'https://github.com/zhangao0086/zhangao0086.github.io'
-
-gitalk:
-    enable: true
-    owner: zhangao0086
-    repo: zhangao0086.github.io
-    clientID: 4f947d812cc002d38d52
-    clientSecret: 7b39edb9c0c6ee98478c06ef994a093039e4caaa
-    admin: zhangao0086
