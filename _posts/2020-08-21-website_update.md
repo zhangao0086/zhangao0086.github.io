@@ -5,7 +5,6 @@ title: "更新 CodingTour"
 date: 2020-08-21 23:32:20 +0800
 categories: [前端]
 article_type: 1
-excerpt_separator: <!--more-->
 typora-root-url: ../../github.io
 ---
 
@@ -15,7 +14,6 @@ typora-root-url: ../../github.io
 2. 支持 Dark Mode
 3. 新的 Logo
 
-<!--more-->
 
 # 优化 CSS
 

@@ -5,7 +5,6 @@ title: "基于 TeamCity 的 CI 集成过程记录"
 date: 2019-10-03 22:00:11 +0800
 categories: [Software, CI]
 article_type: 1
-excerpt_separator: <!--more-->
 ---
 
 目前在 TeamCity 上完成的集成有：
@@ -15,7 +14,6 @@ excerpt_separator: <!--more-->
 3. 集成代码覆盖率报告
 4. 集成测试报告
 
-<!--more-->
 
 # 过程思考
 

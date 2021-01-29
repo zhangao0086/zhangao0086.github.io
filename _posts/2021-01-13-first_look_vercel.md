@@ -4,13 +4,11 @@ title: "尝试 Vercel"
 date: 2021-01-13 18:05:21 +0800
 categories: [分享]
 article_type: 1
-excerpt_separator: <!--more-->
 typora-root-url: ../../github.io
 ---
 
 最近在手机上访问 GitHub Page 时遇到完全打不开的情况，感觉已经无法忍受了。
 
-<!--more-->
 
 上次尝试将 Jekyll 静态生成的内容同步到 Netlify 上，但没有取得太好的效果：
 

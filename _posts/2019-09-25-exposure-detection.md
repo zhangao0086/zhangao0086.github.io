@@ -3,10 +3,8 @@ layout: post
 redirect_from: /2019/09/25/exposure/detection/
 title: "关于坑位曝的光检测方案"
 date: 2019-09-25 16:09:20 +0800
-disable_excerpt: false
 categories: [iOS, ARTS]
 article_type: 1
-excerpt_separator: <!--more-->
 ---
 
 # 需求简述
@@ -19,7 +17,6 @@ excerpt_separator: <!--more-->
 >
 > 3、一个页面对于同一个内容仅曝光一次。仅当重新进入页面后会继续上报。
 
-<!--more-->
 
 # 技术拆解
 

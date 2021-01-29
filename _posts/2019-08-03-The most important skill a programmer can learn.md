@@ -3,7 +3,6 @@ layout: post
 redirect_from: /2019/08/03/The-most-important-skill-a-programmer-can-learn/
 title: "The most important skill a programmer can learn"
 date: 2019-08-03 16:43:20 +0800
-disable_excerpt: false
 categories: [Software]
 article_type: 3
 ---

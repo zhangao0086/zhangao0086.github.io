@@ -20,7 +20,6 @@ defaults:
     scope:
       path: "" # an empty string here means all files in the project
     values:
-      excerpt_separator: <!--more-->
       toc_tags: ["h1", "h2"]
 
 sass:

@@ -5,13 +5,11 @@ title: "Symlinks on CocoaPods"
 date: 2020-12-04 12:53:04 +0800
 categories: [iOS, CocoaPods, 分享]
 article_type: 1
-excerpt_separator: <!--more-->
 typora-root-url: ../../github.io
 ---
 
 CocoaPods 是一个管理 Xcode 工程依赖的工具，其因为简单易用、功能覆盖广、拓展性强，成为了这个领域最常用的工具之一。不过想让工具完美适配各种 workflow 是不现实的，总归会有一些需要二次开发的东西，这一篇就是我们在实现环境切换时，如何利用它的特性达到最终目的的记录。
 
-<!--more-->
 
 # 背景
 

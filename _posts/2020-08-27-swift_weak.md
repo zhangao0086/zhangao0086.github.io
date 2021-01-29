@@ -5,7 +5,6 @@ title: "Swift: weak 的 strong 时机"
 date: 2020-08-27 20:24:10 +0800
 categories: [Swift]
 article_type: 1
-excerpt_separator: <!--more-->
 typora-root-url: ../../github.io
 ---
 
@@ -19,7 +18,6 @@ typora-root-url: ../../github.io
 
 今天就通过 `SIL` 探寻其中的答案。
 
-<!--more-->
 
 # 探索
 

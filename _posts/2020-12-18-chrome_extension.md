@@ -5,13 +5,11 @@ title: "为 GitHub 提供 Owner 维度的文件过滤"
 date: 2020-12-18 23:04:01 +0800
 categories: [分享]
 article_type: 1
-excerpt_separator: <!--more-->
 typora-root-url: ../../github.io
 ---
 
 本文介绍一个通过 Chrome 插件在 GitHub 上实现 Owner 维度的文件过滤功能。
 
-<!--more-->
 
 # 背景
 

@@ -5,7 +5,6 @@ title: "提供 Pub/Sub 服务的 AppDelegate"
 date: 2020-04-11 15:50:10 +0800
 categories: [iOS, ARTS]
 article_type: 1
-excerpt_separator: <!--more-->
 ---
 
 在最近的一次 App 架构调整中，为了：
@@ -14,7 +13,6 @@ excerpt_separator: <!--more-->
 - 减少胶水代码的复杂度（如 `AppDelegate`）
 - 解决潜在的应用跳转回调错误
 
-<!--more-->
 
 我们将代码的组织方式进行了较大的调整，采用的方案主要有：
 

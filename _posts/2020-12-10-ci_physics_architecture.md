@@ -5,13 +5,11 @@ title: "CI 物理架构"
 date: 2020-12-10 21:31:51 +0800
 categories: [DevOps, 分享]
 article_type: 1
-excerpt_separator: <!--more-->
 typora-root-url: ../../github.io
 ---
 
 这一篇介绍稿定客户端持续集成的物理架构。
 
-<!--more-->
 
 目前整体的设计是这样的：
 

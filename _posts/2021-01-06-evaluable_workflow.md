@@ -5,13 +5,11 @@ title: "建立可评估工作流"
 date: 2021-01-06 20:29:46 +0800
 categories: [分享]
 article_type: 1
-excerpt_separator: <!--more-->
 typora-root-url: ../../github.io
 ---
 
 这是建立可评估架构的第一步。
 
-<!--more-->
 
 受《演进式架构》的影响，重新思考了如何做好质量保障这件事：
 
