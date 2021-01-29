@@ -31,7 +31,6 @@ article_type: 1
 typora-root-url: ../../github.io
 ---
 
-<!--more-->
 
 '''
 
