@@ -1,9 +1,33 @@
 ---
 ---
 
-.toc{overflow-y:auto}.toc>.toc-list{overflow:hidden;position:relative}.toc>.toc-list li{list-style:none}.toc-list{margin:0;padding-left:10px}a.toc-link{color:currentColor;height:100%}.is-collapsible{max-height:1000px;overflow:hidden;transition:all 300ms ease-in-out}.is-collapsed{max-height:0}.is-active-link{font-weight:700}.toc-link::before{background-color:#EEE;content:' ';display:inline-block;height:inherit;left:0;margin-top:-1px;position:absolute;width:2px}.is-active-link::before{background-color:#54BC4B}
+.toc>.toc-list {
+    overflow: hidden;
+    position: relative;
+}
+
+.toc>.toc-list li {
+    list-style: none;
+}
+
+a.toc-link {
+    color: currentColor;
+    height: 100%;
+}
+
+.toc-link::before {
+    background-color: #EEE;
+    content: ' ';
+    display: inline-block;
+    height: inherit;
+    left: 0;
+    margin-top: -1px;
+    position: absolute;
+    width: 2px;
+}
 
 .toc {
+    overflow-y: auto;
     height: 100%;
     width: 26rem;
     line-height: 1.5;
@@ -17,16 +41,8 @@
 
 .toc-list {
     line-height: 1.5em;
-}
-
-.toc-icon {
-    position: fixed;
-    top: 0;
-    right: 0;
-    display: none;
-}
-#toc:checked ~ .toc {
-    box-shadow: 0 0 5px #c8c8c8;
+    margin: 0;
+    padding-left: 10px;
 }
 
 .toc.toc-right { 
@@ -38,8 +54,6 @@
     overflow: hidden;
     padding: 0;
 }
-
-// .is-collapsed-custom {}
 
 .is-active-link-custom {
     border-radius: 2px;
