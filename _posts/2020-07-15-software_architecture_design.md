@@ -30,5 +30,5 @@ article_type: 1
 
 附上我自己制作的思维导图：
 
-![https://github.com/zhangao0086/mind/blob/master/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1.png](https://github.com/zhangao0086/mind/blob/master/架构设计/架构设计.png?raw=true)
+![](https://github.com/zhangao0086/mind/blob/master/架构设计/架构设计.png?raw=true)
 *[xmind](https://github.com/zhangao0086/mind/blob/master/架构设计/)*

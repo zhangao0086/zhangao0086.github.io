@@ -22,15 +22,15 @@ typora-root-url: ../../github.io
 
 此外还需要有一个工作流去执行各种度量函数，我们在 CI 中设计了一个简单的流程：
 
->  ![适应度函数](/assets/img/evaluable_workflow-1.png)
+>  ![](/assets/img/evaluable_workflow-1.png)
 
 这一步先用适应度函数（也可以叫度量函数）统一大家的概念，适应度函数本身基于 Python 的技术栈，生态丰富，学习成本低，每个人都能实现自己的度量函数。
 
-> ![Analysis 工作流](/assets/img/evaluable_workflow-2.png)
+> ![](/assets/img/evaluable_workflow-2.png)
 
 基于 `requirements.txt` 创建和重用环境，使各函数的执行在隔离的物理环境中。
 
-> ![image-20210106203201329](/assets/img/evaluable_workflow-3.png)
+> ![](/assets/img/evaluable_workflow-3.png)
 
 最后再引入一个基本的防劣化策略就是一个简易能落地的评估工作流了。
 
@@ -38,4 +38,4 @@ typora-root-url: ../../github.io
 
 
 
-![official_accounts](/assets/img/official_accounts-1.png)
+![](/assets/img/official_accounts-1.png)

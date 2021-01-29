@@ -5,13 +5,11 @@ title: "微信公众号"
 date: 2020-12-23 22:10:36 +0800
 categories: [分享]
 article_type: 1
-excerpt_separator: <!--more-->
 typora-root-url: ../../github.io
 ---
 
 近期创建了一个微信公众号。
 
-<!--more-->
 
 没啥目的，就想亲自试下微信的生态圈，看看相关工具的建设程度，毕竟公众号火了这么多年，红利都快没了，作为互联网人都没尝试过有些说不过去。
 
@@ -39,5 +37,5 @@ typora-root-url: ../../github.io
 
 最后还是贴一个公众号的图作为结束：
 
-![official_accounts](/assets/img/official_accounts-1.png)
+![](/assets/img/official_accounts-1.png)
 

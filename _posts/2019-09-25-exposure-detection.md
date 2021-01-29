@@ -78,7 +78,7 @@ article_type: 1
 
 针对问题1的分析，以频道页面为例，ScrollView - TableView - CollectionView 互相嵌套太深，布局分析极其复杂：
 
-![Image 1](/assets/img/image2019-8-21_17-21-22.png)
+![](/assets/img/image2019-8-21_17-21-22.png)
 
 由于 CollectionView 是全尺寸展示，这带来了两个后果：
 

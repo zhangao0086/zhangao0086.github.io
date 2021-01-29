@@ -17,7 +17,7 @@ typora-root-url: ../../github.io
 
 而由于 GitHub 只能以文件类型为维度过滤列表，如下图：
 
- ![image-20201219164446043](/assets/img/chrome_extension-1.png)
+ ![](/assets/img/chrome_extension-1.png)
 
 当 PR 文件过多时很难让对应的 Owner 找到自己真正关心的文件，于是我们评估并开发了一个 Chrome 插件，用于为 GitHub 提供 Owner 维度的过滤。
 
@@ -34,7 +34,7 @@ typora-root-url: ../../github.io
 
 最终效果演示：
 
-![ezgif.com-gif-maker](/assets/img/chrome_extension-2.gif)
+![](/assets/img/chrome_extension-2.gif)
 
 # 实现细节
 

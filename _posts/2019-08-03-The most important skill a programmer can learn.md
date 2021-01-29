@@ -12,7 +12,7 @@ article_type: 3
 
 
 
-![The Most Important Skill a Programmer Can Learn](https://cdn-media-1.freecodecamp.org/images/0*XG0c4KW0GKI5h3Sq)
+![](https://cdn-media-1.freecodecamp.org/images/0*XG0c4KW0GKI5h3Sq)
 
 **No, no, no, no, and no. And no.**
 
@@ -81,7 +81,7 @@ Now, let’s say it together. NOOOOOOO!
 
 > *知道什么时候不需要代码能让你的代码库变少*
 
-![img](https://cdn-media-1.freecodecamp.org/images/AaXgIsHTyVquQeabDnz5kMCsyEmPuMnod3E9)
+![](https://cdn-media-1.freecodecamp.org/images/AaXgIsHTyVquQeabDnz5kMCsyEmPuMnod3E9)
 
 在项目刚启动时，你知道两、三个源文件，看起来很简单，编译和运行只需要几秒钟，你知道在哪里能找到你想要的东西。
 

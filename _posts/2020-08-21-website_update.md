@@ -42,7 +42,7 @@ Coverage 就是体力活了。
 
 经过一系列的优化，Coverage 达到了 90%，主样式文件从 16.5 kB 降到了 5.6 kB，整体性能得到了较大的改善：
 
-![image-20200824105725157](/assets/img/image-20200824004312465.png)
+![](/assets/img/image-20200824004312465.png)
 
 # 支持 Dark Mode
 
@@ -138,7 +138,7 @@ headingObjectCallback: (n, t) => {
 
 简单设计了几种样式：
 
-![image-20200824111955865](/assets/img/image-20200823193517903.png)
+![](/assets/img/image-20200823193517903.png)
 
 实际对比后还是元素简单、辨识度高的效果最好。
 
@@ -146,7 +146,7 @@ headingObjectCallback: (n, t) => {
 
 优化的过程充满乐趣和挑战，有些细节就留在下次再处理了，如 Safari 的顶部适配：
 
-![Image 2](/assets/img/image-20200824004312466.png)
+![](/assets/img/image-20200824004312466.png)
 
 遗留问题汇总：
 

@@ -18,7 +18,7 @@ article_type: 1
 ### 定义
 定义了算法族，把它们分别封装起来，让它们之间可以互相替换，此模式让算法的变化独立于使用算法的客户之上。
 ### 类图结构
-![这里写图片描述](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwMzIzMjEzMTU3NDkz)
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwMzIzMjEzMTU3NDkz)
 
 ---
 
@@ -38,7 +38,7 @@ article_type: 1
 ### 定义
 动态地将责任附加到对象上。若要拓展功能，装饰者提供了比继承更有弹性的替代方案。
 ### 类图结构
-![这里写图片描述](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDExMDAzNTAzNzc2)
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDExMDAzNTAzNzc2)
 
 ---
 
@@ -64,9 +64,9 @@ article_type: 1
 
 ## 工厂方法与抽象工厂的区别
 坦白说，工厂方法与抽象工厂的相似度很高，从类图上看很难将它们理清楚，但是从定义上来看的话会发现它们的区别主要是在设计层次上，以我们大家熟悉的电子产品为例，如果有两个产品：手机、电脑，用工厂方法表示苹果和三星的类图：
-![这里写图片描述](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDEwMjIzOTM4NjM5)
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDEwMjIzOTM4NjM5)
 从品牌的角度上来看，两家厂商生产不同的手机和电脑，这样的工厂方法很清晰；但是如果我们把生产条件做的更细致一点的话，比如苹果面向中国的产品和面向美国的产品是不同的，面向中国大陆销售的产品是阉割过的，而美国的是全功能的，用抽象工厂表示就像这样：
-![这里写图片描述](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDEwMjM1NDU2ODAw)
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDEwMjM1NDU2ODAw)
 抽象工厂的每一个子类都像是一个工厂方法，就像抽象工厂的定义所说的那样：用于创建相关或依赖对象的家族。
 
 ---
@@ -87,7 +87,7 @@ article_type: 1
 ### 定义
 将“请求”封装成对象，以便使用不同的请求、队列或者日志来参数化其他对象。命令模式也支持可撤销的操作。
 ### 类图结构
-![这里写图片描述](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDExMDAwODU4OTE4)
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDExMDAwODU4OTE4)
 
 ---
 
@@ -117,7 +117,7 @@ article_type: 1
 ### 定义
 在一个方法中定义一个算法的骨架，而将一些步骤延迟到子类中。模板方法使得子类可以在不改变算法结构的情况下，重新定义算法中的某些步骤。
 ### 类图结构
-![这里写图片描述](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwMzI0MjE1NTU4MDAy)
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwMzI0MjE1NTU4MDAy)
 
 ---
 
@@ -127,7 +127,7 @@ article_type: 1
 ### 定义
 提供一种方法顺序访问一个集合对象中的各个元素，而又不暴露其内部的表示。
 ### 类图结构
-![这里写图片描述](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDExMDAzODU5MTQ1)
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDExMDAzODU5MTQ1)
 
 ---
 
@@ -137,7 +137,7 @@ article_type: 1
 ### 定义
 允许你将对象组合成树形结构来表现“整体/部分”层次结构。组合能让客户以一致的方式处理个别对象以及对象组合。
 ### 类图结构
-![这里写图片描述](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDExMDAzOTQwOTg1)
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDExMDAzOTQwOTg1)
 
 ---
 
@@ -157,7 +157,7 @@ article_type: 1
 ### 定义
 为另一个对象提供一个替身或占位符以控制对这个对象的访问。
 ### 类图结构
-![这里写图片描述](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDExMDA1MzI1MzA2)
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDExMDA1MzI1MzA2)
 代理是个复杂的模式，变种颇多，不同的变种甚至就有不同的类图。
 
 ---

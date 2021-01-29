@@ -33,7 +33,7 @@ s.vendored_frameworks = "Frameworks/#$env/*.framework"
 
 同时由于 Flutter 的某些版本对 IDE 的版本号有要求，如果 IDE 的版本不满足将无法打包，所以我们有一套专门构建 Flutter 包的 CI 机器，以及丰富的配置参数，用于满足开发团队的打包需求：
 
-![image-20201205181531490](/assets/img/symlinks_on_cocoapods-1.png)
+![](/assets/img/symlinks_on_cocoapods-1.png)
 
 <center style="color:#999;font-size:.9em;">部分配置参数</center>
 
