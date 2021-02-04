@@ -6,11 +6,11 @@
     document.removeEventListener('DOMContentLoaded', loadToc, false);
 
     tocbot.init({
-      // Where to render the table of contents.
+      /* Where to render the table of contents. */
       tocSelector: '.toc',
-      // Where to grab the headings to build the table of contents.
+      /* Where to grab the headings to build the table of contents. */
       contentSelector: '#post-content',
-      // Which headings to grab inside of the contentSelector element.
+      /* Which headings to grab inside of the contentSelector element. */
       headingSelector: '{{ page.toc_tags | join: "," }}',
       positionFixedSelector: '.toc',
       includeHtml: true,
@@ -23,14 +23,14 @@
         e.preventDefault();
         e.stopPropagation();
         
-        // 添加一个新的 hash
+        /* 添加一个新的 hash */
         history.pushState(null, document.title, location.pathname + e.target.hash);
         jumpToHash();
         return false;
       }
     });
 
-    // 跳转到指定的 hash 位置
+    /* 跳转到指定的 hash 位置 */
     function jumpToHash() {
       if (location.hash.length !== 0) {
         let targetTop = document.getElementById(decodeURI(location.hash).substring(1)).offsetTop - 45;
@@ -42,7 +42,7 @@
       }
     }
 
-    // 在页面内手动修改 hash 后跳转
+    /* 在页面内手动修改 hash 后跳转 */
     window.addEventListener("hashchange", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -50,9 +50,9 @@
       return false;
     }, false);
 
-    // 进入页面时也根据 hash 设置 offset
+    /* 进入页面时也根据 hash 设置 offset */
     window.setTimeout(jumpToHash, 0);
-  }
+  };
 
   document.addEventListener('DOMContentLoaded', loadToc);
 </script>

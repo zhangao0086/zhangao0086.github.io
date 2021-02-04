@@ -93,8 +93,10 @@ layout: compress
       document.addEventListener('click', handler, false);
       document.addEventListener('touchstart', handler, false);
 
-      if (checkbox.checked) { // 默认选中的状态
-        if (!overlay.classList.contains('sidebar-overlay-display-show')) { // 蒙版没有显示，可以是由于浏览器 back 了
+      if (checkbox.checked) {
+        /* 默认选中的状态 */
+        if (!overlay.classList.contains('sidebar-overlay-display-show')) {
+          /* 蒙版没有显示，可以是由于浏览器 back 了 */
           sendChangeEvent();
         }
       }
