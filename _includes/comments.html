@@ -33,29 +33,31 @@
 </style>
 
 <script>
-    function renderCommentsContainer() {
-        var container = document.getElementById('comments-container');
+    (function(document) {
+        function renderCommentsContainer() {
+            var container = document.getElementById('comments-container');
 
-        var script = document.createElement('script');
-        script.src = "https://utteranc.es/client.js";
-        script.type = 'text/javascript';
-        script.crossorigin = 'anonymous';
-        script.setAttribute("async", "");
-        script.setAttribute("issue-term", "title");
-        script.setAttribute("repo", "{{ site.repository }}");
-        script.setAttribute("label", "utteranc");
-        script.setAttribute("theme", "github-light");
+            var script = document.createElement('script');
+            script.src = "https://utteranc.es/client.js";
+            script.type = 'text/javascript';
+            script.crossorigin = 'anonymous';
+            script.setAttribute("async", "");
+            script.setAttribute("issue-term", "title");
+            script.setAttribute("repo", "{{ site.repository }}");
+            script.setAttribute("label", "utteranc");
+            script.setAttribute("theme", "github-light");
 
-        container.append(script);
-    }
-
-    function onScroll() {
-        const container = document.getElementById("comments-container");
-        if (window.scrollY + window.innerHeight >= container.offsetTop) {
-            window.removeEventListener('scroll', onScroll);
-            renderCommentsContainer();
+            container.append(script);
         }
-    }
 
-    window.addEventListener('scroll', onScroll, {passive: true});
+        function onScroll() {
+            const container = document.getElementById("comments-container");
+            if (window.scrollY + window.innerHeight >= container.offsetTop) {
+                window.removeEventListener('scroll', onScroll);
+                renderCommentsContainer();
+            }
+        }
+
+        window.addEventListener('scroll', onScroll, {passive: true});
+    })(document);
 </script> 

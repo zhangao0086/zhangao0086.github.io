@@ -2,57 +2,59 @@
 <link rel="stylesheet" href="{{ '/assets/css/tocbot.css?v=' | append: site.github.build_revision | relative_url }}" />
 <script src="{{ '/assets/js/tocbot.min.js?v=' | append: site.github.build_revision | relative_url }}"></script>
 <script>
-  const loadToc = (_) => {
-    document.removeEventListener('DOMContentLoaded', loadToc, false);
+  (function(document) {
+    const loadToc = (_) => {
+      document.removeEventListener('DOMContentLoaded', loadToc, false);
 
-    tocbot.init({
-      /* Where to render the table of contents. */
-      tocSelector: '.toc',
-      /* Where to grab the headings to build the table of contents. */
-      contentSelector: '#post-content',
-      /* Which headings to grab inside of the contentSelector element. */
-      headingSelector: '{{ page.toc_tags | join: "," }}',
-      positionFixedSelector: '.toc',
-      includeHtml: true,
-      headingsOffset: 45,
-      linkClass: 'toc-link-custom',
-      activeLinkClass: 'is-active-link-custom',
-      isCollapsedClass: 'is-collapsed-custom',
-      collapsibleClass: 'is-collapsible-custom',
-      onClick: function(e) {
+      tocbot.init({
+        /* Where to render the table of contents. */
+        tocSelector: '.toc',
+        /* Where to grab the headings to build the table of contents. */
+        contentSelector: '#post-content',
+        /* Which headings to grab inside of the contentSelector element. */
+        headingSelector: '{{ page.toc_tags | join: "," }}',
+        positionFixedSelector: '.toc',
+        includeHtml: true,
+        headingsOffset: 45,
+        linkClass: 'toc-link-custom',
+        activeLinkClass: 'is-active-link-custom',
+        isCollapsedClass: 'is-collapsed-custom',
+        collapsibleClass: 'is-collapsible-custom',
+        onClick: function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          /* 添加一个新的 hash */
+          history.pushState(null, document.title, location.pathname + e.target.hash);
+          jumpToHash();
+          return false;
+        }
+      });
+
+      /* 跳转到指定的 hash 位置 */
+      function jumpToHash() {
+        if (location.hash.length !== 0) {
+          let targetTop = document.getElementById(decodeURI(location.hash).substring(1)).offsetTop - 45;
+          window.scrollBy({
+            top: targetTop - window.pageYOffset,
+            left: 0,
+            behavior: 'smooth'
+          });
+        }
+      }
+
+      /* 在页面内手动修改 hash 后跳转 */
+      window.addEventListener("hashchange", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        
-        /* 添加一个新的 hash */
-        history.pushState(null, document.title, location.pathname + e.target.hash);
         jumpToHash();
         return false;
-      }
-    });
+      }, false);
 
-    /* 跳转到指定的 hash 位置 */
-    function jumpToHash() {
-      if (location.hash.length !== 0) {
-        let targetTop = document.getElementById(decodeURI(location.hash).substring(1)).offsetTop - 45;
-        window.scrollBy({
-          top: targetTop - window.pageYOffset,
-          left: 0,
-          behavior: 'smooth'
-        });
-      }
-    }
+      /* 进入页面时也根据 hash 设置 offset */
+      window.setTimeout(jumpToHash, 0);
+    };
 
-    /* 在页面内手动修改 hash 后跳转 */
-    window.addEventListener("hashchange", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      jumpToHash();
-      return false;
-    }, false);
-
-    /* 进入页面时也根据 hash 设置 offset */
-    window.setTimeout(jumpToHash, 0);
-  };
-
-  document.addEventListener('DOMContentLoaded', loadToc);
+    document.addEventListener('DOMContentLoaded', loadToc);
+  })(document);
 </script>

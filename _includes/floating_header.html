@@ -10,69 +10,71 @@
 </div>
 
 <script>
-    /* 
-    NOTE: Scroll performance is poor in Safari
-    - this appears to be due to the events firing much more slowly in Safari.
-      Dropping the scroll event and using only a raf loop results in smoother
-      scrolling but continuous processing even when not scrolling
-     */
-    const loadFloatingHeader = (_) => {
-        document.removeEventListener('DOMContentLoaded', loadFloatingHeader, false);
+    (function(document) {
+        /* 
+        NOTE: Scroll performance is poor in Safari
+        - this appears to be due to the events firing much more slowly in Safari.
+        Dropping the scroll event and using only a raf loop results in smoother
+        scrolling but continuous processing even when not scrolling
+        */
+        const loadFloatingHeader = (_) => {
+            document.removeEventListener('DOMContentLoaded', loadFloatingHeader, false);
 
-        var progressBar = document.querySelector('progress');
-        var header = document.querySelector('.floating-header');
-        var title = document.querySelector('.page-header');
-        var content = document.querySelector('#post-content');
-    
-        var lastScrollY = window.scrollY;
-        var lastWindowHeight = window.innerHeight;
-        var lastDocumentHeight = content.scrollHeight;
-        var ticking = false;
-    
-        function onScroll() {
-            lastScrollY = window.scrollY;
-            requestTick();
-        }
-    
-        function onResize() {
-            lastWindowHeight = window.innerHeight;
-            lastDocumentHeight = content.scrollHeight;
-            requestTick();
-        }
-    
-        function requestTick() {
-            if (!ticking) {
-                requestAnimationFrame(update);
+            var progressBar = document.querySelector('progress');
+            var header = document.querySelector('.floating-header');
+            var title = document.querySelector('.page-header');
+            var content = document.querySelector('#post-content');
+        
+            var lastScrollY = window.scrollY;
+            var lastWindowHeight = window.innerHeight;
+            var lastDocumentHeight = content.scrollHeight;
+            var ticking = false;
+        
+            function onScroll() {
+                lastScrollY = window.scrollY;
+                requestTick();
             }
-            ticking = true;
-        }
-    
-        function update() {
-            var progressMax = lastDocumentHeight - lastWindowHeight + (content.offsetTop - title.scrollHeight);
-            var progress = lastScrollY - title.scrollHeight;
-
-            /* show/hide floating header */
-            if (lastScrollY >= title.scrollHeight) {
-                header.classList.add('floating-active');
-            } else {
-                header.classList.remove('floating-active');
+        
+            function onResize() {
+                lastWindowHeight = window.innerHeight;
+                lastDocumentHeight = content.scrollHeight;
+                requestTick();
             }
-    
-            progressBar.setAttribute('max', progressMax);
-            progressBar.setAttribute('value', progress);
-    
-            ticking = false;
-        }
-    
-        window.addEventListener('scroll', onScroll, {passive: true});
-        window.addEventListener('resize', onResize, false);
+        
+            function requestTick() {
+                if (!ticking) {
+                    requestAnimationFrame(update);
+                }
+                ticking = true;
+            }
+        
+            function update() {
+                var progressMax = lastDocumentHeight - lastWindowHeight + (content.offsetTop - title.scrollHeight);
+                var progress = lastScrollY - title.scrollHeight;
 
-        update();
+                /* show/hide floating header */
+                if (lastScrollY >= title.scrollHeight) {
+                    header.classList.add('floating-active');
+                } else {
+                    header.classList.remove('floating-active');
+                }
+        
+                progressBar.setAttribute('max', progressMax);
+                progressBar.setAttribute('value', progress);
+        
+                ticking = false;
+            }
+        
+            window.addEventListener('scroll', onScroll, {passive: true});
+            window.addEventListener('resize', onResize, false);
 
-        for (let img of document.getElementsByTagName('img')) {
-            img.addEventListener('load', onResize);
-        }
-    };
+            update();
 
-    document.addEventListener('DOMContentLoaded', loadFloatingHeader);
+            for (let img of document.getElementsByTagName('img')) {
+                img.addEventListener('load', onResize);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', loadFloatingHeader);
+    })(document);
 </script>

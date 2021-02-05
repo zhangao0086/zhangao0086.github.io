@@ -26,14 +26,16 @@
 </style>
 
 <script>
-  window.onscroll = () => {
-    const element = document.getElementsByClassName("back-to-top")[0];
-    if (document.documentElement.scrollTop > 0) {
-      element.classList.add("back-to-top-on");
-    } else {
-      element.classList.remove("back-to-top-on");
+  (function(document) {
+    window.onscroll = () => {
+      const element = document.getElementsByClassName("back-to-top")[0];
+      if (document.documentElement.scrollTop > 0) {
+        element.classList.add("back-to-top-on");
+      } else {
+        element.classList.remove("back-to-top-on");
+      }
     }
-  }
+  })(document);
 </script>
 
 <div class="back-to-top" onclick="javascript: document.documentElement.scrollTop=0;">
