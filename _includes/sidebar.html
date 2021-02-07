@@ -16,9 +16,7 @@
       <div class="sidebar-personal-info-section">
         <p> Follow me: 
         {% for contact in site.author.contact %}
-          <a href="{{ contact[1] }}">
-            <i class="{{ contact[0] }}"></i>
-          </a>
+          {{ contact }}
           {% assign current_index = current_index | plus: 1 %}
           {% if current_index != len %}|{% endif %}
         {% endfor %}

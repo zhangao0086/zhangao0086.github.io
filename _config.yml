@@ -31,9 +31,9 @@ author:
   description: A passionate <strong>developer</strong> <i class="icon-battery"></i>.
   gravatar: e17021414b4e92b5f20f6bef96e76b08
   contact:
-    'icon-github': https://github.com/zhangao0086
-    'icon-stack-overflow': https://stackoverflow.com/users/907422/bannings
-    'icon-envelope': mailto:zhangao0086@gmail.com
+    - <a href="https://github.com/zhangao0086"><i class="icon-github"></i></a>
+    - <a href="https://stackoverflow.com/users/907422/bannings"><i class="icon-stack-overflow"></i></a>
+    - <a href="mailto:zhangao0086@gmail.com"><i class="icon-envelope"></i></a>
 
 compress_html:
   clippings: all
