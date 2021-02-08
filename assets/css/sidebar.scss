@@ -112,6 +112,10 @@ a.sidebar-nav-item:focus {
   }
 }
 
+.sidebar-personal-info-section {
+  position: relative;
+}
+
 .sidebar-personal-info .sidebar-personal-info-section:not(:first-of-type) {
   margin-top: .75em;
 }
@@ -132,4 +136,11 @@ a.sidebar-nav-item:focus {
   aspect-ratio: 1;
 }
 
+.sidebar-personal-info-section .qrcode {
+  position: absolute;
+  width: 30%;
+  left: 70%;
+  top: 70%;
+  border-radius: 5px;
+  aspect-ratio: 1;
 }
