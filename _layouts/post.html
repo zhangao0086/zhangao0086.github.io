@@ -25,7 +25,6 @@ layout: default
   {% if content contains '<img src=' %}
     {% assign replacement = '<img src="' | append: img_placehodler | append: '" data-src=' %}
     {{ content | replace: '<img src=', replacement }}
-    {% include lozad.html %}
   {% else %}
     {{ content }}
   {% endif %}

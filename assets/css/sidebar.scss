@@ -126,7 +126,10 @@ a.sidebar-nav-item:focus {
   text-decoration: none;
 }
 
-.sidebar img {
+.sidebar-personal-info-section .avatar {
   width: 100%;
   border-radius: 5px;
+  aspect-ratio: 1;
+}
+
 }
