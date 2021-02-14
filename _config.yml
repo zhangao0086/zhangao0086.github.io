@@ -2,7 +2,7 @@ theme: jekyll-theme-cayman
 max_excerpt_chars: 200
 paginate: 20
 timezone: Asia/Chongqing
-title: Coding Tour
+title: CodingTour
 permalink: /posts/:slug/
 highlighter: rouge
 repository: zhangao0086/zhangao0086.github.io
