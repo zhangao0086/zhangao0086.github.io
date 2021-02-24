@@ -45,5 +45,3 @@ $ curl https://www.api.codingtour.com/api/hello
 > 日常使用是够了，更详细的限制条件见：https://vercel.com/docs/platform/limits。
 
 个人博客作为展示自己的一个窗口，还是值得花一些功夫持续做优化。
-
-![](/assets/img/official_accounts-1.png)
