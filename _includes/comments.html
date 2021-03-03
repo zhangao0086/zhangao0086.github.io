@@ -1,5 +1,15 @@
 <div id="comments-container">
     <i class="icon-spinner loading"></i>
+    {% unless site.utteranc.lazy %}
+        <script src="https://utteranc.es/client.js"
+            repo="{{ site.repository }}"
+            issue-term="title"
+            label="utteranc"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+        </script>
+    {% endunless %}
 </div>
 
 <style>
@@ -32,6 +42,7 @@
     }
 </style>
 
+{% if site.utteranc.lazy %}
 <script>
     (function(document) {
         function renderCommentsContainer() {
@@ -39,8 +50,8 @@
 
             var script = document.createElement('script');
             script.src = "https://utteranc.es/client.js";
-            script.type = 'text/javascript';
-            script.crossorigin = 'anonymous';
+            script.type = "text/javascript";
+            script.crossorigin = "anonymous";
             script.setAttribute("async", "");
             script.setAttribute("issue-term", "title");
             script.setAttribute("repo", "{{ site.repository }}");
@@ -61,3 +72,4 @@
         window.addEventListener('scroll', onScroll, {passive: true});
     })(document);
 </script> 
+{% endif %}

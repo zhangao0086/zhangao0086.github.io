@@ -44,6 +44,9 @@ compress_html:
   ignore:
     envs: []
 
+utteranc:
+  lazy: false
+
 nav:
   Home:           
     - '/'
