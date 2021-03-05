@@ -36,7 +36,7 @@ layout: default
 {% endif %}
 
 {%- comment -%} MathJax {%- endcomment -%}
-{% if content contains 'math/tex' %}
+{% if content contains 'math/tex' or content contains '\[' %}
   <script type="text/javascript" defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 {% endif %}
 
