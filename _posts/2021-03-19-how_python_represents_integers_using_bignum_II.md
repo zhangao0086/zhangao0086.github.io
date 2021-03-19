@@ -9,7 +9,7 @@ typora-root-url: ../../github.io
 
 这篇文章记录 Bignum 的加减法运算规则，理解它的最好方式就是直接阅读 Python 源码，我所查阅的版本是 Python-3.9.2，下文引用的代码和分析都基于该版本。
 
-从 `Objects/longobject.c` 文件里可以找到全部相关的代码，在我们往下之前，先介绍一个知识：
+从 `Objects/longobject.c` 文件里可以找到全部相关的代码，在我们往下之前，先介绍一个预备知识。
 
 一个加法函数可以表示为两个处理绝对值的函数：
 
@@ -24,7 +24,7 @@ $$|a|+(-|b|)=|a|-|b|$$
 
 $$-|a|+|b|=|b|-|a|$$
 
-Python 的实现正是采用的该规则：
+Python 的实现正是采用了该规则：
 
 ```c
 static PyObject *
@@ -69,7 +69,7 @@ long_add(PyLongObject *a, PyLongObject *b)
 ```
 `long_add` 只是一层 wrapper，核心的实现在 `x_add` 和 `x_sub` 两个函数里。
 
-两个 Bignum 本质上是两个序列，`x_add` 采用逐位相加并记录进位即可：
+两个 Bignum 本质上是两个序列，`x_add` 逐位相加并记录进位即可：
 
 ```c
 /* Add the absolute values of two integers. */
@@ -112,9 +112,9 @@ x_add(PyLongObject *a, PyLongObject *b)
 }
 ```
 
-如果你做过 [Add Two Numbers](https://leetcode.com/problems/add-two-numbers/) 就会很容易理解这个实现，只是 Base 不同而已。
+如果你做过 [Add Two Numbers](https://leetcode.com/problems/add-two-numbers/) 就会很容易理解这个实现，两者的区别只是 Base 不同而已。
 
-`x_sub` 的实现也类似，先找到两数中较大的数，逐位比较执行减少，进位变成了借位：
+`x_sub` 的实现也类似，先找到两数中较大的数，逐位比较执行减法，进位变成了借位：
 
 ```c
 /* Subtract the absolute values of two integers. */
