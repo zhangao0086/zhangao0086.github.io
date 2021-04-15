@@ -88,9 +88,9 @@ a:hover { text-decoration: underline; }
 .project-name { margin-top: 0; margin-bottom: 0.1rem; font-size: 1.2em; }
 
 .main-content { word-wrap: break-word; color: var(--content-color); max-width: 102.4rem; margin: 0 auto; }
-@media screen and (min-width: 64rem) { .main-content { padding: 3rem 12rem; } }
-@media screen and (min-width: 42rem) and (max-width: 64rem) { .main-content { padding: 2rem 4rem; } }
-@media screen and (max-width: 42rem) { .main-content { padding: 2rem 1.5rem; } }
+@media all and (min-width: 64rem) { .main-content { padding: 3rem 12rem; } }
+@media all and (min-width: 42rem) and (max-width: 64rem) { .main-content { padding: 2rem 4rem; } }
+@media all and (max-width: 42rem) { .main-content { padding: 2rem 1.5rem; } }
 .main-content img { max-width: 100%; }
 .main-content p { margin-bottom: 1rem; }
 .main-content code { padding: 2px 4px; font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace; font-size: 0.9em; color: #567482; background-color: var(--code-background-color); border-radius: 0.3rem; }

@@ -97,7 +97,7 @@ a.toc-link-custom {
     }
 }
 
-@media screen and (min-width: 80rem) {
+@media all and (min-width: 80rem) {
     .toc { 
         display: block; 
     }
