@@ -18,11 +18,11 @@ typora-root-url: ../../github.io
 ```json
 [
   {% for post in site.posts %}
-  	{
-  		"title": "{{ post.title }}",
-  		...
-  	}
-	{% endfor %}
+    {
+      "title": "{{ post.title }}",
+      ...
+    }
+  {% endfor %}
 }
 ```
 
@@ -96,6 +96,8 @@ fuzzysearch 会快很多，原理没去细看。
 
 完整的索引文件创建方法：
 
+{% raw %}
+
 ```json
 ---
 layout: compress
@@ -120,6 +122,8 @@ layout: compress
   {% endfor %}
 ]
 ```
+
+{% endraw %}
 
 相比 Simple-Jekyll-Search 提供的默认功能，我做了两处更新：
 
