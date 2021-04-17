@@ -13,6 +13,8 @@ typora-root-url: ../../github.io
 
 后来想到利用 Jekyll 的文件处理流程，其实可以很容易的实时生成索引文件，类似于这样：
 
+{% raw %}
+
 ```json
 [
   {% for post in site.posts %}
@@ -23,6 +25,8 @@ typora-root-url: ../../github.io
 	{% endfor %}
 }
 ```
+
+{% endraw %}
 
 然后再找一个功能完备的 JS 搜索库就可以了。一番查找后找到了专门做 Jekyll 搜索的库：[Simple-Jekyll-Search](https://github.com/christian-fei/Simple-Jekyll-Search)，它的原理很简单，首先通过 XHR 加载索引文件：
 
