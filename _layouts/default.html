@@ -22,7 +22,7 @@ layout: compress
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="{{ '/assets/css/sidebar.css?v=' | append: site.github.build_revision | relative_url }}" />
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}" />
-    <link rel="stylesheet" href="{{ '/assets/css/fontawesome.css?v=' | append: site.github.build_revision | relative_url }}" />
+    <link rel="stylesheet" href="{{ '/assets/css/fonts/style.css?v=' | append: site.github.build_revision | relative_url }}" />
   </head>
   <body>
     {% include sidebar.html %}
@@ -41,7 +41,7 @@ layout: compress
         {% if page.date %}
           <middle>
             <span>
-              {{ page.date | date: "%Y-%m-%d %H:%M:%S"}}<i class="icon-circle circle-divider"></i>{% include reading_time.html content = content %}    
+              {{ page.date | date: "%Y-%m-%d %H:%M:%S"}}<i class="icon-circle circle-divider"></i>{% include reading_time.html content = content %}
             </span>
           </middle>
         {% endif %}
