@@ -26,7 +26,7 @@ def start():
     # 创建新的文件名
     new_date, new_number = pre_date + datetime.timedelta(days=7), str(int(number) + 1)
     new_date_string = new_date.strftime(DATE_FORMAT)
-    filename = f'{new_date_string}-ARTS #{new_number}.md'
+    filename = f'{new_date_string}-ARTS-#{new_number}.md'
 
     # 创建新的 post
     time_string = datetime.datetime.today().strftime(TIME_FORMAT)
