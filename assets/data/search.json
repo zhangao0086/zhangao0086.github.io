@@ -6,16 +6,17 @@ layout: compress
   {% for post in site.posts %}
     {% assign post_date = post.date | date: '%Y-%m-%d' %}
     {% if post_date < "2019-01-01" %}
-      {% continue %}
+      {% break %}
     {% endif %}
+  {% if insert_comma %},{% endif %}
   {
     "title": "{{ post.title | escape }}",
     "url": "{{ site.baseurl }}{{ post.url }}",
     "categories": "{{ post.categories | join: ', '}}",
     "tags": "{{ post.tags | join: ', ' }}",
-    "date": "{{ post.date }}",
+    "date": "{{ post_date }}",
     {% include no-linenos.html content=post.content %}
     "snippet": "{{ content | strip_html | strip_newlines | remove_chars | escape | replace: '&quot;', '' | replace: '&amp;', '' | replace: '&nbsp;', '' | replace: '\', '\\\\' }}"
-  }{% unless forloop.last %},{% endunless %}
+  }{% assign insert_comma = true %}
   {% endfor %}
 ]
