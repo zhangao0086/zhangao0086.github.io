@@ -23,7 +23,7 @@ typora-root-url: ../../github.io
       ...
     }
   {% endfor %}
-}
+]
 ```
 
 {% endraw %}
