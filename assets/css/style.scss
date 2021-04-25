@@ -234,7 +234,7 @@ td, th { padding: 0; }
   i {
     z-index: 2;
     font-size: 0.8em;
-    color: var(--search-icon-color);
+    color: var(--nav-color);
   }
   .icon-times-circle { /* button 'clean up' */
     visibility: hidden;
@@ -274,12 +274,14 @@ td, th { padding: 0; }
     }
 
     i { // icons
-      color: #818182;
+      color: var(--nav-color);
       margin-right: 0.15rem;
       font-size: 80%;
     }
 
     > p {
+      color: var(--content-color);
+      margin-top: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       display: -webkit-box;
