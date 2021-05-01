@@ -13,7 +13,7 @@ def start():
 
     # 获取当前最新的 arts post
     files = sorted(os.listdir(posts_dir))
-    regex = re.compile('(.*?)-ARTS #(\d+)')
+    regex = re.compile('(.*?)-ARTS-#(\d+)')
     pre_date, number = None, None
     for i in range(len(files)-1,-1,-1):
         if os.path.isfile(os.path.join(posts_dir, files[i])):
