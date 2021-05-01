@@ -15,7 +15,6 @@ $separatorColor: #f3f3f3;
 $blockquoteBorderColor: #dbdbdb;
 
 $searchWrapperBg: #e9e7e7;
-$searchIconColor: #c2c6cc;
 $inputFocusBorderColor: #e9ecef;
 
 // Dark Mode
@@ -31,7 +30,6 @@ $separatorColorDark: #404040;
 $blockquoteBorderColorDark: #404040;
 
 $searchWrapperBgDark: rgb(34, 34, 39);
-$searchIconColorDark: rgb(100, 102, 105);
 $inputFocusBorderColorDark: rgb(112, 114, 115);
 
 // Switcher
@@ -49,7 +47,6 @@ $inputFocusBorderColorDark: rgb(112, 114, 115);
   --blockquote-border-color: #{$blockquoteBorderColor};
 
   --search-wrapper-bg: #{$searchWrapperBg};
-  --search-icon-color: #{$searchIconColor};
   --input-focus-border-color: #{$inputFocusBorderColor};
 }
   
@@ -67,7 +64,6 @@ $inputFocusBorderColorDark: rgb(112, 114, 115);
     --blockquote-border-color: #{$blockquoteBorderColorDark};
 
     --search-wrapper-bg: #{$searchWrapperBgDark};
-    --search-icon-color: #{$searchIconColorDark};
     --input-focus-border-color: #{$inputFocusBorderColorDark};
   }
 }
