@@ -11,6 +11,7 @@ plugins:
   - jemoji
   - jekyll-gist
   - jekyll-redirect-from
+  - jekyll-feed
 
 whitelist:
   - jekyll-redirect-from
