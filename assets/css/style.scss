@@ -121,7 +121,7 @@ middle { font-size: 90%; display: block; opacity: 0.7; }
 .navbar i { font-size: 1.1em; min-width: 1.5rem; text-align: center; padding: 1rem 1rem; }
 
 .main-content h1, .main-content h2, .main-content h3, .main-content h4, .main-content h5, .main-content h6 { margin-top: 2rem; margin-bottom: 1rem; font-weight: bold; outline: none; }
-.main-content h1 { font-size: 1.3em; border-left: 0.35rem solid green; padding-left: 20px; }
+.main-content > h1 { font-size: 1.3em; border-left: 0.35rem solid green; padding-left: 20px; }
 .main-content h2 { font-size: 1.25em; }
 .main-content h3 { font-size: 1.2em; }
 .main-content h4 { font-size: 1.15em; }
