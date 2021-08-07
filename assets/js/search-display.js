@@ -45,6 +45,7 @@
         searchWrapper.classList.add("d-flex");
         searchWrapper.classList.add("w-95");
         navbar.classList.add("d-flex");
+        navbar.classList.add("w-100");
         btnCancel.classList.add("loaded");
       },
       off() {
@@ -53,6 +54,7 @@
         searchWrapper.classList.remove("d-flex");
         searchWrapper.classList.remove("w-95");
         navbar.classList.remove("d-flex");
+        navbar.classList.remove("w-100");
         btnCancel.classList.remove("loaded");
       }
     };

@@ -117,7 +117,7 @@ middle { font-size: 90%; display: block; opacity: 0.7; }
 .circle-divider { transform: scale(0.2, 0.2); display: inline-block; }
 .page-header { z-index: 2 }
 
-.navbar { color: var(--nav-color); position: absolute; display: flex; justify-content: flex-end; width: 100%; padding: 0 1em; align-items: center; height: calc(2em + 2rem); }
+.navbar { color: var(--nav-color); position: absolute; display: flex; justify-content: flex-end; padding: 0 1em; align-items: center; height: calc(2em + 2rem); right: 0; }
 .navbar i { font-size: 1.1em; min-width: 1.5rem; text-align: center; padding: 1rem 1rem; }
 
 .main-content h1, .main-content h2, .main-content h3, .main-content h4, .main-content h5, .main-content h6 { margin-top: 2rem; margin-bottom: 1rem; font-weight: bold; outline: none; }
@@ -209,6 +209,10 @@ td, th { padding: 0; }
 
 .w-95 {
   width: 95%;
+}
+
+.w-100 {
+  width: 100%;
 }
 
 // 搜索
