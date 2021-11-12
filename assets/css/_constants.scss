@@ -14,6 +14,9 @@ $codeBackgroundColor: #f3f6fa;
 $separatorColor: #f3f3f3;
 $blockquoteBorderColor: #dbdbdb;
 
+$searchWrapperBg: #e9e7e7;
+$inputFocusBorderColor: #e9ecef;
+
 // Dark Mode
 $navColorDark: white;
 $backgroundColorDark: #191919;
@@ -25,6 +28,9 @@ $baseLinkColorDark: #c6c6c6;
 $codeBackgroundColorDark: #1d1f21;
 $separatorColorDark: #404040;
 $blockquoteBorderColorDark: #404040;
+
+$searchWrapperBgDark: rgb(34, 34, 39);
+$inputFocusBorderColorDark: rgb(112, 114, 115);
 
 // Switcher
 :root {
@@ -39,6 +45,9 @@ $blockquoteBorderColorDark: #404040;
   --code-background-color: #{$codeBackgroundColor};
   --separator-color: #{$separatorColor};
   --blockquote-border-color: #{$blockquoteBorderColor};
+
+  --search-wrapper-bg: #{$searchWrapperBg};
+  --input-focus-border-color: #{$inputFocusBorderColor};
 }
   
 @media (prefers-color-scheme: dark) {
@@ -53,5 +62,8 @@ $blockquoteBorderColorDark: #404040;
     --code-background-color: #{$codeBackgroundColorDark};
     --separator-color: #{$separatorColorDark};
     --blockquote-border-color: #{$blockquoteBorderColorDark};
+
+    --search-wrapper-bg: #{$searchWrapperBgDark};
+    --input-focus-border-color: #{$inputFocusBorderColorDark};
   }
 }

@@ -1,4 +1,4 @@
-theme: jekyll-theme-cayman
+# theme: jekyll-theme-cayman
 max_excerpt_chars: 200
 paginate: 20
 timezone: Asia/Chongqing
@@ -8,9 +8,10 @@ highlighter: rouge
 repository: zhangao0086/zhangao0086.github.io
 
 plugins:
-  - jemoji
+  # - jemoji
   - jekyll-gist
   - jekyll-redirect-from
+  - jekyll-feed
 
 whitelist:
   - jekyll-redirect-from

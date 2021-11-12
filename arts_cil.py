@@ -13,7 +13,7 @@ def start():
 
     # 获取当前最新的 arts post
     files = sorted(os.listdir(posts_dir))
-    regex = re.compile('(.*?)-ARTS #(\d+)')
+    regex = re.compile('(.*?)-ARTS-#(\d+)')
     pre_date, number = None, None
     for i in range(len(files)-1,-1,-1):
         if os.path.isfile(os.path.join(posts_dir, files[i])):
@@ -26,7 +26,7 @@ def start():
     # 创建新的文件名
     new_date, new_number = pre_date + datetime.timedelta(days=7), str(int(number) + 1)
     new_date_string = new_date.strftime(DATE_FORMAT)
-    filename = f'{new_date_string}-ARTS #{new_number}.md'
+    filename = f'{new_date_string}-ARTS-#{new_number}.md'
 
     # 创建新的 post
     time_string = datetime.datetime.today().strftime(TIME_FORMAT)

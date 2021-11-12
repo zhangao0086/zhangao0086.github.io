@@ -22,18 +22,22 @@ layout: compress
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="{{ '/assets/css/sidebar.css?v=' | append: site.github.build_revision | relative_url }}" />
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}" />
-    <link rel="stylesheet" href="{{ '/assets/css/fontawesome.css?v=' | append: site.github.build_revision | relative_url }}" />
+    <link rel="stylesheet" href="{{ '/assets/css/fonts/style.css?v=' | append: site.github.build_revision | relative_url }}" />
   </head>
   <body>
     {% include sidebar.html %}
 
     <div class="wrap">
-      <nav class="navbar">
-        <ul class="right">
-          <!-- <li><a href="{{ site.github.url | append: '/README.html' }}">Categories</a></li> -->
-          <!-- <li><a href="{{ site.github.url | append: '/README.html' }}">什么是 ARTS？</a></li> -->
-          <li><i class="icon-bars sidebar-toggle"></i></li>
-        </ul>
+      <nav id="navbar" class="navbar">
+        <i id="search-trigger" class="icon-search"></i>
+        <span id="search-wrapper" class="align-items-center">
+          <i class="icon-search"></i>
+          <input class="form-control" id="search-input" type="search" aria-label="search" placeholder="搜索...">
+          <i class="icon-times-circle" id="search-cleaner"></i>
+        </span>
+
+        <span id="search-cancel" >Cancel</span>
+        <i id="sidebar-trigger" class="icon-bars sidebar-toggle"></i>
       </nav>
       <header class="page-header" role="banner">
         <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
@@ -41,14 +45,13 @@ layout: compress
         {% if page.date %}
           <middle>
             <span>
-              {{ page.date | date: "%Y-%m-%d %H:%M:%S"}}<i class="icon-circle circle-divider"></i>{% include reading_time.html content = content %}    
+              {{ page.date | date: "%Y-%m-%d %H:%M:%S"}}<i class="icon-circle circle-divider"></i>{% include reading_time.html content = content %}
             </span>
           </middle>
         {% endif %}
-        <!-- <img src="https://stackoverflow.com/users/flair/907422.png?theme=clean" width="208" height="58" alt="profile for Bannings at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Bannings at Stack Overflow, Q&amp;A for professional and enthusiast programmers"> -->
       </header>
-      
-      <main class="container main-content" role="main">
+
+      <main id="main-content" class="container main-content" role="main">
         {{ content }}
         <footer class="site-footer">
           <span>&copy; {{ site.time | date: '%Y' }} <i class="icon-heart"></i> {{ site.author.name }}.</span>
@@ -57,6 +60,8 @@ layout: compress
       </main>
     </div>
     {% include lozad.html %}
+    {% include search-results.html %}
+    {% include search-loader.html %}
   </body>
 </html>
 

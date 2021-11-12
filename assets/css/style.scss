@@ -1,7 +1,7 @@
 ---
 ---
 
-@import "./constants";
+@import "constants";
 
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 /** 1. Set default font family to sans-serif. 2. Prevent iOS text size adjust after orientation change, without disabling user zoom. */
@@ -88,9 +88,9 @@ a:hover { text-decoration: underline; }
 .project-name { margin-top: 0; margin-bottom: 0.1rem; font-size: 1.2em; }
 
 .main-content { word-wrap: break-word; color: var(--content-color); max-width: 102.4rem; margin: 0 auto; }
-@media screen and (min-width: 64rem) { .main-content { padding: 3rem 12rem; } }
-@media screen and (min-width: 42rem) and (max-width: 64rem) { .main-content { padding: 2rem 4rem; } }
-@media screen and (max-width: 42rem) { .main-content { padding: 2rem 1.5rem; } }
+@media all and (min-width: 64rem) { .main-content { padding: 3rem 12rem; } }
+@media all and (min-width: 42rem) and (max-width: 64rem) { .main-content { padding: 2rem 4rem; } }
+@media all and (max-width: 42rem) { .main-content { padding: 2rem 1.5rem; } }
 .main-content img { max-width: 100%; }
 .main-content p { margin-bottom: 1rem; }
 .main-content code { padding: 2px 4px; font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace; font-size: 0.9em; color: #567482; background-color: var(--code-background-color); border-radius: 0.3rem; }
@@ -115,20 +115,13 @@ a:hover { text-decoration: underline; }
 middle { font-size: 90%; display: block; opacity: 0.7; }
 
 .circle-divider { transform: scale(0.2, 0.2); display: inline-block; }
-
-nav i { font-size: 1.1em; min-width: 1.5rem; text-align: center; padding: 1rem 1rem; }
-
 .page-header { z-index: 2 }
 
-.navbar { color: var(--nav-color);  margin: auto auto; position: relative; width: 100%; }
-.navbar .left { position: absolute; left: 0; }
-.navbar .right { position: absolute; right: 0; }
-.navbar ul { display: flex; padding: 0; margin-block-start: 1rem; margin-block-end: 1rem; }
-.navbar li { display: inline; list-style: none; margin-left: 1rem; margin-right: 1rem; }
-.navbar a, .navbar { text-decoration: none; }
+.navbar { color: var(--nav-color); position: absolute; display: flex; justify-content: flex-end; padding: 0 1em; align-items: center; height: calc(2em + 2rem); right: 0; }
+.navbar i { font-size: 1.1em; min-width: 1.5rem; text-align: center; padding: 1rem 1rem; }
 
 .main-content h1, .main-content h2, .main-content h3, .main-content h4, .main-content h5, .main-content h6 { margin-top: 2rem; margin-bottom: 1rem; font-weight: bold; outline: none; }
-.main-content h1 { font-size: 1.3em; border-left: 0.35rem solid green; padding-left: 20px; }
+.main-content > h1 { font-size: 1.3em; border-left: 0.35rem solid green; padding-left: 20px; }
 .main-content h2 { font-size: 1.25em; }
 .main-content h3 { font-size: 1.2em; }
 .main-content h4 { font-size: 1.15em; }
@@ -184,6 +177,170 @@ td, th { padding: 0; }
   color: white;
   background-color: #5ca580;
   border: 1px solid #5ca580;
+}
+
+/* --- Effects classes --- */
+
+.loaded {
+  display: block !important;
+
+  @at-root .d-flex#{&} {
+    display: flex !important;
+  }
+}
+
+.unloaded {
+  display: none !important;
+}
+
+.visible {
+  visibility: visible !important;
+}
+
+.hidden {
+  visibility: hidden !important;
+}
+
+.d-flex {
+  display: -webkit-box!important;
+  display: -ms-flexbox!important;
+  display: flex!important;
+}
+
+.w-95 {
+  width: 95%;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+// 搜索
+
+#search-result-wrapper {
+  height: 100%;
+  overflow: auto;
+  .main-content {
+    margin-top: 2rem;
+  }
+}
+
+#search-trigger {
+  display: none;
+}
+
+#search-wrapper {
+  display: flex;
+  border-radius: 1rem;
+  border: 1px solid var(--search-wrapper-bg);
+  background: var(--search-wrapper-bg);
+  padding: 0 0.1rem;
+  i {
+    z-index: 2;
+    font-size: 0.8em;
+    color: var(--nav-color);
+  }
+  .icon-times-circle { /* button 'clean up' */
+    visibility: hidden;
+  }
+}
+
+#search-cancel { /* 'Cancel' link */
+  color: var(--base-link-color);
+  margin-left: 1rem;
+  display: none;
+}
+
+#search-input {
+  background: center;
+  border: 0;
+  border-radius: 0;
+  padding: 0.18rem 0.3rem;
+  color: var(--content-color);
+  outline: none;
+}
+
+#search-input::-webkit-search-cancel-button { 
+  -webkit-appearance: none; 
+}
+
+#search-results {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 6rem;
+
+  > div {
+    width: 90%;
+    margin: auto auto;
+
+    &:not(:last-child) {
+      margin-bottom: 1rem;
+    }
+
+    i { // icons
+      color: var(--nav-color);
+      margin-right: 0.15rem;
+      font-size: 80%;
+    }
+
+    > p {
+      color: var(--content-color);
+      margin-top: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+  }
+} // #search-results
+
+@media all and (max-width: 849px) {
+  #search-result-wrapper {
+    width: 100%;
+  }
+  #search-wrapper {
+    display: none;
+  }
+  #search-trigger {
+    display: inline;
+  }
+
+  #search-wrapper {
+    &.loaded ~ a {
+      margin-right: 1rem;
+    }
+    .icon-times-circle {
+      right: 5.2rem;
+    }
+  }
+
+  #search-input {
+    margin-left: 0;
+    width: 95%; 
+  }
+
+  #search-result-wrapper .main-content {
+    letter-spacing: 0;
+  }
+}
+
+.input-focus {
+  box-shadow: none;
+  border-color: var(--input-focus-border-color) !important;
+  background: center white !important;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+@media all and (min-width: 48rem) {
+  #search-input {
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+  }
+
+  #search-results > div {
+    width: 46%;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
