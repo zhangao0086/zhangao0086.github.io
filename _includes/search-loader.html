@@ -18,6 +18,7 @@
 <script>
 SimpleJekyllSearch({
   searchInput: document.getElementById('search-input'),
+  limit: 20,
   resultsContainer: document.getElementById('search-results'),
   json: '{{ '/assets/data/search.json' | relative_url }}',
   searchResultTemplate: '{{ result_elem | strip_newlines }}',
