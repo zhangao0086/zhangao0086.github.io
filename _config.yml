@@ -1,6 +1,6 @@
 # theme: jekyll-theme-cayman
 max_excerpt_chars: 200
-paginate: 20
+paginate: 10
 timezone: Asia/Chongqing
 title: CodingTour
 permalink: /posts/:slug/
