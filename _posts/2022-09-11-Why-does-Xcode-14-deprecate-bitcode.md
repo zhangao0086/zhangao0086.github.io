@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "为什么苹果在 Xcode 14 中废弃了 bitcode"
+title: "为什么苹果在 Xcode 14 中废弃了 Bitcode"
 date: 2022-09-11 02:28:55 +0800
 categories: [分享]
 article_type: 1
