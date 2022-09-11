@@ -41,7 +41,7 @@ Bitcode 是 LLVM bytecode 文件格式，它其实隐含了两个东西：
 - 根据用户的设备不同，提供特定的版本，既减少了下载量，又能提高特定优化版本的性能
 - 不发版的情况下，实现编译优化
 
-比如苹果近年推出的 M1 芯片，其使用了 RISC-V 架构，相比 Intel 超过 1500 个指令来说，RISC-V 只有 40-50 个指令，绝对算得上 small and simple，那借助 Bitcode 的能力，就算应用程序的开发者从未听说过 RISC-V，也能实现对 RISC-V 的原生支持，因为所有带 Bitcode 的应用都可以在苹果后台编译为 RISC-V：
+比如 RISC-V 架构，相比 Intel 超过 1500 个指令来说，RISC-V 只有 40-50 个指令，绝对算得上 small and simple，那借助 Bitcode 的能力，就算应用程序的开发者从未听说过 RISC-V，也能实现对 RISC-V 的原生支持，因为所有带 Bitcode 的应用都可以在苹果后台编译为 RISC-V：
 
 ![](/assets/img/bitcode-2.jpg)
 
