@@ -14,6 +14,9 @@ layout: compress
         gtag('config', '{{ site.google_analytics }}');
       </script>
     {% endif %}
+    {% if page.jquery %}
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+    {% endif %}
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="/favicon.png"/>
 {% seo %}
@@ -36,7 +39,7 @@ layout: compress
           <i class="icon-times-circle" id="search-cleaner"></i>
         </span>
 
-        <span id="search-cancel" >Cancel</span>
+        <span id="search-cancel">Cancel</span>
         <i id="sidebar-trigger" class="icon-bars sidebar-toggle"></i>
       </nav>
       <header class="page-header" role="banner">
