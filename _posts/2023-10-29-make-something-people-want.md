@@ -7,6 +7,8 @@ article_type: 1
 typora-root-url: ../../github.io
 ---
 
+![](/assets/img/make-something-people-want-caption.jpg)
+
 “Make something people want” 是保罗·格雷厄姆的名言，今天随便聊一聊从保罗·格雷厄姆身上学到的和扩展出来的一些东西~
 
 # 士气与心力
