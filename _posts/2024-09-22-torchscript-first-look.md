@@ -7,7 +7,7 @@ article_type: 1
 typora-root-url: ../../github.io
 ---
 
-![](/assets/img/221-caption.png)
+![](/assets/img/torchscript-first-look-caption.png)
 
 > 在长汀遛娃拍的反差照，一个好吃又好玩的县城，消费也不高~
 
@@ -66,7 +66,7 @@ std::cout << output.slice(/*dim=*/1, /*start=*/0, /*end=*/5) << '\n';
 
 PhotoRoom 在今年的 GTC 大会上分享其对模型优化方法时（ [Scaling Generative AI Features to Millions of Users Thanks to Inference Pipeline Optimizations](https://resources.nvidia.com/en-us-ai-inference-content/gtc24-s62726) ），也用到了 `TorchScript`：
 
-![](/assets/img/221-1.png)
+![](/assets/img/torchscript-first-look-1.png)
 
 不过，将模型编译为 `TorchScript` 时，虽然有工具链的支持，但仍然会遇到如下挑战： 
 
@@ -101,11 +101,11 @@ PhotoRoom 在今年的 GTC 大会上分享其对模型优化方法时（ [Scalin
 
 跟上面差不多，一般和某个特定类型有关，在我的例子里是 `EmbeddingConfig`，最终我在 `forward` 里移除了对它的依赖。
 
-> Expected integer literal for index but got a variable or non-integer. ModuleList/Sequential indexing is only supported with integer literals. For example, 'i = 4; self.layers[i](x)' will fail because i is not a literal. Enumeration is supported, e.g. 'for index, v in enumerate(self): out = v(inp)':
+> Expected integer literal for index but got a variable or non-integer. ModuleList/Sequential indexing is only supported with integer literals. For example, 'i = 4; self.layers' will fail because i is not a literal. Enumeration is supported, e.g. 'for index, v in enumerate(self): out = v(inp)':
 
 只能用字面量做索引，不支持动态数组，开解循环可以解决，但不是一个好的解决方案。
 
-> Unable to extract string literal index. ModuleDict indexing is only supported with string literals. For example, 'i = "a"; self.layers[i](x)' will fail because i is not a literal. Enumeration of ModuleDict is supported, e.g. 'for k, v in self.items(): out = v(inp)':
+> Unable to extract string literal index. ModuleDict indexing is only supported with string literals. For example, 'i = "a"; self.layers' will fail because i is not a literal. Enumeration of ModuleDict is supported, e.g. 'for k, v in self.items(): out = v(inp)':
 
 动态字典也不行，但加上类型注解后基本上就行了，由于我的 `ModuleDict` 中的 value 是一个自定义的 `nn.Module`，得显式的调用它的 `forward`，通过 `__call__` 间接调用会被识别为创建实例。
 
