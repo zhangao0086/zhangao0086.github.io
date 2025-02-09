@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "扩散模型推理计算 scaling 的新探索"
+title: "扩散模型推理计算 Scaling 的新探索"
 date: 2025-02-09 22:06:51 +0800
 categories: [分享]
 article_type: 1
