@@ -50,14 +50,6 @@ typora-root-url: ../../github.io
 本周选择的算法题是：[]()。
 
 
-## 规则
-
-
-
-## Solution
-
-
-
 
 # Review
 
