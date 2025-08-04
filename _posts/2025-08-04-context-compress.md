@@ -1,11 +1,13 @@
 ---
 layout: post
-title: ""
-date: 2025-08-03 23:35:22 +0800
+title: "从几个框架看 Context Compress 的实现"
+date: 2025-08-04 23:35:22 +0800
 categories: [分享]
 article_type: 1
 typora-root-url: ../../github.io
 ---
+
+![](/assets/img/context-compress-caption.jpg)
 
 # 什么是 Context Compress
 
