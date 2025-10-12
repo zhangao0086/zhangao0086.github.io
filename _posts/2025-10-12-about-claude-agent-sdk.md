@@ -8,7 +8,7 @@ article_type: 1
 typora-root-url: ../../github.io
 imageNameKey: about-claude-agent-sdk
 ---
-![](assets/img/about-claude-agent-sdk-caption.png)
+![](/assets/img/about-claude-agent-sdk-caption.png)
 # 背景
 
 最近，Anthropic 将 Claude Code SDK 更名为了 Claude Agent SDK，以体现他们的愿景：
@@ -41,7 +41,7 @@ Claude Code 使用的工具和程序员人群每天使用的工具是一样的�
 
 ## ReAct
 
-![](assets/img/about-claude-agent-sdk-1.png)
+![](/assets/img/about-claude-agent-sdk-1.png)
 
 简单的将 ReAct 和 Computer 结合起来就能让 Claude Code 完成大量 “非” 编码任务，比如：
 
@@ -78,7 +78,7 @@ Claude Code 使用的工具和程序员人群每天使用的工具是一样的�
 
 所谓的流式输入，指的就是多轮对话的长任务：
 
-![](assets/img/about-cluade-agent-sdk-2.png)
+![](/assets/img/about-claude-agent-sdk-2.png)
 
 作为对比，简单任务就像一锤子买卖：
 
@@ -90,7 +90,7 @@ Claude Code 使用的工具和程序员人群每天使用的工具是一样的�
 
 控制工具调用：
 
-![](assets/img/about-claude-agent-sdk-3.png)
+![](/assets/img/about-claude-agent-sdk-3.png)
 
 ## Session Management
 
@@ -112,7 +112,7 @@ Claude Code 使用的工具和程序员人群每天使用的工具是一样的�
 
 定义相当简单：
 
-![](assets/img/about-claude-agent-sdk-4.png)
+![](/assets/img/about-claude-agent-sdk-4.png)
 
 ## Slash Commands in the SDK
 
@@ -130,25 +130,25 @@ Claude Code 使用的工具和程序员人群每天使用的工具是一样的�
 
 Claude Agent SDK 很薄，它的架构看起来是这样的：
 
-![](assets/img/about-claude-agent-sdk-5.png)
+![](/assets/img/about-claude-agent-sdk-5.png)
 
 以 interrupt 为例，我们直接通过代码看它的流程。
 
 上层接口：
 
-![](assets/img/about-claude-agent-sdk-6.png)
+![](/assets/img/about-claude-agent-sdk-6.png)
 
 构建和发送请求：
 
-![](assets/img/about-claude-agent-sdk-7.png)
+![](/assets/img/about-claude-agent-sdk-7.png)
 
 协议层：
 
-![](assets/img/about-claude-agent-sdk-8.png)
+![](/assets/img/about-claude-agent-sdk-8.png)
 
 实现层都在 CLI 里，即 Claude Code，再看一眼这张图：
 
-![](assets/img/about-claude-agent-sdk-5.png)
+![](/assets/img/about-claude-agent-sdk-5.png)
 
 真正干活的是 Claude Code，它以独立进程运行，Claude Agent SDK 就像一个 Client SDK 一样仅封装 CLI 的能力而已。了解这层架构后，你就明白为什么 Claude Agent SDK 里要专门介绍如何 *Modifying system prompts*，Claude Agent SDK 不能算开发 Agent 的 SDK，只能算调用 CLI 的 SDK，CLI 内部有大量的黑盒实现，比如 CLI 的 system prompts 就自带了这些：
 
@@ -182,7 +182,7 @@ LLM 本身就很难调试和评估，任何你引入的额外复杂性（多代�
 
 只保留一个主循环，可调试性远胜于复杂的多代理、图节点混合系统：
 
-![](assets/img/about-claude-agent-sdk-9.png)
+![](/assets/img/about-claude-agent-sdk-9.png)
 
 左侧是标准的 ReAct，右侧也是，只是其中一个 Tool 也是属于 ReAct。
 
