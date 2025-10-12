@@ -211,7 +211,7 @@ asyncio.run(main())
 
 查看对话和工具调用的费用情况，用过 Cluade Code 的话应该不陌生：
 
-![](../assets/img/about-claude-agent-sdk-10.png)
+![](/assets/img/about-claude-agent-sdk-10.png)
 
 ## Todo Lists
 
@@ -273,7 +273,7 @@ LLM 本身就很难调试和评估，任何你引入的额外复杂性（多代�
 
 只保留一个主循环，可调试性远胜于复杂的多代理、图节点混合系统：
 
-![](../assets/img/about-claude-agent-sdk-9.gif)
+![](/assets/img/about-claude-agent-sdk-9.gif)
 
 左侧是标准的 ReAct，右侧也是，只是其中一个 Tool 也是属于 ReAct。
 
