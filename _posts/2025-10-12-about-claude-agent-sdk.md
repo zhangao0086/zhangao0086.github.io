@@ -15,7 +15,7 @@ imageNameKey: about-claude-agent-sdk
 
 *Claude Agent SDK 并不是只用于编码场景，在 deep research、创作等非编码场景中也同样适用。*
 
-Claude Agent SDK 相关文档及介绍：
+官方文档及介绍：
 
 - [Agent SDK overview](https://docs.claude.com/en/api/agent-sdk/overview)
 - [Subagents in the SDK](https://docs.claude.com/en/api/agent-sdk/subagents)
@@ -43,7 +43,7 @@ Claude Code 使用的工具和程序员人群每天使用的工具是一样的�
 
 ![](/assets/img/about-claude-agent-sdk-1.png)
 
-简单的将 ReAct 和 Computer 结合起来就能让 Claude Code 完成大量 “非” 编码任务，比如：
+简单的将 ReAct 和 Computer 结合起来就能让 Claude Code 完成大量 “非” 编码型任务，比如：
 
 - 运行 bash 命令
 - 编辑与创建文件
@@ -60,8 +60,8 @@ Claude Code 使用的工具和程序员人群每天使用的工具是一样的�
 上下文不只是指 prompt 写的好不好，这个话题包含了：
 
 - Agentic search 与文件系统组合而成的上下文检索能力，Agent 必须能够自行获取和更新上下文
-- 语义检索，比 agentic search 更快，但准确性较低、维护成本更高且可调试性差，局限性强，适合需要更快获得结果或更多 variation 时才使用
-- Subagents，主要两个好处：
+- 语义检索，虽然比 agentic search 快，但准确性较低、维护成本更高且可调试性差，因此局限性很强，适合需要更快获得结果或更多 variation 时才使用
+- Subagents，两个特点：
     - 可并行执行，能同时启动多个 Subagents 同时处理不同任务
     - 方便上下文管理，Subagents 使用独立的 context window，并且和 lead agent 之间只传递和自身有关的信息，而非完整上下文，这使它们更容易聚焦任务
 - 上下文压缩，防止长任务下耗尽上下文
@@ -72,7 +72,7 @@ Claude Code 使用的工具和程序员人群每天使用的工具是一样的�
 
 # 关键能力
 
-算是 Claude Agent SDK 具备的功能，其实内容并不多。
+Claude Agent SDK 具备的功能，内容并不多。
 
 ## Streaming Input
 
@@ -102,29 +102,120 @@ Claude Code 使用的工具和程序员人群每天使用的工具是一样的�
 
 ## MCP in the SDK
 
-如何通过配置自定义 MCP Servers 扩展工具集。
+通过配置自定义 MCP Servers 扩展工具集，示例：
+
+```python
+from claude_agent_sdk import query
+
+async for message in query(
+    prompt="List files in my project",
+    options={
+        "mcpServers": {
+            "filesystem": {
+                "command": "python",
+                "args": ["-m", "mcp_server_filesystem"],
+                "env": {
+                    "ALLOWED_PATHS": "/Users/me/projects"
+                }
+            }
+        },
+        "allowedTools": ["mcp__filesystem__list_files"]
+    }
+):
+    if message["type"] == "result" and message["subtype"] == "success":
+        print(message["result"])
+```
 
 ## Custom Tools
 
-如何通过本地代码的形式扩展工具集。
+通过本地代码的形式扩展工具集：
+
+```python
+from claude_agent_sdk import tool, create_sdk_mcp_server, ClaudeSDKClient, ClaudeAgentOptions
+from typing import Any
+import aiohttp
+
+# Define a custom tool using the @tool decorator
+@tool("get_weather", "Get current weather for a location", {"location": str, "units": str})
+async def get_weather(args: dict[str, Any]) -> dict[str, Any]:
+    # Call weather API
+    units = args.get('units', 'celsius')
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            f"https://api.weather.com/v1/current?q={args['location']}&units={units}"
+        ) as response:
+            data = await response.json()
+
+    return {
+        "content": [{
+            "type": "text",
+            "text": f"Temperature: {data['temp']}°\nConditions: {data['conditions']}\nHumidity: {data['humidity']}%"
+        }]
+    }
+
+# Create an SDK MCP server with the custom tool
+custom_server = create_sdk_mcp_server(
+    name="my-custom-tools",
+    version="1.0.0",
+    tools=[get_weather]  # Pass the decorated function
+)
+```
 
 ## Subagents in the SDK
 
-定义相当简单：
+一种 Multi-Agents 的实现，定义相当简单：
 
 ![](/assets/img/about-claude-agent-sdk-4.png)
 
+然后：
+
+```typescript
+const result = query({
+  prompt: "Optimize the database queries in the API layer",
+  options: {
+    agents: {
+      'performance-optimizer': {
+        description: 'Use PROACTIVELY when code changes might impact performance. MUST BE USED for optimization tasks.',
+        prompt: 'You are a performance optimization specialist...',
+        tools: ['Read', 'Edit', 'Bash', 'Grep'],
+        model: 'sonnet'
+      }
+    }
+  }
+});
+```
+
 ## Slash Commands in the SDK
 
-如何主动调用 Claude Code 的斜杠命令和自定义斜杠命令。
+能调用 Claude Code 自带的斜杠命令，也能自定义斜杠命令。
+
+调用示例：
+
+```python
+import asyncio
+from claude_agent_sdk import query
+
+async def main():
+    # Send a slash command
+    async for message in query(
+        prompt="/compact",
+        options={"max_turns": 1}
+    ):
+        if message.type == "result":
+            print("Command executed:", message.result)
+
+asyncio.run(main())
+```
 
 ## Tracking Costs and Usage
 
-查看对话和工具调用的费用情况。
+查看对话和工具调用的费用情况，用过 Cluade Code 的话应该不陌生：
+
+![](../assets/img/about-claude-agent-sdk-10.png)
 
 ## Todo Lists
 
-如何查看和监控待办清单的状态。
+查看和监控待办清单的状态，是 Planning 的一种实现方式。
 
 # SDK 与 CLI 的关系
 
@@ -303,34 +394,10 @@ NEVER commit changes unless the user explicitly asks you to. It is VERY IMPORTAN
 
 在关键的 ‎`Task Management`、‎`Doing tasks` 和 ‎`Tool Usage Policy` 等部分，都详细写出了算法流程，也有大量启发式和场景示例。这些流程化算法化的指令，比零散的 Do/Don’t 更容易被执行，能让 LLM 的行为更加结构化、可预测，也更不容易出错。
 
-## CC 的启示
+# Anthropic 的启示
 
 打造强大的 Agent，不一定要复杂的框架和繁琐的工程化。其实，简单的 Agent 一样可以很强大。
 
-CC 没有追求花哨的新技术，而是选择相信模型，把复杂的部分交给模型处理，让系统专注于基础和调度。与其堆叠工具和流程，不如把复杂留给模型，把简单留给系统，或许效果更好。
+Claude Code 没有追求花哨的新技术，而是选择相信模型，把复杂的部分交给模型处理，让系统专注于基础和调度。与其堆叠工具和流程，不如把复杂留给模型，把简单留给系统，或许效果更好。
 
-# 
-
-这些框架之间，包括我们自己实现的框架，在设计上都很雷同，我觉得没有谁比谁更高级，反正从实现上看是这样。
-
-但是在概念上大家争的比较厉害，比如 subagents 和 handoffs：
-
-- subagents，有明确的、相对窄的职责与独立的 context window，可以同时并行启动多个子代理、每个子代理仅接收与自身任务相关的 context，而非完整对话历史，从而提升任务的聚焦度与可管理性，架构上一般会有个 lead agent 负责编排与结果汇总，subagents 负责执行各自的专长
-- handoffs，一般表达为接力，一个 agent 在达到某个边界或发现有更合适的能力提供者时，将当前任务状态、必要的上下文 “移交” 给另一个 agent，它强调的是控制权转移：什么时候交棒、交什么内容，关注的是执行实体之间的有序转移
-
-这两个东西从使用者视角来看，差别很小，甚至能在两者之间随意切换（我们也可以），但如果抛开这些词汇，这几个框架也就没啥大区别了。
-
-为什么会出现这种现象？我觉得有两个原因：
-
-1. 当前 agent 技术底座同质化。多数体系都基于类似的 ReAct 模式、会话与上下文管理、工具路由、权限控制、以及结果汇总。无论是 “并行分工”（subagents）还是 “接力”（handoffs），都要做同样的事情：创建或选择执行单元、打包最小必要的上下文、设定能力与权限、等待产出、再合并到主流程。Claude Agent SDK 就是这种薄封装：会话管理、权限、MCP/工具扩展、subagents 都复用同一套协议与 CLI 能力
-2. 其次是系统架构设计上，领域抽象的边界趋同。为了可观察性与可靠性，系统都会要求明确的输入输出协议、可审计的权限与成本跟踪、以及错误与中断处理，这些非功能性需求迫使不同 “编排意图” 在代码层收敛成相近的 API 和状态机
-
-对我们来说，应该保持灵活与框架中立，避免技术锁定，能使用不同的 Models、能结合 subagents & handoffs 的混合编排、能应用业界前沿实践、能在关键路径上选定一条低成本 & 可交付的首选实现就好。
-
-
-Anthropic 很有野心，他们正在把 Claude Code 变成一个高渗透、广适用的通用智能入口，就像当年的 Chrome 一样，进入所有用户的日常环境，成为每台电脑的标配。
-
-
-如果只是做 workflow 确实如他所说已经够用了，但我感觉 openai 的目标仍然是不断逼近 AGI，前些年的 ChatBot 也不是非 openai 做不可，却只有 openai 做出来后才产生了广泛的影响，而今 ChatBot 的形态已经满足不了我们在复杂任务上的期望，下一阶段的形态看起来貌似就是 agentic workflow，他们不是在做另一个 workflow 框架，而是在自己的路线上迭代，试图把 “自主性（agentic）” 与 “可控性（workflow）” 在同一运行时上打通，这个远期目标和 langchain 是不一样的。
-
-如果仅拿纯粹的 workflow 构建平台来说，Dify 的机会还是要大一些，当时用 Dify 构造出的复杂 workflow 会在模型边界扩大 + 模型能力提升 + 插件化架构下慢慢变成历史，我看法是这样的~
+Anthropic 很有野心，他们正试图把 Claude Code 变成一个高渗透、广适用的通用智能入口，就像当年的 Chrome，只要开发者用 Agent，背后就有 Claude Code 的身影，最终进入每个用户的日常环境、成为每台电脑的标配。
