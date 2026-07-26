@@ -86,7 +86,7 @@ Context → Action → Feedback → Context
 | Verifier | 使用 AST、测试、规则和沙盒执行验证模型产出 |
 | Memory | 保存模型选择、验证成绩、成本与失败轨迹，供后续任务检索 |
 
-![ACRouter 的执行反馈闭环](/assets/img/model-router-acrouter-loop.png)
+![](/assets/img/model-router-acrouter-loop.png)
 
 论文实现中的 Orchestrator 使用微调后的 Qwen3.5-0.8B，再结合启发式规则投票；Memory 会检索 Top-10 相似任务，最多保留 20K 条经验。每完成一个任务，Verifier 都会产生新信息并写入 Memory，下一次选择也随之变化。
 
@@ -102,7 +102,7 @@ Context → Action → Feedback → Context
 
 它们并不是同一种实现，Cursor 面向高吞吐的真实请求，强调轻量分类、缓存、用户反馈、线上 A/B 和组织策略；ACRouter 面向任务流，强调沙盒验证、相似经验和在线适应。
 
-![Cursor Router 与 ACRouter 的实现侧重点对比](/assets/img/model-router-comparison.png)
+![](/assets/img/model-router-comparison.png)
 
 但它们指向了同一件事：Router 的效果不取决于一次分类有多聪明，而取决于系统是否知道各模型过去的真实表现，并能不能把这次结果变成下一次选择的依据。
 
@@ -156,7 +156,7 @@ Context → Action → Feedback → Context
 | Agent Runtime | 执行任务，保持模型粘性，并在明确条件下升级 |
 | Outcome Store | 记录实际成本、验证结果、用户是否接受以及路由原因 |
 
-![最小 Model Router 架构](/assets/img/model-router-minimal-architecture.png)
+![](/assets/img/model-router-minimal-architecture.png)
 
 一次决策至少要包含：
 
