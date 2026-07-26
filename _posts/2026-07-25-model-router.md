@@ -1,8 +1,9 @@
 ---
 layout: post
-title: "Model Router 该怎么做"
-date: 2026-07-25 21:54:16 +0800
-categories: [分享]
+title: Model Router 该怎么做
+date: 2026-07-26 21:54:16 +0800
+categories:
+  - 分享
 article_type: 1
 typora-root-url: ../../github.io
 ---
@@ -11,11 +12,7 @@ typora-root-url: ../../github.io
 
 7.22，Cursor 正式发布了 [Cursor Router](https://cursor.com/blog/router)。一个月前，论文 [Agent-as-a-Router](https://arxiv.org/abs/2606.22902) 提出了 ACRouter（Agentic Coding Router），并开放了[代码和 Benchmark](https://github.com/LanceZPF/agent-as-a-router)。
 
-一个是已经进入真实产品的 Router，一个是可以看到实现细节的研究原型。把它们放在一起看，Model Router 的轮廓会清晰很多。
-
-先说我的结论：选模型本身没有多神秘，难的是知道这次选择究竟对不对。在没有真实执行结果以前，再复杂的 Router 也只是在做更复杂的猜测。
-
-下面一部分是公开资料，一部分是我基于这些资料整理出的实现思路，不是生产实践复盘。
+一个是已经进入真实产品的 Router，一个是可以看到实现细节的研究原型，把它们放在一起看，Model Router 的轮廓会清晰很多。
 
 # Cursor Router 做了什么
 
