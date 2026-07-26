@@ -7,6 +7,8 @@ article_type: 1
 typora-root-url: ../../github.io
 ---
 
+![](/assets/img/model-router-caption.png)
+
 7.22，Cursor 正式发布了 [Cursor Router](https://cursor.com/blog/router)。一个月前，论文 [Agent-as-a-Router](https://arxiv.org/abs/2606.22902) 提出了 ACRouter（Agentic Coding Router），并开放了[代码和 Benchmark](https://github.com/LanceZPF/agent-as-a-router)。
 
 一个是已经进入真实产品的 Router，一个是可以看到实现细节的研究原型。把它们放在一起看，Model Router 的轮廓会清晰很多。
@@ -87,6 +89,8 @@ Context → Action → Feedback → Context
 | Verifier | 使用 AST、测试、规则和沙盒执行验证模型产出 |
 | Memory | 保存模型选择、验证成绩、成本与失败轨迹，供后续任务检索 |
 
+![ACRouter 的执行反馈闭环](/assets/img/model-router-acrouter-loop.png)
+
 论文实现中的 Orchestrator 使用微调后的 Qwen3.5-0.8B，再结合启发式规则投票；Memory 会检索 Top-10 相似任务，最多保留 20K 条经验。每完成一个任务，Verifier 都会产生新信息并写入 Memory，下一次选择也随之变化。
 
 这种 Router 不太适合只用准确率评估。一个任务可能有多个模型都能完成，只是质量和成本不同。ACRouter 使用累积遗憾值，也就是每次实际选择与事后最优模型之间的差距。差距越小，说明长期路由越接近逐任务最优策略。
@@ -100,6 +104,8 @@ Context → Action → Feedback → Context
 从目前公开的资料来看，Cursor Router 和 ACRouter 可以分别视为 Model Router 在工业界与学术界的两个代表性工作，前者有真实产品流量和线上结果，后者公开了系统设计、评测集与消融实验。
 
 它们并不是同一种实现，Cursor 面向高吞吐的真实请求，强调轻量分类、缓存、用户反馈、线上 A/B 和组织策略；ACRouter 面向任务流，强调沙盒验证、相似经验和在线适应。
+
+![Cursor Router 与 ACRouter 的实现侧重点对比](/assets/img/model-router-comparison.png)
 
 但它们指向了同一件事：Router 的效果不取决于一次分类有多聪明，而取决于系统是否知道各模型过去的真实表现，并能不能把这次结果变成下一次选择的依据。
 
@@ -152,6 +158,8 @@ Context → Action → Feedback → Context
 | Policy & Router | 过滤硬约束，根据规则选择模型和备用模型 |
 | Agent Runtime | 执行任务，保持模型粘性，并在明确条件下升级 |
 | Outcome Store | 记录实际成本、验证结果、用户是否接受以及路由原因 |
+
+![最小 Model Router 架构](/assets/img/model-router-minimal-architecture.png)
 
 一次决策至少要包含：
 
